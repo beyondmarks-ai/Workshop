@@ -166,6 +166,17 @@ main {
   transition: color .2s ease, transform .2s ease;
 }
 
+.guide-link {
+  display: inline-block;
+  margin-top: 18px;
+  color: #62718c;
+  font-size: .78rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.guide-link:hover { color: #148b73; }
+
 .skip-dashboard:hover {
   color: #16866e;
   transform: translateX(3px);

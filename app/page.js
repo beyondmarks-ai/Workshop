@@ -50,6 +50,7 @@ export default function Home() {
           <button className="launch-button signup-button" onClick={() => setMode("signup")}>Sign Up <span aria-hidden="true">→</span></button>
         </div>
         <a className="skip-dashboard" href="/dashboard">Skip to Dashboard <span aria-hidden="true">→</span></a>
+        <a className="guide-link" href="/hackathon-guide.html">Hackathon Guide</a>
       </div>
 
       {mode && (
