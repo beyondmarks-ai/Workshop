@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Hls from "hls.js";
+import { useEffect, useRef, useState } from "react";
 import { languages } from "../lib/languages";
 
 export default function Home() {
+  const backgroundVideoRef = useRef(null);
   const [mode, setMode] = useState(null);
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
@@ -12,6 +14,43 @@ export default function Home() {
     const closeOnEscape = (event) => event.key === "Escape" && setMode(null);
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
+  useEffect(() => {
+    const video = backgroundVideoRef.current;
+    if (!video) return undefined;
+    const sources = [
+      "https://astra-bg-cnf7bta0crg5fugq.z01.azurefd.net/assetsbg/hls/master.m3u8",
+      "https://astra617db5store.blob.core.windows.net/assetsbg/hls/master.m3u8"
+    ];
+    let hls;
+    let sourceIndex = 0;
+    const attachSource = () => {
+      const source = sources[sourceIndex];
+      if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = source;
+        video.load();
+        video.play().catch(() => {});
+        return;
+      }
+      if (!Hls.isSupported()) return;
+      hls?.destroy();
+      hls = new Hls({ enableWorker: true, lowLatencyMode: false, maxBufferLength: 30, backBufferLength: 30 });
+      hls.on(Hls.Events.ERROR, (_, data) => {
+        if (data.fatal && sourceIndex < sources.length - 1) {
+          sourceIndex += 1;
+          attachSource();
+        }
+      });
+      hls.loadSource(source);
+      hls.attachMedia(video);
+    };
+    attachSource();
+    return () => {
+      if (hls) hls.destroy();
+      video.removeAttribute("src");
+      video.load();
+    };
   }, []);
 
   const authenticate = async (event, action) => {
@@ -38,8 +77,7 @@ export default function Home() {
 
   return (
     <main>
-      <video className="background-video" autoPlay loop muted playsInline aria-hidden="true">
-        <source src="https://astra617db5store.blob.core.windows.net/assetsbg/bg.mp4" type="video/mp4" />
+      <video ref={backgroundVideoRef} className="background-video" autoPlay loop muted playsInline preload="auto" fetchPriority="high" aria-hidden="true">
       </video>
       <div className="welcome-panel">
         <p className="eyebrow">BEYOND THE ORDINARY</p>

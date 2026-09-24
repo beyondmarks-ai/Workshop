@@ -2100,6 +2100,9 @@ main {
   object-fit: cover;
   object-position: center;
   filter: saturate(.9) contrast(1.05);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 main::before,
@@ -2136,11 +2139,10 @@ main::after {
 .welcome-panel {
   width: min(760px, calc(100vw - 32px));
   padding: clamp(28px, 5vw, 58px) clamp(22px, 6vw, 76px);
-  border: 1px solid #ffffff26;
-  border-radius: 34px;
-  background: #fffaf00e;
-  box-shadow: 0 28px 90px #07132d66, inset 0 1px #ffffff24;
-  backdrop-filter: blur(16px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
   transform: none;
 }
 

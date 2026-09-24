@@ -5,3 +5,9 @@ node_modules/
 /Corners/
 function-app/local.settings.json
 *.log
+bg-source.mp4
+bg-full-source*.mp4
+bg-full-accurate.mp4
+bg-part-*
+public/bg-optimized.mp4
+public/hls/
