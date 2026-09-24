@@ -20,29 +20,37 @@ export default function Home() {
     const video = backgroundVideoRef.current;
     if (!video) return undefined;
     const sources = [
-      "https://astra-bg-cnf7bta0crg5fugq.z01.azurefd.net/assetsbg/hls/master.m3u8",
-      "https://astra617db5store.blob.core.windows.net/assetsbg/hls/master.m3u8"
+      { url: "https://astra-bg-cnf7bta0crg5fugq.z01.azurefd.net/assetsbg/hls/master.m3u8", type: "hls" },
+      { url: "https://astra617db5store.blob.core.windows.net/assetsbg/hls/master.m3u8", type: "hls" },
+      { url: "https://astra617db5store.blob.core.windows.net/assetsbg/bg.mp4", type: "mp4" }
     ];
     let hls;
     let sourceIndex = 0;
     const attachSource = () => {
       const source = sources[sourceIndex];
+      if (hls) { hls.destroy(); hls = undefined; }
+      if (source.type === "mp4") {
+        video.src = source.url;
+        video.load();
+        video.play().catch(() => {});
+        return;
+      }
       if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = source;
+        video.src = source.url;
         video.load();
         video.play().catch(() => {});
         return;
       }
       if (!Hls.isSupported()) return;
-      hls?.destroy();
       hls = new Hls({ enableWorker: true, lowLatencyMode: false, maxBufferLength: 30, backBufferLength: 30 });
+      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal && sourceIndex < sources.length - 1) {
           sourceIndex += 1;
           attachSource();
         }
       });
-      hls.loadSource(source);
+      hls.loadSource(source.url);
       hls.attachMedia(video);
     };
     attachSource();
