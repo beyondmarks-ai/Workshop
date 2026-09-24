@@ -28,7 +28,7 @@ export default function Home() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Authentication failed.");
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (error) {
       setAuthError(error.message);
     } finally {
@@ -38,19 +38,18 @@ export default function Home() {
 
   return (
     <main>
-      <img className="corner-art corner-left-header" src="/Corners/Left Header.png" alt="" />
-      <img className="corner-art corner-right-upper" src="/Corners/Right Upper.png" alt="" />
-      <img className="corner-art corner-left-bottom" src="/Corners/Left Bootom.png" alt="" />
-      <img className="corner-art corner-right-footer" src="/Corners/Right Footer.png" alt="" />
-
+      <video className="background-video" autoPlay loop muted playsInline aria-hidden="true">
+        <source src="https://astra617db5store.blob.core.windows.net/assetsbg/bg.mp4" type="video/mp4" />
+      </video>
       <div className="welcome-panel">
-        <h1 className="welcome"><span>Welcome to</span><strong>Astra</strong></h1>
+        <p className="eyebrow">BEYOND THE ORDINARY</p>
+        <h1 className="welcome"><span>Welcome to</span><strong>Beyond Marks</strong><em>AI Academy Workshop</em></h1>
+        <p className="welcome-tagline">Learn boldly. Build intelligently. Make your mark.</p>
         <div className="auth-actions">
           <button className="launch-button login-button" onClick={() => setMode("signin")}>Sign In</button>
           <button className="launch-button signup-button" onClick={() => setMode("signup")}>Sign Up <span aria-hidden="true">→</span></button>
         </div>
-        <a className="skip-dashboard" href="/dashboard">Skip to Dashboard <span aria-hidden="true">→</span></a>
-        <a className="guide-link" href="/hackathon-guide.html">Hackathon Guide</a>
+        <span className="skip-dashboard">A new way to learn with AI</span>
       </div>
 
       {mode && (
@@ -60,7 +59,7 @@ export default function Home() {
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" /></svg>
             </button>
 
-            <p className="modal-kicker">WELCOME TO ASTRA</p>
+            <p className="modal-kicker">BEYOND MARKS · AI ACADEMY WORKSHOP</p>
             <h2 id="auth-title">{mode === "signup" ? "Create your account" : "Welcome back"}</h2>
             <p className="modal-description">{mode === "signup" ? "Set up your profile to begin your learning journey." : "Enter your details to continue to your account."}</p>
 

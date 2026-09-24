@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Welcome to Astra",
-  description: "Welcome to Astra."
+  title: "Beyond Marks | AI Academy Workshop",
+  description: "Learn boldly. Build intelligently. Make your mark."
 };
 
 export default function RootLayout({ children }) {

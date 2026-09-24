@@ -2072,3 +2072,184 @@ main {
 
   .translate-button { animation: none; }
 }
+
+/* Beyond Marks visual identity */
+:root {
+  --ink: #16233d;
+  --paper: #fffaf0;
+  --coral: #f26b4f;
+  --violet: #6558d8;
+  --lime: #c6dc62;
+}
+
+body {
+  color: var(--ink);
+  background: #192744;
+  font-family: "DM Sans", sans-serif;
+}
+
+main {
+  background: #101b3526;
+}
+
+.background-video {
+  position: absolute;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(.9) contrast(1.05);
+}
+
+main::before,
+main::after {
+  display: none;
+}
+
+main::before,
+main::after {
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+main::before {
+  top: -18vw;
+  right: -10vw;
+  width: 46vw;
+  height: 46vw;
+  border: 1px solid #ffffff2e;
+  box-shadow: 0 0 0 38px #ffffff09, 0 0 0 76px #ffffff07;
+}
+
+main::after {
+  bottom: -28vw;
+  left: -12vw;
+  width: 54vw;
+  height: 54vw;
+  background: #c6dc6214;
+  filter: blur(2px);
+}
+
+.welcome-panel {
+  width: min(760px, calc(100vw - 32px));
+  padding: clamp(28px, 5vw, 58px) clamp(22px, 6vw, 76px);
+  border: 1px solid #ffffff26;
+  border-radius: 34px;
+  background: #fffaf00e;
+  box-shadow: 0 28px 90px #07132d66, inset 0 1px #ffffff24;
+  backdrop-filter: blur(16px);
+  transform: none;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: var(--lime);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .3em;
+}
+
+.welcome span {
+  margin-bottom: 10px;
+  color: #fffaf0cc;
+  font-size: clamp(.95rem, 1.8vw, 1.35rem);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.welcome strong {
+  padding: 0;
+  color: var(--paper);
+  background: none;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(3rem, 7.8vw, 6.7rem);
+  letter-spacing: -.08em;
+  line-height: .95;
+  text-shadow: 6px 7px 0 #f26b4f55;
+  animation: none;
+}
+
+.welcome em {
+  display: block;
+  margin-top: 17px;
+  color: var(--coral);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.9rem);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.welcome::after {
+  width: 84px;
+  height: 6px;
+  margin-top: 22px;
+  background: var(--lime);
+  box-shadow: 13px 0 0 var(--coral), 26px 0 0 var(--violet);
+}
+
+.welcome-tagline {
+  margin: 23px auto 0;
+  color: #fffaf0b8;
+  font-size: clamp(.86rem, 1.5vw, 1rem);
+  letter-spacing: .04em;
+}
+
+.auth-actions {
+  margin-top: 34px;
+}
+
+.launch-button {
+  min-width: 148px;
+  min-height: 54px;
+  border: 1px solid #fffaf099;
+  border-radius: 14px;
+  background: #fffaf014;
+  color: var(--paper);
+  box-shadow: none;
+}
+
+.launch-button:hover {
+  border-color: var(--lime);
+  box-shadow: 0 12px 30px #07132d44;
+}
+
+.signup-button {
+  border: 0;
+  background: var(--coral);
+  color: #fff;
+  animation: none;
+}
+
+.skip-dashboard {
+  margin-top: 19px;
+  color: #fffaf099;
+}
+
+.skip-dashboard:hover { color: var(--lime); }
+
+.modal-backdrop { background: #0d1831b8; }
+
+.auth-modal {
+  border: 1px solid #ffffff55;
+  border-radius: 24px;
+  background: var(--paper);
+  box-shadow: 0 32px 100px #07132dcc;
+}
+
+.modal-kicker { color: var(--violet); }
+
+.submit-button {
+  background: var(--coral);
+  box-shadow: 0 12px 25px #f26b4f3d;
+}
+
+@media (max-width: 600px) {
+  .welcome-panel { padding: 32px 18px 28px; }
+  .welcome strong { font-size: clamp(2.65rem, 13vw, 4.8rem); }
+  .auth-actions { margin-top: 28px; }
+  .launch-button { min-width: 126px; }
+}
