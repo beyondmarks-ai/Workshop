@@ -2199,6 +2199,45 @@ main {
   .credits-card strong { font-size: 1.35rem; }
 }
 
+/* Dashboard-only dark blue and white theme */
+.dashboard-shell {
+  background: #132342;
+  color: #fff;
+}
+
+.dashboard-topbar h1 {
+  color: #fff;
+}
+
+.dashboard-topbar h1 span {
+  color: #9ed8ff;
+  text-shadow: 3px 4px 0 #0b172d;
+}
+
+.credits-card {
+  min-width: 76px;
+  width: 76px;
+  padding: 10px 11px;
+  border: 1px solid #ffffff24;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 24px #07132955;
+}
+
+.credits-card small {
+  font-size: .55rem;
+  letter-spacing: .12em;
+}
+
+.credits-card strong {
+  font-size: 1.35rem;
+}
+
+.dashboard-loading {
+  background: #132342;
+  color: #9ed8ff;
+}
+
 @keyframes dashboard-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 700px) {
