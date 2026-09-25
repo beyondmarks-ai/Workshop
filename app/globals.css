@@ -2582,20 +2582,21 @@ main::after {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, #07162d4d 0%, #07162d1f 48%, #07162d66 100%);
+  background: url("/dashboard-bg.png") center / cover no-repeat;
   content: "";
+  filter: blur(2px);
+  opacity: .94;
   pointer-events: none;
+  transform: scale(1.01);
 }
 
 .dashboard-shell::after {
   position: absolute;
   inset: -8px;
-  z-index: 0;
-  background: url("/dashboard-bg.png") center / cover no-repeat;
+  z-index: 1;
+  background: linear-gradient(180deg, #07162d4d 0%, #07162d1f 48%, #07162d66 100%);
   content: "";
-  filter: blur(2px);
-  opacity: .94;
-  transform: scale(1.01);
+  pointer-events: none;
 }
 
 .dashboard-topbar {
