@@ -24,7 +24,7 @@ export default function Dashboard() {
     window.location.href = "/";
   };
 
-  if (loading || !user) return <main className="dashboard-shell"><div className="dashboard-loading">Loading your workspace…</div></main>;
+  if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
 
   return (
     <main className="dashboard-shell">
