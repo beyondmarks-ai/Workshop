@@ -2119,6 +2119,35 @@ main {
 .dashboard-orbit-two { bottom: -420px; left: -260px; width: 680px; height: 680px; border-color: #f26b4f22; }
 .dashboard-loading { display: grid; min-height: 100svh; place-items: center; color: #6558d8; font-weight: 700; }
 
+.dashboard-only-welcome {
+  display: grid;
+  min-height: calc(100svh - 60px);
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  animation: dashboard-enter .9s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.dashboard-only-welcome p {
+  margin: 0 0 16px;
+  color: #6558d8;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .32em;
+}
+
+.dashboard-only-welcome h1 {
+  margin: 0;
+  color: #192744;
+  font: 800 clamp(2.5rem, 8vw, 7rem)/1 "Manrope", sans-serif;
+  letter-spacing: -.08em;
+}
+
+.dashboard-only-welcome h1 span {
+  color: #f26b4f;
+  text-shadow: 5px 6px 0 #f26b4f2b;
+}
+
 @keyframes dashboard-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 700px) {
