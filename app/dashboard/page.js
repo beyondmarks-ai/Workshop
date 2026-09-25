@@ -26,12 +26,5 @@ export default function Dashboard() {
 
   if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
 
-  return (
-    <main className="dashboard-shell">
-      <header className="dashboard-topbar" aria-live="polite">
-        <h1>Welcome, <span>{user.name}</span></h1>
-        <div className="credits-card"><small>CREDITS</small><strong>100</strong></div>
-      </header>
-    </main>
-  );
+  return <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard" />;
 }

@@ -2573,30 +2573,15 @@ main::after {
 
 /* Keep the supplied artwork above all dashboard background overrides. */
 .dashboard-shell {
-  background-color: #07162d;
-  background-image: none;
-  isolation: isolate;
+  background: #07162d url("/dashboard-bg.png") center / cover no-repeat;
 }
 
 .dashboard-shell::before {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: url("/dashboard-bg.png") center / cover no-repeat;
-  content: "";
-  filter: blur(2px);
-  opacity: .94;
-  pointer-events: none;
-  transform: scale(1.01);
+  content: none;
 }
 
 .dashboard-shell::after {
-  position: absolute;
-  inset: -8px;
-  z-index: 1;
-  background: linear-gradient(180deg, #07162d4d 0%, #07162d1f 48%, #07162d66 100%);
-  content: "";
-  pointer-events: none;
+  content: none;
 }
 
 .dashboard-topbar {
