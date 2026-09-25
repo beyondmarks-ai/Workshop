@@ -2573,19 +2573,18 @@ main::after {
 
 /* Keep the supplied artwork above all dashboard background overrides. */
 .dashboard-shell {
-  background: #07162d;
+  background: #07162d url("/dashboard-bg.png") center / cover no-repeat;
   isolation: isolate;
 }
 
 .dashboard-shell::before {
   position: absolute;
-  inset: -10px;
+  inset: 0;
   z-index: 0;
-  background: url("/dashboard-bg.png") center / cover no-repeat;
+  background: #07162d18;
   content: "";
-  filter: blur(6px);
+  backdrop-filter: blur(6px);
   pointer-events: none;
-  transform: scale(1.01);
 }
 
 .dashboard-shell::after {
