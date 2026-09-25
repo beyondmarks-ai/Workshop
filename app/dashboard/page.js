@@ -28,11 +28,14 @@ export default function Dashboard() {
 
   return (
     <main className="dashboard-shell">
-      <img className="dashboard-theme-logo" src="/beyond-marks-logo.png" alt="Beyond Marks AI Academy" />
       <header className="dashboard-topbar" aria-live="polite">
         <h1>Welcome, <span>{user.name}</span></h1>
         <div className="credits-card"><small>CREDITS</small><strong>100</strong></div>
       </header>
+      <div className="dashboard-wordmark" aria-label="Beyond Marks AI Academy">
+        <strong>BEYOND MARKS</strong>
+        <span>AI ACADEMY</span>
+      </div>
     </main>
   );
 }
