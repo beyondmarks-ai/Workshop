@@ -2573,7 +2573,8 @@ main::after {
 
 /* Keep the supplied artwork above all dashboard background overrides. */
 .dashboard-shell {
-  background: #07162d url("/dashboard-bg.png") center / cover no-repeat;
+  background: #07162d;
+  isolation: isolate;
 }
 
 .dashboard-shell::before {
@@ -2581,9 +2582,8 @@ main::after {
   inset: -10px;
   z-index: 0;
   background: url("/dashboard-bg.png") center / cover no-repeat;
-  clip-path: ellipse(31% 39% at 50% 48%);
   content: "";
-  filter: blur(7px);
+  filter: blur(6px);
   pointer-events: none;
   transform: scale(1.01);
 }
