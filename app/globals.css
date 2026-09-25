@@ -2253,6 +2253,22 @@ main {
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
+.dashboard-shell {
+  background-image: linear-gradient(#07162d4d, #07162d4d), url("/dashboard-bg.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.dashboard-shell::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, #07162d66 0%, #07162d14 42%, #07162d66 100%);
+  content: "";
+  pointer-events: none;
+}
+
 /* Dashboard-only dark blue and white theme */
 .dashboard-shell {
   background: #132342;
