@@ -2596,3 +2596,23 @@ main::after {
   position: relative;
   z-index: 2;
 }
+
+.dashboard-menu-toggle {
+  border-color: #ffffff66;
+  background: #07162dcc;
+  box-shadow: 0 8px 24px #00000038;
+}
+
+.dashboard-menu-toggle span { background: #fff; }
+
+.dashboard-menu-toggle.open {
+  background: #ffffff;
+}
+
+.dashboard-menu-toggle.open span { background: #07162d; }
+
+.dashboard-drawer {
+  border-right-color: #ffffff26;
+  background: #07162df2;
+  box-shadow: 24px 0 70px #00000066;
+}
