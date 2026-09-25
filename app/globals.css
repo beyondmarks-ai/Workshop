@@ -2073,6 +2073,60 @@ main {
   .translate-button { animation: none; }
 }
 
+.dashboard-shell {
+  position: relative;
+  display: block;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 30px clamp(22px, 6vw, 88px);
+  background: #f8f4e9;
+  color: #192744;
+}
+
+.dashboard-header,
+.dashboard-main { position: relative; z-index: 1; }
+
+.dashboard-header { display: flex; align-items: center; justify-content: space-between; }
+.dashboard-mark { display: flex; align-items: center; gap: 11px; color: #192744; }
+.dashboard-mark span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 12px; background: #f26b4f; color: #fff; font: 800 .8rem "Manrope", sans-serif; }
+.dashboard-mark strong { font: 800 1.05rem "Manrope", sans-serif; letter-spacing: -.04em; }
+.dashboard-signout { border: 0; background: transparent; color: #6c7381; font: 700 .78rem "DM Sans", sans-serif; cursor: pointer; }
+.dashboard-signout:hover { color: #f26b4f; }
+
+.dashboard-main { width: min(1080px, 100%); margin: clamp(70px, 13vh, 140px) auto 0; }
+.dashboard-kicker { margin: 0 0 12px; color: #6558d8; font-size: .68rem; font-weight: 800; letter-spacing: .25em; }
+.dashboard-main h1 { max-width: 720px; margin: 0; color: #192744; font: 800 clamp(2.2rem, 6vw, 5rem)/1.02 "Manrope", sans-serif; letter-spacing: -.075em; animation: dashboard-enter .7s ease both; }
+.dashboard-main h1 span { color: #f26b4f; }
+.dashboard-subtitle { margin: 16px 0 0; color: #747b89; font-size: 1rem; animation: dashboard-enter .7s .1s ease both; }
+.dashboard-cards { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; margin-top: 48px; animation: dashboard-enter .7s .2s ease both; }
+.dashboard-card { min-height: 230px; padding: 27px; border-radius: 24px; }
+.dashboard-card-primary { background: #192744; color: #fffaf0; box-shadow: 0 22px 50px #19274426; }
+.dashboard-card-action { background: #fff; color: #192744; box-shadow: 0 18px 45px #19274412; }
+.card-label { display: block; color: #c6dc62; font-size: .62rem; font-weight: 800; letter-spacing: .18em; }
+.dashboard-card-action .card-label { color: #6558d8; }
+.dashboard-card strong { display: block; margin-top: 26px; font: 800 clamp(1.4rem, 3vw, 2.25rem) "Manrope", sans-serif; letter-spacing: -.06em; }
+.dashboard-card small { display: block; margin-top: 5px; color: #fffaf099; }
+.profile-facts { display: flex; gap: 9px; margin-top: 28px; flex-wrap: wrap; }
+.profile-facts span { display: grid; gap: 4px; min-width: 100px; padding: 9px 11px; border: 1px solid #ffffff20; border-radius: 10px; color: #fffaf0cc; font-size: .72rem; }
+.profile-facts b { color: #f26b4f; font-size: .59rem; letter-spacing: .1em; text-transform: uppercase; }
+.card-icon { display: block; color: #f26b4f; font-size: 2rem; }
+.dashboard-card-action strong { margin-top: 18px; font-size: 1.55rem; }
+.dashboard-card-action p { max-width: 260px; margin: 9px 0 24px; color: #747b89; font-size: .82rem; line-height: 1.5; }
+.dashboard-card-action button { padding: 12px 16px; border: 0; border-radius: 10px; background: #f26b4f; color: #fff; font: 700 .78rem "DM Sans", sans-serif; cursor: pointer; }
+.dashboard-card-action button span { margin-left: 8px; }
+.dashboard-orbit { position: absolute; border: 1px solid #6558d822; border-radius: 50%; pointer-events: none; }
+.dashboard-orbit-one { top: -360px; right: -180px; width: 700px; height: 700px; }
+.dashboard-orbit-two { bottom: -420px; left: -260px; width: 680px; height: 680px; border-color: #f26b4f22; }
+.dashboard-loading { display: grid; min-height: 100svh; place-items: center; color: #6558d8; font-weight: 700; }
+
+@keyframes dashboard-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 700px) {
+  .dashboard-shell { padding: 22px 18px; }
+  .dashboard-main { margin-top: 80px; }
+  .dashboard-cards { grid-template-columns: 1fr; margin-top: 34px; }
+}
+
 /* Beyond Marks visual identity */
 :root {
   --ink: #16233d;

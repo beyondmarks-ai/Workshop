@@ -92,7 +92,7 @@ export default function Home() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Authentication failed.");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (error) {
       setAuthError(error.message);
     } finally {
