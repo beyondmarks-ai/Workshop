@@ -71,7 +71,17 @@ export default function Home() {
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, name: form.get("name"), contact: form.get("contact"), password: form.get("password"), role: form.get("role"), language: form.get("language") })
+        body: JSON.stringify({
+          action,
+          name: form.get("name"),
+          contact: form.get("contact"),
+          email: form.get("email"),
+          contactNumber: form.get("contactNumber"),
+          branch: form.get("branch"),
+          semester: form.get("semester"),
+          usn: form.get("usn"),
+          password: form.get("password")
+        })
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Authentication failed.");
@@ -93,7 +103,7 @@ export default function Home() {
         <p className="welcome-tagline">Learn boldly. Build intelligently. Make your mark.</p>
         <div className="auth-actions">
           <button className="launch-button login-button" onClick={() => setMode("signin")}>Sign In</button>
-          <button className="launch-button signup-button" onClick={() => setMode("signup")}>Sign Up <span aria-hidden="true">→</span></button>
+          <button className="launch-button signup-button" onClick={() => setMode("signup")}>Register <span aria-hidden="true">→</span></button>
         </div>
         <span className="skip-dashboard">A new way to learn with AI</span>
       </div>
@@ -110,23 +120,20 @@ export default function Home() {
             <p className="modal-description">{mode === "signup" ? "Set up your profile to begin your learning journey." : "Enter your details to continue to your account."}</p>
 
             <div className="auth-tabs" role="tablist" aria-label="Choose account action">
-              <button className={mode === "signup" ? "active" : ""} onClick={() => { setMode("signup"); setAuthError(""); }} role="tab" aria-selected={mode === "signup"}>Sign Up</button>
+              <button className={mode === "signup" ? "active" : ""} onClick={() => { setMode("signup"); setAuthError(""); }} role="tab" aria-selected={mode === "signup"}>Register</button>
               <button className={mode === "signin" ? "active" : ""} onClick={() => { setMode("signin"); setAuthError(""); }} role="tab" aria-selected={mode === "signin"}>Sign In</button>
             </div>
 
             {mode === "signup" ? (
               <form className="auth-form signup-form" onSubmit={(event) => authenticate(event, "signup")}>
                 <label>Full Name<input name="name" type="text" autoComplete="name" placeholder="Your full name" autoFocus required /></label>
-                <label>Email / Phone<input name="contact" type="text" autoComplete="username" placeholder="you@example.com" required /></label>
+                <label>Email ID<input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
+                <label>Contact Number<input name="contactNumber" type="tel" autoComplete="tel" placeholder="+91 98765 43210" required /></label>
+                <label>Branch<input name="branch" type="text" placeholder="e.g. Computer Science" required /></label>
+                <label>Semester<select name="semester" defaultValue="" required><option value="" disabled>Select semester</option>{Array.from({ length: 8 }, (_, index) => <option key={index + 1}>Semester {index + 1}</option>)}</select></label>
+                <label>USN<input name="usn" type="text" placeholder="Your university seat number" required /></label>
                 <label>Password<input name="password" type="password" autoComplete="new-password" placeholder="Minimum 8 characters" minLength="8" required /></label>
                 <label>Confirm Password<input name="confirm-password" type="password" autoComplete="new-password" placeholder="Repeat password" minLength="8" required /></label>
-                <fieldset className="role-field">
-                  <legend>Select Role:</legend>
-                  <label><input name="role" type="radio" value="teacher" /> Teacher</label>
-                  <label><input name="role" type="radio" value="student" defaultChecked /> Student</label>
-                  <label><input name="role" type="radio" value="admin" /> Admin</label>
-                </fieldset>
-                <label className="language-field">Select Preferred Language<select name="language" defaultValue="English">{languages.map((language) => <option key={language}>{language}</option>)}</select></label>
                 {authError && <p className="auth-error" role="alert">{authError}</p>}
                 <button className="submit-button" type="submit" disabled={authBusy}>{authBusy ? "Creating account..." : "Create Account"} <span aria-hidden="true">→</span></button>
               </form>

@@ -47,6 +47,14 @@ function validateContact(contact) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact) || /^\+?\d{7,15}$/.test(contact);
 }
 
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validatePhone(phone) {
+  return /^\+?\d{7,15}$/.test(phone);
+}
+
 export async function GET() {
   try {
     const id = sessionId();
@@ -60,18 +68,21 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const contact = normalizeContact(body.contact);
-    const id = userId(contact);
-    if (!validateContact(contact) || String(body.password || "").length < 8) return Response.json({ error: "Enter a valid email or phone and an 8-character password." }, { status: 400 });
     if (body.action === "signup") {
-      if (!String(body.name || "").trim() || !["teacher", "student", "admin"].includes(body.role) || !languages.includes(body.language)) return Response.json({ error: "Complete all account details." }, { status: 400 });
+      const email = normalizeContact(body.email);
+      const contactNumber = normalizeContact(body.contactNumber);
+      const id = userId(email);
+      if (!validateEmail(email) || !validatePhone(contactNumber) || String(body.password || "").length < 8 || !String(body.name || "").trim() || !String(body.branch || "").trim() || !String(body.semester || "").trim() || !String(body.usn || "").trim()) return Response.json({ error: "Complete all registration details with a valid email, contact number, and 8-character password." }, { status: 400 });
       if (await getUser(id)) return Response.json({ error: "An account already exists for this email or phone." }, { status: 409 });
       const password = await hashPassword(body.password);
-      const user = { id, name: body.name.trim(), contact, role: body.role, preferredLanguage: body.language, gradeSubject: "", notifications: true, passwordHash: password.hash, passwordSalt: password.salt, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      const user = { id, name: body.name.trim(), contact: email, email, contactNumber, branch: body.branch.trim(), semester: body.semester.trim(), usn: body.usn.trim().toUpperCase(), role: "student", preferredLanguage: "English", gradeSubject: "", notifications: true, passwordHash: password.hash, passwordSalt: password.salt, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
       await saveUser(user);
       setSession(id);
       return Response.json({ user: publicUser(user) }, { status: 201 });
     }
+    const contact = normalizeContact(body.contact);
+    const id = userId(contact);
+    if (!validateContact(contact) || String(body.password || "").length < 8) return Response.json({ error: "Enter a valid email or phone and an 8-character password." }, { status: 400 });
     const user = await getUser(id);
     if (!user || !await passwordMatches(body.password, user)) return Response.json({ error: "Incorrect email/phone or password." }, { status: 401 });
     setSession(id);
