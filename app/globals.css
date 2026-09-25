@@ -2233,6 +2233,78 @@ main::after {
 
 .skip-dashboard:hover { color: var(--lime); }
 
+.student-welcome {
+  margin: 34px auto 0;
+  animation: student-arrival .8s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.student-welcome > p {
+  margin: 0 0 8px;
+  color: var(--lime);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .24em;
+}
+
+.student-welcome > strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--paper);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: -.05em;
+}
+
+.student-welcome > span {
+  display: block;
+  margin-top: 7px;
+  color: #fffaf0b8;
+  font-size: .9rem;
+}
+
+.student-details {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin: 22px auto 0;
+  flex-wrap: wrap;
+}
+
+.student-details span {
+  display: grid;
+  gap: 3px;
+  min-width: 112px;
+  padding: 10px 13px;
+  border: 1px solid #fffaf033;
+  border-radius: 12px;
+  background: #fffaf00d;
+  color: #fffaf0d9;
+  font-size: .72rem;
+}
+
+.student-details b {
+  color: var(--coral);
+  font-size: .61rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.student-signout {
+  margin-top: 22px;
+  border: 0;
+  background: transparent;
+  color: #fffaf099;
+  font: 600 .76rem "DM Sans", sans-serif;
+  cursor: pointer;
+}
+
+.student-signout:hover { color: var(--lime); }
+
+@keyframes student-arrival {
+  from { opacity: 0; transform: translateY(18px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .modal-backdrop { background: #0d1831b8; }
 
 .auth-modal {

@@ -7,6 +7,7 @@ import { languages } from "../lib/languages";
 export default function Home() {
   const backgroundVideoRef = useRef(null);
   const [mode, setMode] = useState(null);
+  const [user, setUser] = useState(null);
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
 
@@ -14,6 +15,12 @@ export default function Home() {
     const closeOnEscape = (event) => event.key === "Escape" && setMode(null);
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/auth")
+      .then(async (response) => response.ok ? setUser((await response.json()).user) : setUser(null))
+      .catch(() => setUser(null));
   }, []);
 
   useEffect(() => {
@@ -101,11 +108,27 @@ export default function Home() {
         <p className="eyebrow">BEYOND THE ORDINARY</p>
         <h1 className="welcome"><span>Welcome to</span><strong>Beyond Marks</strong><em>AI Academy Workshop</em></h1>
         <p className="welcome-tagline">Learn boldly. Build intelligently. Make your mark.</p>
-        <div className="auth-actions">
-          <button className="launch-button login-button" onClick={() => setMode("signin")}>Sign In</button>
-          <button className="launch-button signup-button" onClick={() => setMode("signup")}>Register <span aria-hidden="true">→</span></button>
-        </div>
-        <span className="skip-dashboard">A new way to learn with AI</span>
+        {user ? (
+          <section className="student-welcome" aria-live="polite">
+            <p>STUDENT PORTAL</p>
+            <strong>Welcome, {user.name}</strong>
+            <span>Your learning space is ready.</span>
+            <div className="student-details">
+              <span><b>Branch</b>{user.branch}</span>
+              <span><b>Semester</b>{user.semester}</span>
+              <span><b>USN</b>{user.usn}</span>
+            </div>
+            <button className="student-signout" type="button" onClick={async () => { await fetch("/api/auth", { method: "DELETE" }); setUser(null); }}>Sign Out</button>
+          </section>
+        ) : (
+          <>
+            <div className="auth-actions">
+              <button className="launch-button login-button" onClick={() => setMode("signin")}>Sign In</button>
+              <button className="launch-button signup-button" onClick={() => setMode("signup")}>Register <span aria-hidden="true">→</span></button>
+            </div>
+            <span className="skip-dashboard">A new way to learn with AI</span>
+          </>
+        )}
       </div>
 
       {mode && (
