@@ -2577,7 +2577,15 @@ main::after {
 }
 
 .dashboard-shell::before {
-  content: none;
+  position: absolute;
+  inset: -10px;
+  z-index: 0;
+  background: url("/dashboard-bg.png") center / cover no-repeat;
+  clip-path: ellipse(31% 39% at 50% 48%);
+  content: "";
+  filter: blur(7px);
+  pointer-events: none;
+  transform: scale(1.01);
 }
 
 .dashboard-shell::after {
