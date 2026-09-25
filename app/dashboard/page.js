@@ -29,7 +29,6 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell">
       <section className="dashboard-only-welcome" aria-live="polite">
-        <p>WELCOME</p>
         <h1>Welcome, <span>{user.name}</span></h1>
       </section>
     </main>
