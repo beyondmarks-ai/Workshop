@@ -8,9 +8,10 @@ export const runtime = "nodejs";
 
 const scrypt = promisify(crypto.scrypt);
 const cookieName = "astra_session";
+const adminEmail = "admin@beyondmarks.ai";
 const normalizeContact = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, "");
 const userId = (contact) => crypto.createHash("sha256").update(contact).digest("hex");
-const publicUser = ({ passwordHash, passwordSalt, ...user }) => user;
+const publicUser = ({ passwordHash, passwordSalt, apiKeyHash, ...user }) => user;
 
 async function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
   return { salt, hash: (await scrypt(password, salt, 64)).toString("hex") };
@@ -55,6 +56,11 @@ function validatePhone(phone) {
   return /^\+?\d{7,15}$/.test(phone);
 }
 
+function createApiKey() {
+  const key = `bma_${crypto.randomBytes(32).toString("base64url")}`;
+  return { key, hash: crypto.createHash("sha256").update(key).digest("hex"), prefix: key.slice(0, 12) };
+}
+
 export async function GET() {
   try {
     const id = sessionId();
@@ -75,16 +81,18 @@ export async function POST(request) {
       if (!validateEmail(email) || !validatePhone(contactNumber) || String(body.password || "").length < 8 || !String(body.name || "").trim() || !String(body.branch || "").trim() || !String(body.semester || "").trim() || !String(body.usn || "").trim()) return Response.json({ error: "Complete all registration details with a valid email, contact number, and 8-character password." }, { status: 400 });
       if (await getUser(id)) return Response.json({ error: "An account already exists for this email or phone." }, { status: 409 });
       const password = await hashPassword(body.password);
-      const user = { id, name: body.name.trim(), contact: email, email, contactNumber, branch: body.branch.trim(), semester: body.semester.trim(), usn: body.usn.trim().toUpperCase(), role: "student", preferredLanguage: "English", gradeSubject: "", notifications: true, passwordHash: password.hash, passwordSalt: password.salt, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      const apiKey = createApiKey();
+      const user = { id, name: body.name.trim(), contact: email, email, contactNumber, branch: body.branch.trim(), semester: body.semester.trim(), usn: body.usn.trim().toUpperCase(), role: email === adminEmail ? "admin" : "student", preferredLanguage: "English", gradeSubject: "", notifications: true, credits: 100, apiKeyHash: apiKey.hash, apiKeyPrefix: apiKey.prefix, passwordHash: password.hash, passwordSalt: password.salt, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
       await saveUser(user);
       setSession(id);
-      return Response.json({ user: publicUser(user) }, { status: 201 });
+      return Response.json({ user: publicUser(user), apiKey: apiKey.key }, { status: 201 });
     }
     const contact = normalizeContact(body.contact);
     const id = userId(contact);
     if (!validateContact(contact) || String(body.password || "").length < 8) return Response.json({ error: "Enter a valid email or phone and an 8-character password." }, { status: 400 });
     const user = await getUser(id);
     if (!user || !await passwordMatches(body.password, user)) return Response.json({ error: "Incorrect email/phone or password." }, { status: 401 });
+    if (contact === adminEmail && user.role !== "admin") { user.role = "admin"; await saveUser(user); }
     setSession(id);
     return Response.json({ user: publicUser(user) });
   } catch (error) {

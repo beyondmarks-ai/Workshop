@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.10.1",
     "@azure/storage-blob": "^12.33.0",
     "hls.js": "^1.7.3",
     "next": "14.2.15",
