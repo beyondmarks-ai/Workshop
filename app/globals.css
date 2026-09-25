@@ -2149,12 +2149,29 @@ main {
 }
 
 .dashboard-topbar {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   width: 100%;
   animation: dashboard-enter .8s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.dashboard-theme-logo {
+  position: absolute;
+  z-index: 1;
+  top: 54%;
+  left: 50%;
+  width: min(520px, 72vw);
+  max-height: 68svh;
+  object-fit: contain;
+  border-radius: 28px;
+  opacity: .86;
+  box-shadow: 0 24px 80px #07132966;
+  transform: translate(-50%, -50%);
+  animation: dashboard-logo-arrival 1.1s cubic-bezier(.2,.8,.2,1) both;
 }
 
 .dashboard-topbar h1 {
@@ -2197,6 +2214,12 @@ main {
   .dashboard-topbar { align-items: center; gap: 12px; }
   .credits-card { min-width: 86px; padding: 10px 11px; }
   .credits-card strong { font-size: 1.35rem; }
+  .dashboard-theme-logo { top: 56%; width: min(430px, 88vw); }
+}
+
+@keyframes dashboard-logo-arrival {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(.94); }
+  to { opacity: .86; transform: translate(-50%, -50%) scale(1); }
 }
 
 /* Dashboard-only dark blue and white theme */
