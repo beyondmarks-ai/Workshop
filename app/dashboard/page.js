@@ -28,9 +28,10 @@ export default function Dashboard() {
 
   return (
     <main className="dashboard-shell">
-      <section className="dashboard-only-welcome" aria-live="polite">
+      <header className="dashboard-topbar" aria-live="polite">
         <h1>Welcome, <span>{user.name}</span></h1>
-      </section>
+        <div className="credits-card"><small>CREDITS</small><strong>100</strong></div>
+      </header>
     </main>
   );
 }
