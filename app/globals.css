@@ -2570,3 +2570,12 @@ main::after {
   .auth-actions { margin-top: 28px; }
   .launch-button { min-width: 126px; }
 }
+
+/* Keep the supplied artwork above all dashboard background overrides. */
+.dashboard-shell {
+  background-color: #07162d;
+  background-image: linear-gradient(#07162d26, #07162d26), url("/dashboard-bg.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
