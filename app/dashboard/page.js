@@ -91,16 +91,14 @@ export default function Dashboard() {
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
         <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
           <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
-          <small>BEYOND MARKS AI</small>
+          <small>CODEX CLI</small>
           <h2 id="codex-title">Install Codex</h2>
-          <p className="codex-modal-intro">Use the endpoint catalog with your Node.js project and your student API key.</p>
-          <div className="codex-modal-section"><strong>Requirements</strong><span>Node.js 18 or newer</span><span>npm 9 or newer</span><span>Your student API key</span></div>
-          <div className="codex-modal-section"><strong>Install and check</strong><code>node --version{`\nnpm --version\nnpm install\nnpm run dev`}</code></div>
-          <div className="codex-modal-actions">
-            <a className="codex-download-button" href="/api/access" download="codex-endpoints.json">Download catalog</a>
-            <button type="button" onClick={() => copyText("node --version\nnpm --version\nnpm install\nnpm run dev")}>Copy npm steps</button>
-          </div>
-          <p className="codex-modal-check"><strong>How to check:</strong> if both version commands return a version and the dev server starts at <code>http://localhost:3000</code>, Codex is ready.</p>
+          <p className="codex-modal-intro">Follow these steps in PowerShell to install and start the Codex CLI.</p>
+          <div className="codex-modal-section"><strong>1. Open PowerShell</strong><code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code><span>When prompted, type <b>Y</b> and press Enter.</span></div>
+          <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org ↗</a><code>node --version{`\nnpm --version`}</code></div>
+          <div className="codex-modal-section"><strong>3. Install Codex CLI</strong><code>npm install -g @openai/codex</code></div>
+          <div className="codex-modal-section"><strong>4. Start Codex</strong><code>codex</code><span>Codex is installed when the CLI opens in your terminal.</span></div>
+          <div className="codex-modal-actions"><button type="button" onClick={() => copyText("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned\nnpm install -g @openai/codex\ncodex")}>Copy commands</button></div>
         </section>
       </div>}
       <div className="dashboard-student-welcome">
