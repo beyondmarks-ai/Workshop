@@ -39,15 +39,21 @@ function newApiKey() {
   return { key, hash: crypto.createHash("sha256").update(key).digest("hex"), prefix: key.slice(0, 12) };
 }
 
+function codexUnlocked(user) {
+  return new Date(user.codexAccessUntil || 0).getTime() > Date.now();
+}
+
 export async function GET() {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
-  return Response.json({ services, endpoints, apiKeyPrefix: user.apiKeyPrefix || null, apiEndpoint: "/api/proxy/responses" });
+  const unlocked = codexUnlocked(user);
+  return Response.json({ services, endpoints, apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
 }
 
 export async function POST() {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (!codexUnlocked(user)) return Response.json({ error: "Unlock Codex with 5 credits to access your API key." }, { status: 403 });
   const apiKey = newApiKey();
   user.apiKeyHash = apiKey.hash;
   user.apiKeyPrefix = apiKey.prefix;

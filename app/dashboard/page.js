@@ -54,6 +54,7 @@ export default function Dashboard() {
     setCodexPaymentOpen(false);
     setCodexPaymentError("");
     setCodexOpen(true);
+    fetch("/api/access").then((response) => response.ok && response.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {});
     setUser((current) => ({ ...current, credits: data.credits }));
   }
 
@@ -81,6 +82,7 @@ export default function Dashboard() {
   }
 
   async function copyApiKey() {
+    if (!codexUnlocked) { setCodexPaymentOpen(true); return; }
     const key = access.apiKey || await generateApiKey();
     if (!key) return;
     await copyText(key);
@@ -95,6 +97,7 @@ export default function Dashboard() {
   }
 
   async function toggleApiKeyVisibility() {
+    if (!codexUnlocked) { setCodexPaymentOpen(true); return; }
     if (!access.apiKey && !await generateApiKey()) return;
     setKeyVisible((visible) => !visible);
   }
@@ -156,12 +159,12 @@ export default function Dashboard() {
             <div className="pricing-card-title-row"><h2>API Endpoints</h2><span className="pricing-card-badge">{endpointItems.length} available</span></div>
             <div className="dashboard-api-key">
               <div className="dashboard-api-key-value">
-                <code>{keyVisible && access.apiKey ? access.apiKey : access.apiKeyPrefix ? `${access.apiKeyPrefix}********` : "Creating key..."}</code>
+                <code>{!codexUnlocked ? "Locked - unlock Codex with 5 credits" : keyVisible && access.apiKey ? access.apiKey : access.apiKeyPrefix ? `${access.apiKeyPrefix}********` : "Creating key..."}</code>
               </div>
-              <button type="button" onClick={toggleApiKeyVisibility} aria-label={keyVisible ? "Hide API key" : "Show API key"} title={keyVisible ? "Hide API key" : "Show API key"}>
+              <button type="button" onClick={toggleApiKeyVisibility} aria-label={codexUnlocked ? (keyVisible ? "Hide API key" : "Show API key") : "Unlock API key"} title={codexUnlocked ? (keyVisible ? "Hide API key" : "Show API key") : "Unlock API key"}>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-5 9.5-5 9.5 5 9.5 5-3.4 5-9.5 5-9.5-5-9.5-5Z" /><circle cx="12" cy="12" r="2.5" /></svg>
               </button>
-              <button type="button" onClick={copyApiKey} aria-label="Copy API key" title="Copy API key">
+              <button type="button" onClick={copyApiKey} aria-label={codexUnlocked ? "Copy API key" : "Unlock API key"} title={codexUnlocked ? "Copy API key" : "Unlock API key"}>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
               </button>
               {copyStatus && <small>{copyStatus}</small>}
