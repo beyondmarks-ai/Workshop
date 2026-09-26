@@ -11,6 +11,9 @@ export default function Dashboard() {
   const [copyStatus, setCopyStatus] = useState("");
   const [endpointCategory, setEndpointCategory] = useState("generative");
   const [codexOpen, setCodexOpen] = useState(false);
+  const [codexPaymentOpen, setCodexPaymentOpen] = useState(false);
+  const [codexAccessUntil, setCodexAccessUntil] = useState(null);
+  const [codexPaymentError, setCodexPaymentError] = useState("");
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -19,7 +22,9 @@ export default function Dashboard() {
           window.location.href = "/";
           return;
         }
-        setUser((await response.json()).user);
+        const data = await response.json();
+        setUser(data.user);
+        setCodexAccessUntil(data.user.codexAccessUntil || null);
       })
       .catch(() => { window.location.href = "/"; })
       .finally(() => setLoading(false));
@@ -34,6 +39,22 @@ export default function Dashboard() {
       if (data) setAccess((current) => ({ ...current, ...data }));
     }).catch(() => {});
   }, [user]);
+
+  const codexUnlocked = codexAccessUntil && new Date(codexAccessUntil).getTime() > Date.now();
+
+  async function unlockCodex() {
+    const response = await fetch("/api/codex", { method: "POST" });
+    const data = await response.json();
+    if (!response.ok) {
+      setCodexPaymentError(data.reason || "Could not unlock Codex.");
+      return;
+    }
+    setCodexAccessUntil(data.accessUntil);
+    setCodexPaymentOpen(false);
+    setCodexPaymentError("");
+    setCodexOpen(true);
+    setUser((current) => ({ ...current, credits: data.credits }));
+  }
 
   async function generateApiKey() {
     const response = await fetch("/api/access", { method: "POST" });
@@ -88,6 +109,21 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>
       </button>
+      <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => codexUnlocked ? setCodexOpen(true) : setCodexPaymentOpen(true)} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+        <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
+      </button>
+      {codexPaymentOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexPaymentOpen(false)}>
+        <section className="codex-modal codex-payment-modal" role="dialog" aria-modal="true" aria-labelledby="codex-payment-title">
+          <button className="codex-modal-close" type="button" onClick={() => setCodexPaymentOpen(false)} aria-label="Close Codex payment">×</button>
+          <small>CODEX WORKSHOP</small>
+          <h2 id="codex-payment-title">Unlock Codex</h2>
+          <p className="codex-modal-intro">Pay 5 credits once to use Codex for the next 3 days of the workshop.</p>
+          <div className="codex-payment-price"><strong>5</strong><span>credits</span></div>
+          {codexPaymentError && <p className="codex-payment-error">{codexPaymentError}</p>}
+          <button className="codex-payment-button" type="button" onClick={unlockCodex}>Unlock for 5 credits</button>
+        </section>
+      </div>}
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
         <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
           <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
