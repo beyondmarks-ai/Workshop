@@ -2603,9 +2603,9 @@ main::after {
   z-index: 51;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 38px;
-  padding: 0 14px;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
   border: 1px solid #087d66;
   border-radius: 10px;
   background: #087d66;
@@ -2619,7 +2619,7 @@ main::after {
 .dashboard-codex-button:hover { background: #066b58; }
 .dashboard-codex-button:active { transform: scale(.96); }
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
-.dashboard-codex-locked { left: 145px; }
+.dashboard-codex-locked { left: 158px; }
 .dashboard-codex-locked.unlocked { background: #0a9a7d; }
 
 .codex-modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: #00000055; backdrop-filter: blur(3px); }
@@ -2925,7 +2925,7 @@ main::after {
   .dashboard-student-welcome > p { top: 18px; }
 
   .dashboard-codex-button { top: 16px; left: 18px; }
-  .dashboard-codex-locked { left: 145px; }
+  .dashboard-codex-locked { left: 158px; }
 
 
   .dashboard-api-key { top: auto; left: auto; }
