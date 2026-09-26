@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [marketplaceBusy, setMarketplaceBusy] = useState(false);
   const [marketplaceCategory, setMarketplaceCategory] = useState("all");
   const [marketplaceProvider, setMarketplaceProvider] = useState("all");
+  const [marketplaceCartOpen, setMarketplaceCartOpen] = useState(false);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -161,7 +162,8 @@ export default function Dashboard() {
       <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>?</span> Marketplace</button>
       {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}>
         <section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title">
-          <button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">�</button>
+          <button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button>
+<button className="marketplace-cart-button" type="button" onClick={() => setMarketplaceCartOpen(true)} aria-label="Open cart">Cart <span>{marketplaceCart.length}</span></button>
           <small>AI MODEL MARKETPLACE</small>
           <h2 id="marketplace-title">Choose a model</h2>
           <p className="codex-modal-intro">Browse models by capability and buy access using credits.</p>
@@ -176,14 +178,13 @@ export default function Dashboard() {
   <div className="comet-card-content">
     <div className="comet-card-heading"><b>{item.name}</b><span>{item.category}</span></div>
     <small>{item.description}</small>
-    <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><button type="button" onClick={(event) => { event.preventDefault(); setMarketplaceCart((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id]); }}>{marketplaceCart.includes(item.id) ? "Added" : "Add to cart"}</button></div>
+    <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><span className="comet-card-cart-hint">{marketplaceCart.includes(item.id) ? "In cart" : "Select to add"}</span></div>
   </div>
 </label>)}
               </div>
             </article>)}
           </div>
-          <div className="marketplace-checkout"><strong>{marketplaceCart.length} selected</strong><span>Total: {marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</span><button type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></div>
-          {marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}
+          {marketplaceCartOpen && <aside className="marketplace-cart-drawer" aria-label="Shopping cart"><div className="marketplace-cart-heading"><div><small>YOUR CART</small><h3>Selected models</h3></div><button type="button" onClick={() => setMarketplaceCartOpen(false)} aria-label="Close cart">×</button></div><div className="marketplace-cart-items">{marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).map((item) => <div className="marketplace-cart-item" key={item.id}><div><strong>{item.name}</strong><small>{item.category}</small></div><span>{item.credits ? `${item.credits} credits` : "Free"}</span><button type="button" onClick={() => setMarketplaceCart((current) => current.filter((id) => id !== item.id))} aria-label={`Remove ${item.name}`}>×</button></div>)}{!marketplaceCart.length && <p className="marketplace-cart-empty">Your cart is empty. Select a model to add it.</p>}</div><div className="marketplace-cart-total"><span>Total</span><strong>{marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</strong></div><button className="marketplace-cart-buy" type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></aside>}          {marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}
         </section>
       </div>}
       <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
