@@ -193,8 +193,8 @@ export default function Dashboard() {
       <div className="dashboard-credits" aria-label={`${user.credits ?? 100} credits`}>
         <small>CREDITS</small>
         <strong>{user.credits ?? 100}</strong>
-        <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>History</button>
       </div>
+      <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
     </main>
   );
 }
