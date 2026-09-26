@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [keyVisible, setKeyVisible] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
   const [endpointCategory, setEndpointCategory] = useState("generative");
+  const [codexOpen, setCodexOpen] = useState(false);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -83,10 +84,25 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
-      <a className="dashboard-codex-button" href="/api/access" download="codex-endpoints.json" aria-label="Download Codex endpoint catalog">
+      <button className="dashboard-codex-button" type="button" onClick={() => setCodexOpen(true)} aria-label="Open Codex setup instructions">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Codex</span>
-      </a>
+      </button>
+      {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
+        <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
+          <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
+          <small>BEYOND MARKS AI</small>
+          <h2 id="codex-title">Install Codex</h2>
+          <p className="codex-modal-intro">Use the endpoint catalog with your Node.js project and your student API key.</p>
+          <div className="codex-modal-section"><strong>Requirements</strong><span>Node.js 18 or newer</span><span>npm 9 or newer</span><span>Your student API key</span></div>
+          <div className="codex-modal-section"><strong>Install and check</strong><code>node --version{`\nnpm --version\nnpm install\nnpm run dev`}</code></div>
+          <div className="codex-modal-actions">
+            <a className="codex-download-button" href="/api/access" download="codex-endpoints.json">Download catalog</a>
+            <button type="button" onClick={() => copyText("node --version\nnpm --version\nnpm install\nnpm run dev")}>Copy npm steps</button>
+          </div>
+          <p className="codex-modal-check"><strong>How to check:</strong> if both version commands return a version and the dev server starts at <code>http://localhost:3000</code>, Codex is ready.</p>
+        </section>
+      </div>}
       <div className="dashboard-student-welcome">
         <p><span>Welcome,</span><strong>{user.name}</strong></p>
       </div>
