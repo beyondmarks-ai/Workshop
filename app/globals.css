@@ -2648,6 +2648,18 @@ main::after {
 .marketplace-connected { background: #dcfce7; color: #15803d; }
 .marketplace-required { background: #fef3c7; color: #a16207; }
 .marketplace-grid ul { display: grid; gap: 5px; margin: 12px 0 0; padding-left: 16px; color: #6b7280; font-size: .7rem; }
+.marketplace-items { display: grid; gap: 6px; margin-top: 12px; }
+.marketplace-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; cursor: pointer; }
+.marketplace-item input { accent-color: #087d66; }
+.marketplace-item span { display: grid; gap: 2px; padding: 0; background: transparent; color: #111827; }
+.marketplace-item b { font-size: .7rem; }
+.marketplace-item small { color: #6b7280; font-size: .6rem; }
+.marketplace-item em { color: #087d66; font: 800 .62rem "Manrope", sans-serif; font-style: normal; white-space: nowrap; }
+.marketplace-checkout { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
+.marketplace-checkout span { flex: 1; color: #6b7280; font-size: .72rem; }
+.marketplace-checkout button { min-height: 34px; padding: 0 13px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .68rem "DM Sans", sans-serif; cursor: pointer; }
+.marketplace-checkout button:disabled { opacity: .5; cursor: wait; }
+.marketplace-message { margin: 10px 0 0; color: #087d66; font-size: .72rem; }
 .dashboard-history-link { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 108px); z-index: 50; min-height: 40px; padding: 0 12px; border: 1px solid #087d66; border-radius: 10px; background: #fff; color: #087d66; font: 800 .68rem/1 "Manrope", sans-serif; cursor: pointer; }
 .dashboard-notification-button { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 228px); z-index: 50; width: 40px; height: 40px; border: 1px solid #087d66; border-radius: 10px; background: #fff; font-size: 1rem; cursor: pointer; }
 .dashboard-notification-button span { position: absolute; top: -6px; right: -6px; min-width: 17px; padding: 3px 4px; border-radius: 999px; background: #ef4444; color: #fff; font: 800 .58rem/1 "Manrope", sans-serif; }

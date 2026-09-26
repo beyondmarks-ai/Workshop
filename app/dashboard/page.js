@@ -2,15 +2,7 @@
 
 import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
-
-const marketplaceServices = [
-  { name: "OpenAI", status: "Connected", items: ["GPT-4.1", "GPT-5.6 Luna", "GPT Image 2", "Sora 2"] },
-  { name: "Astra", status: "Connected", items: ["Learning tools", "APIM gateway", "Codex workshop"] },
-  { name: "Vertex AI", status: "Key required", items: ["Gemini Pro", "Gemini Flash", "Imagen image models", "Veo video models"] },
-  { name: "Claude", status: "Key required", items: ["Claude Sonnet", "Claude Haiku", "Claude Opus"] },
-  { name: "Sarvam AI", status: "Key required", items: ["Bulbul voices", "Speech to text", "Translation voices"] },
-  { name: "Firecrawl", status: "Key required", items: ["Scrape", "Crawl", "Map", "Search"] }
-];
+import { marketplaceCatalog } from "../../lib/marketplace";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -29,6 +21,9 @@ export default function Dashboard() {
   const [notifications, setNotifications] = useState([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [marketplaceOpen, setMarketplaceOpen] = useState(false);
+  const [marketplaceCart, setMarketplaceCart] = useState([]);
+  const [marketplaceMessage, setMarketplaceMessage] = useState("");
+  const [marketplaceBusy, setMarketplaceBusy] = useState(false);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -137,6 +132,16 @@ export default function Dashboard() {
     setNotifications((current) => current.map((item) => item.id === id ? { ...item, read: true } : item));
   }
 
+  async function purchaseMarketplace() {
+    setMarketplaceBusy(true);
+    setMarketplaceMessage("");
+    const response = await fetch("/api/marketplace", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ itemIds: marketplaceCart }) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) setMarketplaceMessage(data.error || "Purchase could not be completed.");
+    else { setUser((current) => ({ ...current, credits: data.credits })); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); }
+    setMarketplaceBusy(false);
+  }
+
   if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
 
   const endpointItems = (access.endpoints || []).filter((endpoint) => endpoint.category === endpointCategory);
@@ -148,8 +153,7 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>
       </button>
-      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>◆</span> Marketplace</button>
-      {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}><section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title"><button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button><small>AI SERVICE MARKETPLACE</small><h2 id="marketplace-title">Choose a service</h2><p className="codex-modal-intro">Browse models and tools available through the workshop gateway.</p><div className="marketplace-grid">{marketplaceServices.map((service) => <article key={service.name}><div><strong>{service.name}</strong><span className={service.status === "Connected" ? "marketplace-connected" : "marketplace-required"}>{service.status}</span></div><ul>{service.items.map((item) => <li key={item}>{item}</li>)}</ul></article>)}</div></section></div>}
+      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>◆</span> Marketplace</button>      {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}><section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title"><button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button><small>AI SERVICE MARKETPLACE</small><h2 id="marketplace-title">Choose services</h2><p className="codex-modal-intro">Select services with checkboxes and buy access using credits.</p><div className="marketplace-grid">{marketplaceCatalog.map((service) => <article key={service.id}><div><strong>{service.name}</strong><span className={service.status === "Connected" ? "marketplace-connected" : "marketplace-required"}>{service.status}</span></div><div className="marketplace-items">{service.items.map((item) => <label key={item.id} className="marketplace-item"><input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} /><span><b>{item.name}</b><small>{item.description}</small></span><em>{item.credits ? `${item.credits} credits` : "Free"}</em></label>)}</div></article>)}</div><div className="marketplace-checkout"><strong>{marketplaceCart.length} selected</strong><span>Total: {marketplaceCatalog.flatMap((service) => service.items).filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</span><button type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></div>{marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}</section></div>}
       <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
         <span>{codexUnlocked ? "Codex" : "Codex Â· 5 credits"}</span>
