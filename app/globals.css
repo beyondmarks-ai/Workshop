@@ -2660,6 +2660,22 @@ main::after {
 .marketplace-checkout button { min-height: 34px; padding: 0 13px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .68rem "DM Sans", sans-serif; cursor: pointer; }
 .marketplace-checkout button:disabled { opacity: .5; cursor: wait; }
 .marketplace-message { margin: 10px 0 0; color: #087d66; font-size: .72rem; }
+.marketplace-modal { width: min(980px, 100%); padding: 32px; background: #f8fafc; }
+.marketplace-modal h2 { font-size: 2rem; letter-spacing: -.04em; }
+.marketplace-grid { grid-template-columns: 1fr; gap: 14px; }
+.marketplace-category { padding: 18px; border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px #0f172a0a; }
+.marketplace-category-heading { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; }
+.marketplace-category-heading strong { font-size: .95rem; }
+.marketplace-category > .marketplace-items { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 9px; margin-top: 14px; }
+.marketplace-item { min-height: 72px; align-items: start; border-color: #e5e7eb; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.marketplace-item:hover { border-color: #73cbb7; box-shadow: 0 6px 16px #087d6618; transform: translateY(-1px); }
+.marketplace-item:has(input:checked) { border-color: #087d66; background: #f0fdf9; box-shadow: 0 0 0 2px #087d6620; }
+.marketplace-item input { margin-top: 3px; }
+.marketplace-checkout { position: sticky; bottom: -32px; margin: 22px -32px -32px; padding: 16px 32px; background: #102f2b; color: #fff; }
+.marketplace-checkout span { color: #c7e8df; }
+.marketplace-checkout button { background: #25b08f; }
+.marketplace-checkout button:hover { background: #159979; }
+@media (max-width: 700px) { .marketplace-modal { padding: 22px; } .marketplace-checkout { bottom: -22px; margin: 18px -22px -22px; padding: 14px 22px; } }
 .dashboard-history-link { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 108px); z-index: 50; min-height: 40px; padding: 0 12px; border: 1px solid #087d66; border-radius: 10px; background: #fff; color: #087d66; font: 800 .68rem/1 "Manrope", sans-serif; cursor: pointer; }
 .dashboard-notification-button { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 228px); z-index: 50; width: 40px; height: 40px; border: 1px solid #087d66; border-radius: 10px; background: #fff; font-size: 1rem; cursor: pointer; }
 .dashboard-notification-button span { position: absolute; top: -6px; right: -6px; min-width: 17px; padding: 3px 4px; border-radius: 999px; background: #ef4444; color: #fff; font: 800 .58rem/1 "Manrope", sans-serif; }
