@@ -2964,7 +2964,8 @@ main::after {
   z-index: 2;
 }
 
-.admin-shell { min-height: 100svh; padding: 42px clamp(20px, 6vw, 90px); background: #07162d; color: #fff; }
+.admin-shell { position: relative; min-height: 100svh; padding: 42px clamp(20px, 6vw, 90px); overflow: hidden; background: #000; color: #fff; }
+.admin-shell > *:not(.dashboard-stars) { position: relative; z-index: 1; }
 .admin-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; max-width: 1180px; margin: 0 auto 30px; }
 .admin-header small, .admin-card-heading small { color: #ffffff9c; font: 700 .62rem/1 "Manrope", sans-serif; letter-spacing: .17em; }
 .admin-header h1 { margin: 10px 0 0; font: 800 clamp(1.8rem, 4vw, 3.3rem)/1 "Manrope", sans-serif; letter-spacing: -.06em; }
@@ -2985,8 +2986,11 @@ main::after {
 .admin-logout-button:hover { background: #ff8b8b18; }
 .admin-note-tools { display: flex; gap: 8px; margin: 0 0 16px; }
 .admin-note-tools input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d99; color: #fff; outline: none; font-size: .72rem; }
+.admin-note-tools select { padding: 0 10px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d; color: #fff; font-size: .72rem; }
 .admin-note-tools button { padding: 0 12px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .66rem "DM Sans", sans-serif; cursor: pointer; }
 .admin-note-tools button:disabled { opacity: .5; cursor: wait; }
+.admin-comment-button { color: #bfeee4 !important; border-color: #087d6680 !important; }
+.admin-cancel-button { background: transparent !important; border: 1px solid #ffffff2e !important; }
 .admin-table { display: grid; gap: 8px; }
 .admin-table article { display: grid; grid-template-columns: 1.5fr 1fr auto; align-items: center; gap: 18px; padding: 13px 14px; border: 1px solid #ffffff18; border-radius: 10px; background: #07162d66; }
 .admin-students-card .admin-table article { grid-template-columns: 1.5fr 1fr auto auto 1.7fr; }
