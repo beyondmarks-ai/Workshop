@@ -17,6 +17,8 @@ export default function Dashboard() {
   const [codexPaymentError, setCodexPaymentError] = useState("");
   const [creditHistoryOpen, setCreditHistoryOpen] = useState(false);
   const [creditHistory, setCreditHistory] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -41,6 +43,7 @@ export default function Dashboard() {
     fetch("/api/access").then((response) => response.ok && response.json()).then((data) => {
       if (data) setAccess((current) => ({ ...current, ...data }));
     }).catch(() => {});
+    fetch("/api/notifications").then((response) => response.ok && response.json()).then((data) => data && setNotifications(data.notifications || [])).catch(() => {});
   }, [user]);
 
   const codexUnlocked = (user?.role === "admin" || user?.verified === true) && codexAccessUntil && new Date(codexAccessUntil).getTime() > Date.now();
@@ -110,6 +113,18 @@ export default function Dashboard() {
     const response = await fetch("/api/activity");
     const data = await response.json().catch(() => ({}));
     setCreditHistory(response.ok ? data.activities || [] : []);
+  }
+
+  async function openNotifications() {
+    setNotificationOpen(true);
+    const response = await fetch("/api/notifications");
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) setNotifications(data.notifications || []);
+  }
+
+  async function markNotificationRead(id) {
+    await fetch("/api/notifications", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "mark-read", id }) });
+    setNotifications((current) => current.map((item) => item.id === id ? { ...item, read: true } : item));
   }
 
   if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
@@ -195,6 +210,8 @@ export default function Dashboard() {
         <strong>{user.credits ?? 100}</strong>
       </div>
       <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
+      <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications">🔔{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
+      {notificationOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setNotificationOpen(false)}><section className="credit-history-modal notification-modal" role="dialog" aria-modal="true" aria-labelledby="notifications-title"><button className="codex-modal-close" type="button" onClick={() => setNotificationOpen(false)} aria-label="Close notifications">×</button><small>ACADEMY NOTIFICATIONS</small><h2 id="notifications-title">Notifications</h2><div className="notification-list">{notifications.length ? notifications.map((item) => <article className={item.read ? "read" : "unread"} key={item.id} onClick={() => markNotificationRead(item.id)}><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span><p>{item.message}</p></article>) : <p>No notifications yet.</p>}</div></section></div>}
     </main>
   );
 }

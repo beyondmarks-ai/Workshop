@@ -70,6 +70,22 @@ export async function POST(request) {
     }
     return Response.json({ updated });
   }
+  if (body.action === "send-notification") {
+    const title = String(body.title || "").trim().slice(0, 100);
+    const message = String(body.message || "").trim().slice(0, 1000);
+    const allStudents = body.allStudents === true;
+    const selectedIds = new Set(Array.isArray(body.studentIds) ? body.studentIds.map(String) : []);
+    if (!title || !message || (!allStudents && !selectedIds.size)) return Response.json({ error: "Choose recipients and enter a title and message." }, { status: 400 });
+    const users = await listUsers();
+    const recipients = users.filter((user) => user.role === "student" && (allStudents || selectedIds.has(user.id)));
+    for (const student of recipients) {
+      const notifications = Array.isArray(student.notifications) ? student.notifications : [];
+      student.notifications = [{ id: crypto.randomUUID(), title, message, createdAt: new Date().toISOString(), read: false }, ...notifications].slice(0, 50);
+      student.updatedAt = new Date().toISOString();
+      await saveUser(student);
+    }
+    return Response.json({ sent: recipients.length });
+  }
   const actions = new Set(["verify-student", "adjust-credits", "revoke-student", "delete-student"]);
   if (!actions.has(body.action) || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid student action." }, { status: 400 });
   const student = await getUser(body.studentId);
