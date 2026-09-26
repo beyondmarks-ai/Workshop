@@ -12,11 +12,14 @@ const services = [
 ];
 
 const endpoints = [
-  { id: "responses", name: "Luna Responses", method: "POST", path: "/api/proxy/responses", auth: "Student API key", description: "Send prompts through the approved AI gateway. Uses one credit per call." },
-  { id: "access", name: "Access catalog", method: "GET", path: "/api/access", auth: "Dashboard session", description: "Read the services and endpoints assigned to this student." },
-  { id: "resources", name: "Student resources", method: "GET / POST", path: "/api/resources", auth: "Dashboard session", description: "List and upload your private learning resources." },
-  { id: "activity", name: "Activity history", method: "GET", path: "/api/activity", auth: "Dashboard session", description: "View calls and credit usage recorded for your account." },
-  { id: "apim-test", name: "Gateway health check", method: "GET", path: "/api/apim-test", auth: "Dashboard session", description: "Test whether the configured APIM gateway is reachable." }
+  { id: "responses", category: "generative", name: "GPT-4.1 Generative", method: "POST", path: "/api/proxy/responses", auth: "Student API key", description: "Send prompts through GPT-4.1 via the APIM gateway. Uses one credit per call." },
+  { id: "image-2", category: "image", name: "GPT Image 2", method: "POST", path: "/api/proxy/images?model=gpt-image-2", auth: "Student API key", description: "Generate and edit images with GPT Image 2 through the East US 2 APIM deployment." },
+  { id: "image-flare", category: "image", name: "GPT Image 2.5 Flare", method: "POST", path: "/api/proxy/images?model=gpt-image-2.5-flare", auth: "Student API key", description: "Fast everyday image generation through the East US 2 APIM deployment." },
+  { id: "sora-2", category: "video", name: "Sora 2 Video", method: "POST", path: "/api/proxy/videos?model=sora-2", auth: "Student API key", description: "Create video jobs with Sora 2 through the East US 2 APIM deployment." },
+  { id: "access", category: "other", name: "Authentication", method: "GET", path: "/api/access", auth: "Dashboard session", description: "Read the services and endpoints assigned to this student." },
+  { id: "resources", category: "other", name: "Storage", method: "GET / POST", path: "/api/resources", auth: "Dashboard session", description: "List and upload your private learning resources." },
+  { id: "activity", category: "other", name: "Database", method: "GET", path: "/api/activity", auth: "Dashboard session", description: "View calls and credit usage recorded for your account." },
+  { id: "apim-test", category: "other", name: "Gateway health check", method: "GET", path: "/api/apim-test", auth: "Dashboard session", description: "Test whether the configured APIM gateway is reachable." }
 ];
 
 function sessionId() {
