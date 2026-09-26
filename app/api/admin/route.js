@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { deleteUser, getUser, listUsers, saveUser } from "../../../lib/storage";
-import { hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
+import { adminTotpConfigured, hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -29,7 +29,8 @@ export async function GET() {
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
   if (body.action === "verify-admin") {
-    if (!validAdminCredentials(body.email, body.pin)) return Response.json({ error: "Invalid admin email or PIN." }, { status: 403 });
+    if (!adminTotpConfigured()) return Response.json({ error: "Google Authenticator is not configured on the server." }, { status: 503 });
+    if (!validAdminCredentials(body.email, body.pin, body.code)) return Response.json({ error: "Invalid admin email, PIN, or authenticator code." }, { status: 403 });
     setAdminAccess();
     return Response.json({ verified: true });
   }

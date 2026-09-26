@@ -9,6 +9,7 @@ export default function AdminPage() {
   const [gate, setGate] = useState(false);
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
+  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [actionBusy, setActionBusy] = useState("");
   const [creditAmounts, setCreditAmounts] = useState({});
@@ -30,7 +31,7 @@ export default function AdminPage() {
     event.preventDefault();
     setBusy(true);
     setError("");
-    const response = await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "verify-admin", email, pin }) });
+    const response = await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "verify-admin", email, pin, code }) });
     const result = await response.json();
     if (!response.ok) { setError(result.error || "Admin verification failed."); setBusy(false); return; }
     window.location.reload();
@@ -53,7 +54,7 @@ export default function AdminPage() {
 
   const students = useMemo(() => (data?.users || []).filter((user) => user.role === "student" && JSON.stringify(user).toLowerCase().includes(query.toLowerCase())), [data, query]);
 
-  if (gate) return <main className="admin-shell"><section className="admin-gate"><small>BEYOND MARKS AI ACADEMY</small><h1>Admin verification</h1><p>Enter the admin email and six-digit PIN to manage student access.</p><form onSubmit={verifyAdmin}><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Admin email" required /><input type="password" value={pin} onChange={(event) => setPin(event.target.value)} placeholder="6-digit PIN" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required />{error && <p className="admin-error">{error}</p>}<button type="submit" disabled={busy}>{busy ? "Verifying..." : "Open student access"}</button></form><a href="/">Back to sign in</a></section></main>;
+  if (gate) return <main className="admin-shell"><section className="admin-gate"><small>BEYOND MARKS AI ACADEMY</small><h1>Admin verification</h1><p>Enter your admin email, PIN, and six-digit Google Authenticator code.</p><form onSubmit={verifyAdmin}><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Admin email" required /><input type="password" value={pin} onChange={(event) => setPin(event.target.value)} placeholder="6-digit PIN" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required /><input type="text" value={code} onChange={(event) => setCode(event.target.value)} placeholder="Authenticator code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required />{error && <p className="admin-error">{error}</p>}<button type="submit" disabled={busy}>{busy ? "Verifying..." : "Open student access"}</button></form><a href="/">Back to sign in</a></section></main>;
   if (!data) return <main className="admin-shell" aria-busy="true" />;
 
   return <main className="admin-shell">
