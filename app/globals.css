@@ -2725,7 +2725,7 @@ main::after {
   z-index: 10;
   display: grid;
   place-items: center;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .pricing-card {
