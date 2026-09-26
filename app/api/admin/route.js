@@ -52,6 +52,24 @@ export async function POST(request) {
     if (!response.ok || !polished) return Response.json({ error: "GPT-4.1 could not polish the comment." }, { status: 502 });
     return Response.json({ comment: polished });
   }
+  if (body.action === "adjust-credits-bulk") {
+    const studentIds = [...new Set(Array.isArray(body.studentIds) ? body.studentIds.map(String) : [])];
+    const delta = Number(body.delta);
+    if (!studentIds.length || studentIds.length > 100 || studentIds.some((id) => !/^[a-f0-9]{64}$/.test(id))) return Response.json({ error: "Select valid student accounts." }, { status: 400 });
+    if (!Number.isFinite(delta) || Math.abs(delta) < 0.01 || Math.abs(delta) > Number.MAX_SAFE_INTEGER) return Response.json({ error: "Credit adjustment must be a positive number." }, { status: 400 });
+    const updated = [];
+    for (const studentId of studentIds) {
+      const student = await getUser(studentId);
+      if (!student || student.role !== "student") continue;
+      const currentCredits = Number.isFinite(Number(student.credits)) ? Number(student.credits) : 0;
+      student.credits = Math.max(0, Math.round((currentCredits + delta) * 100) / 100);
+      student.updatedAt = new Date().toISOString();
+      await saveUser(student);
+      await saveActivity({ studentId: student.id, service: "admin-credit", action: delta > 0 ? "credit-added" : "credit-removed", status: "completed", creditsUsed: delta, balance: student.credits, note: String(body.note || "Admin credit adjustment").trim().slice(0, 500), source: "admin" });
+      updated.push({ studentId: student.id, balance: student.credits });
+    }
+    return Response.json({ updated });
+  }
   const actions = new Set(["verify-student", "adjust-credits", "revoke-student", "delete-student"]);
   if (!actions.has(body.action) || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid student action." }, { status: 400 });
   const student = await getUser(body.studentId);
