@@ -15,7 +15,7 @@ export async function POST(request) {
   if (!user) return Response.json({ error: "Invalid student API key." }, { status: 401 });
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const requestedModel = new URL(request.url).searchParams.get("model");
-  const model = ["gpt-4.1", "gpt-5.6-luna"].includes(requestedModel) ? requestedModel : process.env.APIM_TEST_MODEL || "gpt-5.6-luna";
+  const model = ["gpt-4.1", "gpt-6-astra", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"].includes(requestedModel) ? requestedModel : process.env.APIM_TEST_MODEL || "gpt-5.6-luna";
   if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
   const cost = creditCost("responses", model);
   const credit = await consumeCredit(user.id, cost);
