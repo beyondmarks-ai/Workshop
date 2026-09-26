@@ -110,11 +110,7 @@ export default function Home() {
         <p className="welcome-tagline">Learn boldly. Build intelligently. Make your mark.</p>
         {user ? (
           <section className="student-welcome" aria-live="polite">
-            <p>STUDENT PORTAL</p>
-            <strong>Your dashboard is ready.</strong>
-            <span>Continue to your learning space.</span>
             <button className="student-continue" type="button" onClick={() => { window.location.href = "/dashboard"; }}>Continue to dashboard <span aria-hidden="true">→</span></button>
-            <button className="student-signout" type="button" onClick={async () => { await fetch("/api/auth", { method: "DELETE" }); setUser(null); }}>Sign Out</button>
           </section>
         ) : (
           <>
