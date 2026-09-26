@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
-import { marketplaceCatalog } from "../../lib/marketplace";
+import { marketplaceItems } from "../../lib/marketplace";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -146,6 +146,8 @@ export default function Dashboard() {
   if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
 
   const endpointItems = (access.endpoints || []).filter((endpoint) => endpoint.category === endpointCategory);
+  const marketplaceItemsList = marketplaceItems();
+  const marketplaceKinds = [{ id: "all", name: "All models" }, { id: "chat", name: "Chat" }, { id: "image", name: "Image" }, { id: "video", name: "Video" }, { id: "audio", name: "Audio" }, { id: "embeddings", name: "Embeddings" }, { id: "tools", name: "Tools" }];
 
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
@@ -154,15 +156,36 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>
       </button>
-      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>◆</span> Marketplace</button>      {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}><section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title"><button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button><small>AI SERVICE MARKETPLACE</small><h2 id="marketplace-title">Choose services</h2><p className="codex-modal-intro">Select services with checkboxes and buy access using credits.</p><div className="marketplace-category-tabs"><button type="button" className={marketplaceCategory === "all" ? "active" : ""} onClick={() => setMarketplaceCategory("all")}>All services</button>{marketplaceCatalog.map((service) => <button type="button" className={marketplaceCategory === service.id ? "active" : ""} onClick={() => setMarketplaceCategory(service.id)} key={service.id}>{service.name}</button>)}</div><div className="marketplace-grid">{marketplaceCatalog.filter((service) => marketplaceCategory === "all" || marketplaceCategory === service.id).map((service) => <article className="marketplace-category" key={service.id}><div className="marketplace-category-heading"><strong>{service.name}</strong><span className={service.status === "Connected" ? "marketplace-connected" : "marketplace-required"}>{service.status}</span></div><div className="marketplace-items">{service.items.map((item) => <label key={item.id} className="marketplace-item"><input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} /><span><b>{item.name}</b><small>{item.description}</small></span><em>{item.credits ? `${item.credits} credits` : "Free"}</em></label>)}</div></article>)}</div><div className="marketplace-checkout"><strong>{marketplaceCart.length} selected</strong><span>Total: {marketplaceCatalog.flatMap((service) => service.items).filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</span><button type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></div>{marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}</section></div>}
+      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>?</span> Marketplace</button>
+      {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}>
+        <section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title">
+          <button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">�</button>
+          <small>AI MODEL MARKETPLACE</small>
+          <h2 id="marketplace-title">Choose a model</h2>
+          <p className="codex-modal-intro">Browse models by capability and buy access using credits.</p>
+          <div className="marketplace-category-tabs">
+            {marketplaceKinds.map((kind) => <button type="button" className={marketplaceCategory === kind.id ? "active" : ""} onClick={() => setMarketplaceCategory(kind.id)} key={kind.id}>{kind.name}</button>)}
+          </div>
+          <div className="marketplace-grid">
+            {marketplaceKinds.filter((kind) => kind.id !== "all" && (marketplaceCategory === "all" || marketplaceCategory === kind.id)).map((kind) => <article className="marketplace-category" key={kind.id}>
+              <div className="marketplace-category-heading"><strong>{kind.name} models</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id).length} available</span></div>
+              <div className="marketplace-items">
+                {marketplaceItemsList.filter((item) => item.kind === kind.id).map((item) => <label key={item.id} className="marketplace-item"><input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} /><span><b>{item.name}</b><small>{item.category} � {item.description}</small></span><em>{item.credits ? `${item.credits} credits` : "Free"}</em></label>)}
+              </div>
+            </article>)}
+          </div>
+          <div className="marketplace-checkout"><strong>{marketplaceCart.length} selected</strong><span>Total: {marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</span><button type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></div>
+          {marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}
+        </section>
+      </div>}
       <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-        <span>{codexUnlocked ? "Codex" : "Codex Â· 5 credits"}</span>
+        <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
       </button>
-      {creditHistoryOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCreditHistoryOpen(false)}><section className="credit-history-modal" role="dialog" aria-modal="true" aria-labelledby="credit-history-title"><button className="codex-modal-close" type="button" onClick={() => setCreditHistoryOpen(false)} aria-label="Close credit history">×</button><small>CREDIT ACTIVITY</small><h2 id="credit-history-title">Credit history</h2><p className="codex-modal-intro">Your endpoint usage and admin credit adjustments.</p><div className="credit-history-list">{creditHistory === null ? <p>Loading history...</p> : creditHistory.length ? creditHistory.map((activity) => <article className={`credit-history-item ${activity.action === "credit-added" ? "credit-added" : "credit-deducted"}`} key={activity.id}><div><strong>{activity.service === "admin-credit" ? (activity.action === "credit-added" ? "Credits added" : "Credits removed") : activity.service}</strong><span>{new Date(activity.createdAt).toLocaleString()} · {activity.action === "credit-added" ? "+" : "-"}{Math.abs(activity.creditsUsed || 0)} credits{activity.balance !== undefined ? ` · Balance ${activity.balance}` : ""}</span>{activity.note && <p>{activity.note}</p>}</div></article>) : <p>No credit activity recorded yet.</p>}</div></section></div>}
+      {creditHistoryOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCreditHistoryOpen(false)}><section className="credit-history-modal" role="dialog" aria-modal="true" aria-labelledby="credit-history-title"><button className="codex-modal-close" type="button" onClick={() => setCreditHistoryOpen(false)} aria-label="Close credit history">�</button><small>CREDIT ACTIVITY</small><h2 id="credit-history-title">Credit history</h2><p className="codex-modal-intro">Your endpoint usage and admin credit adjustments.</p><div className="credit-history-list">{creditHistory === null ? <p>Loading history...</p> : creditHistory.length ? creditHistory.map((activity) => <article className={`credit-history-item ${activity.action === "credit-added" ? "credit-added" : "credit-deducted"}`} key={activity.id}><div><strong>{activity.service === "admin-credit" ? (activity.action === "credit-added" ? "Credits added" : "Credits removed") : activity.service}</strong><span>{new Date(activity.createdAt).toLocaleString()} � {activity.action === "credit-added" ? "+" : "-"}{Math.abs(activity.creditsUsed || 0)} credits{activity.balance !== undefined ? ` � Balance ${activity.balance}` : ""}</span>{activity.note && <p>{activity.note}</p>}</div></article>) : <p>No credit activity recorded yet.</p>}</div></section></div>}
       {codexPaymentOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexPaymentOpen(false)}>
         <section className="codex-modal codex-payment-modal" role="dialog" aria-modal="true" aria-labelledby="codex-payment-title">
-          <button className="codex-modal-close" type="button" onClick={() => setCodexPaymentOpen(false)} aria-label="Close Codex payment">Ã—</button>
+          <button className="codex-modal-close" type="button" onClick={() => setCodexPaymentOpen(false)} aria-label="Close Codex payment">×</button>
           <small>CODEX WORKSHOP</small>
           <h2 id="codex-payment-title">Unlock Codex</h2>
           <p className="codex-modal-intro">Pay 5 credits once to use Codex for the next 3 days of the workshop.</p>
@@ -173,7 +196,7 @@ export default function Dashboard() {
       </div>}
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
         <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
-          <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">Ã—</button>
+          <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
           {codexMode === "codex" ? <>
           <small>CODEX WORKSHOP</small>
           <h2 id="codex-title">Codex access</h2>
@@ -186,7 +209,7 @@ export default function Dashboard() {
           <h2 id="codex-title">Install Codex</h2>
           <p className="codex-modal-intro">Follow these steps in PowerShell to install and start the Codex CLI.</p>
           <div className="codex-modal-section"><strong>1. Open PowerShell</strong><div className="codex-command"><code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code><button type="button" onClick={() => copyText("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned")} aria-label="Copy PowerShell command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>When prompted, type <b>Y</b> and press Enter.</span></div>
-          <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org â†—</a><div className="codex-command"><code>{`node --version\nnpm --version`}</code><button type="button" onClick={() => copyText("node --version\nnpm --version")} aria-label="Copy npm check commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
+          <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org ↗</a><div className="codex-command"><code>{`node --version\nnpm --version`}</code><button type="button" onClick={() => copyText("node --version\nnpm --version")} aria-label="Copy npm check commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <div className="codex-modal-section"><strong>3. Install Codex CLI</strong><div className="codex-command"><code>npm install -g @openai/codex</code><button type="button" onClick={() => copyText("npm install -g @openai/codex")} aria-label="Copy Codex install command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <div className="codex-modal-section"><strong>4. Start Codex</strong><div className="codex-command"><code>codex</code><button type="button" onClick={() => copyText("codex")} aria-label="Copy Codex start command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>Codex is installed when the CLI opens in your terminal.</span></div>
           </>}
@@ -227,8 +250,8 @@ export default function Dashboard() {
         <strong>{user.credits ?? 100}</strong>
       </div>
       <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
-      <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications">🔔{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
-      {notificationOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setNotificationOpen(false)}><section className="credit-history-modal notification-modal" role="dialog" aria-modal="true" aria-labelledby="notifications-title"><button className="codex-modal-close" type="button" onClick={() => setNotificationOpen(false)} aria-label="Close notifications">×</button><small>ACADEMY NOTIFICATIONS</small><h2 id="notifications-title">Notifications</h2><div className="notification-list">{notifications.length ? notifications.map((item) => <article className={item.read ? "read" : "unread"} key={item.id} onClick={() => markNotificationRead(item.id)}><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span><p>{item.message}</p></article>) : <p>No notifications yet.</p>}</div></section></div>}
+      <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications">??{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
+      {notificationOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setNotificationOpen(false)}><section className="credit-history-modal notification-modal" role="dialog" aria-modal="true" aria-labelledby="notifications-title"><button className="codex-modal-close" type="button" onClick={() => setNotificationOpen(false)} aria-label="Close notifications">�</button><small>ACADEMY NOTIFICATIONS</small><h2 id="notifications-title">Notifications</h2><div className="notification-list">{notifications.length ? notifications.map((item) => <article className={item.read ? "read" : "unread"} key={item.id} onClick={() => markNotificationRead(item.id)}><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span><p>{item.message}</p></article>) : <p>No notifications yet.</p>}</div></section></div>}
     </main>
   );
 }
