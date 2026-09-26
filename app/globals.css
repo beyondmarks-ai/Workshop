@@ -2635,9 +2635,9 @@ main::after {
 .codex-npm-link { color: #087d66; font-weight: 800; text-decoration: underline; }
 .codex-tools-download { display: grid; min-height: 42px; place-items: center; margin: 18px 0; border-radius: 10px; background: #087d66; color: #fff; font: 800 .75rem "DM Sans", sans-serif; text-decoration: none; }
 .codex-tools-download:hover { background: #066b58; }
-.codex-command { display: flex; align-items: center; gap: 8px; }
-.codex-command code { flex: 1; min-width: 0; }
-.codex-command button { display: grid; flex: 0 0 auto; width: 28px; height: 28px; place-items: center; border: 1px solid #087d6645; border-radius: 7px; background: #fff; color: #087d66; cursor: pointer; }
+.codex-command { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 10px; border: 1px solid #d9e9e5; border-radius: 9px; background: #fff; }
+.codex-command code { flex: 1; min-width: 0; max-width: 100%; overflow-x: auto; white-space: pre; font-size: .67rem; line-height: 1.55; }
+.codex-command button { display: grid; flex: 0 0 auto; width: 30px; height: 30px; place-items: center; border: 1px solid #087d6645; border-radius: 7px; background: #fff; color: #087d66; cursor: pointer; }
 .codex-command button:hover { background: #e6f5f1; }
 .codex-command svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 .codex-modal-check { margin: 16px 0 0; color: #607089; font: 500 .7rem/1.5 "DM Sans", sans-serif; }
