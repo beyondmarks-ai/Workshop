@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getStudentResource } from "../../../../lib/storage";
+import { getUser, getStudentResource, isVerifiedUser } from "../../../../lib/storage";
 
 export const runtime = "nodejs";
 
@@ -17,6 +17,7 @@ async function sessionId() {
 export async function GET(request, { params }) {
   const id = await sessionId();
   if (!id || !/^[0-9a-f-]{36}$/.test(params.id)) return new Response("Not found.", { status: 404 });
+  if (!isVerifiedUser(await getUser(id))) return new Response("Verification required.", { status: 403 });
   const resource = await getStudentResource(id, params.id);
   if (!resource) return new Response("Not found.", { status: 404 });
   return new Response(resource.data, { headers: { "content-type": resource.contentType, "content-disposition": `inline; filename="${resource.name.replace(/[^a-zA-Z0-9._ -]/g, "_")}"` } });

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { listStudentResources, uploadStudentResource } from "../../../lib/storage";
+import { getUser, isVerifiedUser, listStudentResources, uploadStudentResource } from "../../../lib/storage";
 
 export const runtime = "nodejs";
 
@@ -17,12 +17,14 @@ async function sessionId() {
 export async function GET() {
   const id = await sessionId();
   if (!id) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (!isVerifiedUser(await getUser(id))) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   return Response.json({ resources: await listStudentResources(id) });
 }
 
 export async function POST(request) {
   const id = await sessionId();
   if (!id) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (!isVerifiedUser(await getUser(id))) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const body = await request.formData();
   const file = body.get("file");
   if (!file || typeof file.arrayBuffer !== "function") return Response.json({ error: "Choose a file." }, { status: 400 });

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getUser } from "../../../lib/storage";
+import { getUser, isVerifiedUser } from "../../../lib/storage";
 import { listStudentActivities } from "../../../lib/activity";
 
 export const runtime = "nodejs";
@@ -18,5 +18,6 @@ async function sessionUser() {
 export async function GET() {
   const user = await sessionUser();
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   return Response.json({ database: process.env.COSMOS_DATABASE || "academy", container: process.env.COSMOS_CONTAINER || "activity", partitionKey: "/studentId", studentId: user.id, activities: await listStudentActivities(user.id) });
 }
