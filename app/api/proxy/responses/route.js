@@ -20,7 +20,8 @@ export async function POST(request) {
     const rawBody = await request.text();
     let body;
     try { body = JSON.parse(rawBody); } catch { return Response.json({ error: "Request body must be valid JSON." }, { status: 400 }); }
-    body.model = process.env.APIM_TEST_MODEL || "gpt-5.6-luna";
+    const requestedModel = new URL(request.url).searchParams.get("model");
+    body.model = ["gpt-4.1", "gpt-5.6-luna"].includes(requestedModel) ? requestedModel : process.env.APIM_TEST_MODEL || "gpt-5.6-luna";
     const response = await fetch(`${gateway}/openai/responses?api-version=2025-03-01-preview`, { method: "POST", headers: { "content-type": "application/json", "Ocp-Apim-Subscription-Key": apimKey }, body: JSON.stringify(body) });
     const result = await response.text();
     await saveActivity({ studentId: user.id, service: "foundry-responses", action: "responses", status: response.status, creditsUsed: 1, request: { model: body.model, input: body.input }, response: result.slice(0, 12000) }).catch(() => {});

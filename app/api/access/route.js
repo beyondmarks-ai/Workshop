@@ -13,6 +13,7 @@ const services = [
 
 const endpoints = [
   { id: "responses", category: "generative", name: "GPT-4.1 Generative", method: "POST", path: "/api/proxy/responses", auth: "Student API key", description: "Send prompts through GPT-4.1 via the APIM gateway. Uses one credit per call." },
+  { id: "luna", category: "generative", name: "GPT-5.6 Luna Generative", method: "POST", path: "/api/proxy/responses?model=gpt-5.6-luna", auth: "Student API key", description: "Send prompts through the GPT-5.6 Luna APIM deployment. Uses one credit per call." },
   { id: "image-2", category: "image", name: "GPT Image 2", method: "POST", path: "/api/proxy/images?model=gpt-image-2", auth: "Student API key", description: "Generate and edit images with GPT Image 2 through the East US 2 APIM deployment." },
   { id: "image-flare", category: "image", name: "GPT Image 2.5 Flare", method: "POST", path: "/api/proxy/images?model=gpt-image-2.5-flare", auth: "Student API key", description: "Fast everyday image generation through the East US 2 APIM deployment." },
   { id: "sora-2", category: "video", name: "Sora 2 Video", method: "POST", path: "/api/proxy/videos?model=sora-2", auth: "Student API key", description: "Create video jobs with Sora 2 through the East US 2 APIM deployment." },
