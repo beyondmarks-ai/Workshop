@@ -2665,7 +2665,10 @@ main::after {
 .marketplace-modal { position: relative; }
 .marketplace-cart-button { position: sticky; top: -1px; z-index: 20; display: flex; align-items: center; gap: 7px; width: max-content; min-height: 34px; margin: -8px 0 8px auto; padding: 0 11px; border: 1px solid #087d66; border-radius: 9px; background: #effcf8f2; color: #087d66; box-shadow: 0 5px 14px #0f172a12; font: 800 .65rem "Manrope", sans-serif; cursor: pointer; }
 .marketplace-cart-button span { min-width: 18px; padding: 4px 5px; border-radius: 999px; background: #087d66; color: #fff; text-align: center; }
-.marketplace-cart-drawer { position: fixed; z-index: 80; top: 0; right: 0; bottom: 0; display: flex; width: min(380px, 92vw); min-height: 100vh; flex-direction: column; overflow: hidden; padding: 30px; background: #fff; box-shadow: -18px 0 50px #0f172a35; animation: marketplace-cart-in .25s ease both; }
+.marketplace-modal { position: relative; display: flex; flex-direction: column; overflow: hidden; }
+.marketplace-content-scroll { flex: 1; min-height: 0; overflow: auto; padding-right: 4px; }
+.marketplace-cart-button { position: absolute; top: 27px; right: 70px; margin: 0; }
+.marketplace-cart-drawer { position: absolute; z-index: 80; inset: 0 0 0 auto; display: flex; width: min(380px, 92%); min-height: 100%; flex-direction: column; overflow: hidden; padding: 30px; background: #fff; box-shadow: -18px 0 50px #0f172a35; animation: marketplace-cart-in .25s ease both; }
 @keyframes marketplace-cart-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
 .marketplace-cart-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid #e5e7eb; }
 .marketplace-cart-heading small { color: #087d66; font: 800 .58rem/1 "Manrope", sans-serif; letter-spacing: .14em; }

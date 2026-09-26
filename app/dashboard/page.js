@@ -169,6 +169,7 @@ export default function Dashboard() {
           <small>AI MODEL MARKETPLACE</small>
           <h2 id="marketplace-title">Choose a model</h2>
           <p className="codex-modal-intro">Browse models by capability and buy access using credits.</p>
+          <div className="marketplace-content-scroll">
           <div className="marketplace-filter-group"><strong>Model</strong><div className="marketplace-category-tabs">{marketplaceProviders.map((provider) => <button type="button" className={marketplaceProvider === provider.id ? "active" : ""} onClick={() => setMarketplaceProvider(provider.id)} key={provider.id}>{provider.name}</button>)}</div></div>
 <div className="marketplace-filter-group"><strong>Category</strong><div className="marketplace-category-tabs">{marketplaceKinds.map((kind) => <button type="button" className={marketplaceCategory === kind.id ? "active" : ""} onClick={() => setMarketplaceCategory(kind.id)} key={kind.id}>{kind.name}</button>)}</div></div>
           <div className="marketplace-grid">
@@ -185,6 +186,7 @@ export default function Dashboard() {
 </label>)}
               </div>
             </article>)}
+          </div>
           </div>
           {marketplaceCartOpen && <aside className="marketplace-cart-drawer" aria-label="Shopping cart"><div className="marketplace-cart-heading"><div><small>YOUR CART</small><h3>Selected models</h3></div><button type="button" onClick={() => setMarketplaceCartOpen(false)} aria-label="Close cart">×</button></div><div className="marketplace-cart-items">{marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).map((item) => <div className="marketplace-cart-item" key={item.id}><div><strong>{item.name}</strong><small>{item.category}</small></div><span>{item.credits ? `${item.credits} credits` : "Free"}</span><button type="button" onClick={() => setMarketplaceCart((current) => current.filter((id) => id !== item.id))} aria-label={`Remove ${item.name}`}>×</button></div>)}{!marketplaceCart.length && <p className="marketplace-cart-empty">Your cart is empty. Select a model to add it.</p>}</div><div className="marketplace-cart-total"><span>Total</span><strong>{marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</strong></div><button className="marketplace-cart-buy" type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></aside>}          {marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}
         </section>
