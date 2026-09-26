@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { deleteUser, getUser, listUsers, saveUser } from "../../../lib/storage";
 import { adminTotpConfigured, clearAdminAccess, hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
+import { saveActivity } from "../../../lib/activity";
 
 export const runtime = "nodejs";
 
@@ -39,6 +40,18 @@ export async function POST(request) {
     return Response.json({ loggedOut: true });
   }
   if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
+  if (body.action === "polish-comment") {
+    const comment = String(body.comment || "").trim().slice(0, 500);
+    const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
+    const apimKey = process.env.APIM_SUBSCRIPTION_KEY;
+    if (!comment) return Response.json({ error: "Enter a comment first." }, { status: 400 });
+    if (!gateway || !apimKey) return Response.json({ error: "APIM gateway is not configured." }, { status: 503 });
+    const response = await fetch(`${gateway}/openai/responses?api-version=2025-03-01-preview`, { method: "POST", headers: { "content-type": "application/json", "Ocp-Apim-Subscription-Key": apimKey }, body: JSON.stringify({ model: "gpt-4.1", input: [{ role: "system", content: "Rewrite the admin's credit note professionally in one concise sentence. Preserve the meaning and do not add facts." }, { role: "user", content: comment }] }) });
+    const result = await response.json().catch(() => ({}));
+    const polished = result.output?.flatMap((item) => item.content || []).find((item) => item.type === "output_text")?.text?.trim();
+    if (!response.ok || !polished) return Response.json({ error: "GPT-4.1 could not polish the comment." }, { status: 502 });
+    return Response.json({ comment: polished });
+  }
   const actions = new Set(["verify-student", "adjust-credits", "revoke-student", "delete-student"]);
   if (!actions.has(body.action) || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid student action." }, { status: 400 });
   const student = await getUser(body.studentId);
@@ -53,6 +66,7 @@ export async function POST(request) {
     if (!Number.isFinite(delta) || Math.abs(delta) < 0.01 || Math.abs(delta) > Number.MAX_SAFE_INTEGER) return Response.json({ error: "Credit adjustment must be a positive number." }, { status: 400 });
     const currentCredits = Number.isFinite(Number(student.credits)) ? Number(student.credits) : 0;
     student.credits = Math.max(0, Math.round((currentCredits + delta) * 100) / 100);
+    await saveActivity({ studentId: student.id, service: "admin-credit", action: delta > 0 ? "credit-added" : "credit-removed", status: "completed", creditsUsed: delta, balance: student.credits, note: String(body.note || "Admin credit adjustment").trim().slice(0, 500), source: "admin" });
   }
   if (body.action === "revoke-student") {
     student.verified = false;

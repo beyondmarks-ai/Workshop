@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
@@ -115,11 +115,12 @@ export default function Dashboard() {
       </button>
       <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-        <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
+        <span>{codexUnlocked ? "Codex" : "Codex Â· 5 credits"}</span>
       </button>
+      <a className="dashboard-history-link" href="/activity">Credit history</a>
       {codexPaymentOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexPaymentOpen(false)}>
         <section className="codex-modal codex-payment-modal" role="dialog" aria-modal="true" aria-labelledby="codex-payment-title">
-          <button className="codex-modal-close" type="button" onClick={() => setCodexPaymentOpen(false)} aria-label="Close Codex payment">×</button>
+          <button className="codex-modal-close" type="button" onClick={() => setCodexPaymentOpen(false)} aria-label="Close Codex payment">Ã—</button>
           <small>CODEX WORKSHOP</small>
           <h2 id="codex-payment-title">Unlock Codex</h2>
           <p className="codex-modal-intro">Pay 5 credits once to use Codex for the next 3 days of the workshop.</p>
@@ -130,7 +131,7 @@ export default function Dashboard() {
       </div>}
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
         <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
-          <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
+          <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">Ã—</button>
           {codexMode === "codex" ? <>
           <small>CODEX WORKSHOP</small>
           <h2 id="codex-title">Codex access</h2>
@@ -143,7 +144,7 @@ export default function Dashboard() {
           <h2 id="codex-title">Install Codex</h2>
           <p className="codex-modal-intro">Follow these steps in PowerShell to install and start the Codex CLI.</p>
           <div className="codex-modal-section"><strong>1. Open PowerShell</strong><div className="codex-command"><code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code><button type="button" onClick={() => copyText("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned")} aria-label="Copy PowerShell command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>When prompted, type <b>Y</b> and press Enter.</span></div>
-          <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org ↗</a><div className="codex-command"><code>{`node --version\nnpm --version`}</code><button type="button" onClick={() => copyText("node --version\nnpm --version")} aria-label="Copy npm check commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
+          <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org â†—</a><div className="codex-command"><code>{`node --version\nnpm --version`}</code><button type="button" onClick={() => copyText("node --version\nnpm --version")} aria-label="Copy npm check commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <div className="codex-modal-section"><strong>3. Install Codex CLI</strong><div className="codex-command"><code>npm install -g @openai/codex</code><button type="button" onClick={() => copyText("npm install -g @openai/codex")} aria-label="Copy Codex install command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <div className="codex-modal-section"><strong>4. Start Codex</strong><div className="codex-command"><code>codex</code><button type="button" onClick={() => copyText("codex")} aria-label="Copy Codex start command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>Codex is installed when the CLI opens in your terminal.</span></div>
           </>}
