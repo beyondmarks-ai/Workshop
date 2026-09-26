@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [marketplaceCategory, setMarketplaceCategory] = useState("all");
   const [marketplaceProvider, setMarketplaceProvider] = useState("all");
   const [marketplaceCartOpen, setMarketplaceCartOpen] = useState(false);
+  const [marketplacePurchases, setMarketplacePurchases] = useState([]);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -52,6 +53,7 @@ export default function Dashboard() {
       if (data) setAccess((current) => ({ ...current, ...data }));
     }).catch(() => {});
     fetch("/api/notifications").then((response) => response.ok && response.json()).then((data) => data && setNotifications(data.notifications || [])).catch(() => {});
+    fetch("/api/marketplace").then((response) => response.ok && response.json()).then((data) => data && setMarketplacePurchases(data.purchases || [])).catch(() => {});
   }, [user]);
 
   const codexUnlocked = (user?.role === "admin" || user?.verified === true) && codexAccessUntil && new Date(codexAccessUntil).getTime() > Date.now();
@@ -141,7 +143,7 @@ export default function Dashboard() {
     const response = await fetch("/api/marketplace", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ itemIds: marketplaceCart }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) setMarketplaceMessage(data.error || "Purchase could not be completed.");
-    else { setUser((current) => ({ ...current, credits: data.credits })); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); fetch("/api/access").then((accessResponse) => accessResponse.ok && accessResponse.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {}); }
+    else { setUser((current) => ({ ...current, credits: data.credits })); setMarketplacePurchases(data.purchases || []); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); fetch("/api/access").then((accessResponse) => accessResponse.ok && accessResponse.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {}); }
     setMarketplaceBusy(false);
   }
 
@@ -174,11 +176,11 @@ export default function Dashboard() {
               <div className="marketplace-category-heading"><strong>{kind.name} models</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).length} available</span></div>
               <div className="marketplace-items">
                 {marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).map((item) => <label key={item.id} className={`marketplace-item comet-card${marketplaceCart.includes(item.id) ? " selected" : ""}`}>
-  <input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} aria-label={`Add ${item.name} to cart`} />
+  <input type="checkbox" checked={marketplaceCart.includes(item.id)} disabled={marketplacePurchases.some((purchase) => purchase.itemId === item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} aria-label={`Add ${item.name} to cart`} />
   <div className="comet-card-content">
     <div className="comet-card-heading"><b>{item.name}</b><span>{item.category}</span></div>
     <small>{item.description}</small>
-    <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><span className="comet-card-cart-hint">{marketplaceCart.includes(item.id) ? "In cart" : "Select to add"}</span></div>
+    <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><span className="comet-card-cart-hint">{marketplacePurchases.some((purchase) => purchase.itemId === item.id) ? "Already bought" : marketplaceCart.includes(item.id) ? "In cart" : "Select to add"}</span></div>
   </div>
 </label>)}
               </div>

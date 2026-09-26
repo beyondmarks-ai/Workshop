@@ -31,9 +31,11 @@ export async function POST(request) {
   const body = await request.json().catch(() => ({}));
   const ids = [...new Set(Array.isArray(body.itemIds) ? body.itemIds.map(String) : [])];
   const items = marketplaceItems().filter((item) => ids.includes(item.id));
+  const ownedIds = new Set((user.marketplacePurchases || []).map((purchase) => purchase.itemId));
   const total = items.reduce((sum, item) => sum + item.credits, 0);
   const credits = Number.isFinite(Number(user.credits)) ? Number(user.credits) : 0;
   if (!items.length || items.length !== ids.length) return Response.json({ error: "Select valid marketplace items." }, { status: 400 });
+  if (items.some((item) => ownedIds.has(item.id))) return Response.json({ error: "One or more selected models are already bought." }, { status: 409 });
   if (credits < total) return Response.json({ error: `You need ${total} credits for this cart.`, credits }, { status: 402 });
   user.credits = Math.round((credits - total) * 100) / 100;
   user.marketplacePurchases = [...(user.marketplacePurchases || []), ...items.map((item) => ({ id: crypto.randomUUID(), itemId: item.id, name: item.name, category: item.category, credits: item.credits, purchasedAt: new Date().toISOString() }))];

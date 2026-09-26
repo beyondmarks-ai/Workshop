@@ -2709,6 +2709,7 @@ main::after {
 .marketplace-item.comet-card:hover::before, .marketplace-item.comet-card:focus-within::before { opacity: 1; transform: translate(18%, 12%); }
 .marketplace-item.comet-card.selected { border-color: #087d66; background: linear-gradient(145deg, #f2fffa 0%, #e8faf4 100%); box-shadow: 0 0 0 2px #087d6622, 0 14px 28px #087d6618; }
 .marketplace-item.comet-card > input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.marketplace-item.comet-card:has(input:disabled) { border-color: #cfe8df; background: #f2faf7; }
 .comet-card-content { position: relative; z-index: 1; display: flex; min-height: 122px; flex-direction: column; gap: 10px; }
 .comet-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .comet-card-heading b { color: #102f2b; font: 800 .86rem/1.25 "Manrope", sans-serif; }

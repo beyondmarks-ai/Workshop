@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { getUser, isVerifiedUser, saveUser } from "../../../lib/storage";
-import { hasMarketplaceAccess } from "../../../lib/marketplace";
+import { hasMarketplaceAccess, marketplaceItems } from "../../../lib/marketplace";
 import { creditCost } from "../../../lib/pricing";
 
 export const runtime = "nodejs";
@@ -30,6 +30,12 @@ const endpoints = [
   { id: "apim-test", category: "other", name: "Gateway health check", method: "GET", path: "/api/apim-test", auth: "Dashboard session", description: "Test whether the configured APIM gateway is reachable." }
 ];
 
+function vertexEndpoint(item) {
+  const operation = item.kind === "video" ? "predictLongRunning" : item.kind === "embeddings" ? "embedContent" : "generate";
+  const category = item.kind === "video" ? "video" : item.kind === "image" ? "image" : item.kind === "chat" ? "generative" : "other";
+  return { id: `vertex-${item.id}`, category, name: `Vertex ${item.name}`, model: item.id, method: "POST", path: `/api/proxy/vertex?model=${item.id}&operation=${operation}`, auth: "Student API key", description: `${item.description} through the APIM gateway.` };
+}
+
 function sessionId() {
   try {
     const [payload, signature] = cookies().get(cookieName)?.value.split(".") || [];
@@ -55,7 +61,9 @@ export async function GET() {
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const unlocked = codexUnlocked(user);
-  return Response.json({ services, endpoints: endpoints.filter((endpoint) => !endpoint.model || hasMarketplaceAccess(user, endpoint.model)).map((endpoint) => ({ ...endpoint, creditCost: endpoint.id === "apim-test" ? creditCost("apim-test") : endpoint.model ? creditCost(endpoint.category === "image" ? "images" : endpoint.category === "video" ? "videos" : endpoint.id.startsWith("vertex-") ? "vertex" : "responses", endpoint.model) : 0 })), apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
+  const dynamicVertexEndpoints = marketplaceItems().filter((item) => item.category === "Vertex AI" && item.kind !== "tools").map(vertexEndpoint);
+  const allEndpoints = [...endpoints, ...dynamicVertexEndpoints].filter((endpoint, index, list) => list.findIndex((candidate) => candidate.model && candidate.model === endpoint.model) === index || !endpoint.model);
+  return Response.json({ services, endpoints: allEndpoints.filter((endpoint) => !endpoint.model || hasMarketplaceAccess(user, endpoint.model)).map((endpoint) => ({ ...endpoint, creditCost: endpoint.id === "apim-test" ? creditCost("apim-test") : endpoint.model ? creditCost(endpoint.category === "image" ? "images" : endpoint.category === "video" ? "videos" : endpoint.id.startsWith("vertex-") ? "vertex" : "responses", endpoint.model) : 0 })), apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
 }
 
 export async function POST() {
