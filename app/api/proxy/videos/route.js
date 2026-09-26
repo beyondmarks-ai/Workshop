@@ -1,5 +1,6 @@
 import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
 import { creditCost } from "../../../../lib/pricing";
+import { hasMarketplaceAccess } from "../../../../lib/marketplace";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,7 @@ export async function POST(request) {
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const requestedModel = new URL(request.url).searchParams.get("model");
   const model = requestedModel === "sora-2" ? "sora-2" : process.env.APIM_VIDEO_MODEL || "sora-2";
+  if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
   const cost = creditCost("videos", model);
   const credit = await consumeCredit(user.id, cost);
   if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });

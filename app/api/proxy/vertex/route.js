@@ -1,6 +1,6 @@
 import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
 import { saveActivity } from "../../../../lib/activity";
-import { marketplaceItems } from "../../../../lib/marketplace";
+import { hasMarketplaceAccess, marketplaceItems } from "../../../../lib/marketplace";
 import { creditCost } from "../../../../lib/pricing";
 
 export const runtime = "nodejs";
@@ -29,6 +29,7 @@ export async function POST(request) {
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const query = new URL(request.url).searchParams;
   const model = suppliedModel(request);
+  if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
   const operation = operationFor(allowedModels.get(model), query.get("operation"));
   const cost = creditCost("vertex", model);
   const credit = await consumeCredit(user.id, cost);
