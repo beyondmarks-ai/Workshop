@@ -2663,10 +2663,13 @@ main::after {
 .marketplace-modal { width: min(980px, 100%); padding: 32px; background: #f8fafc; }
 .marketplace-modal h2 { font-size: 2rem; letter-spacing: -.04em; }
 .marketplace-grid { grid-template-columns: 1fr; gap: 14px; }
+.marketplace-category-tabs { display: flex; gap: 7px; overflow-x: auto; margin: 20px 0 14px; padding-bottom: 4px; }
+.marketplace-category-tabs button { flex: 0 0 auto; padding: 9px 13px; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #6b7280; font: 800 .66rem "Manrope", sans-serif; cursor: pointer; }
+.marketplace-category-tabs button.active { border-color: #087d66; background: #087d66; color: #fff; }
 .marketplace-category { padding: 18px; border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px #0f172a0a; }
 .marketplace-category-heading { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; }
 .marketplace-category-heading strong { font-size: .95rem; }
-.marketplace-category > .marketplace-items { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 9px; margin-top: 14px; }
+.marketplace-category > .marketplace-items { display: grid !important; grid-template-columns: 1fr; gap: 7px; margin-top: 14px; }
 .marketplace-item { min-height: 72px; align-items: start; border-color: #e5e7eb; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
 .marketplace-item:hover { border-color: #73cbb7; box-shadow: 0 6px 16px #087d6618; transform: translateY(-1px); }
 .marketplace-item:has(input:checked) { border-color: #087d66; background: #f0fdf9; box-shadow: 0 0 0 2px #087d6620; }
