@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
-import { marketplaceItems } from "../../lib/marketplace";
+import { marketplaceCatalog, marketplaceItems } from "../../lib/marketplace";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -25,6 +25,7 @@ export default function Dashboard() {
   const [marketplaceMessage, setMarketplaceMessage] = useState("");
   const [marketplaceBusy, setMarketplaceBusy] = useState(false);
   const [marketplaceCategory, setMarketplaceCategory] = useState("all");
+  const [marketplaceProvider, setMarketplaceProvider] = useState("all");
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -147,7 +148,8 @@ export default function Dashboard() {
 
   const endpointItems = (access.endpoints || []).filter((endpoint) => endpoint.category === endpointCategory);
   const marketplaceItemsList = marketplaceItems();
-  const marketplaceKinds = [{ id: "all", name: "All models" }, { id: "chat", name: "Chat" }, { id: "image", name: "Image" }, { id: "video", name: "Video" }, { id: "audio", name: "Audio" }, { id: "embeddings", name: "Embeddings" }, { id: "tools", name: "Tools" }];
+  const marketplaceKinds = [{ id: "all", name: "All categories" }, { id: "chat", name: "Chat" }, { id: "image", name: "Image" }, { id: "video", name: "Video" }, { id: "audio", name: "Audio" }, { id: "embeddings", name: "Embeddings" }, { id: "tools", name: "Tools" }];
+  const marketplaceProviders = [{ id: "all", name: "All models" }, ...marketplaceCatalog.map((service) => ({ id: service.name, name: service.name }))];
 
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
@@ -163,14 +165,13 @@ export default function Dashboard() {
           <small>AI MODEL MARKETPLACE</small>
           <h2 id="marketplace-title">Choose a model</h2>
           <p className="codex-modal-intro">Browse models by capability and buy access using credits.</p>
-          <div className="marketplace-category-tabs">
-            {marketplaceKinds.map((kind) => <button type="button" className={marketplaceCategory === kind.id ? "active" : ""} onClick={() => setMarketplaceCategory(kind.id)} key={kind.id}>{kind.name}</button>)}
-          </div>
+          <div className="marketplace-filter-group"><strong>Model</strong><div className="marketplace-category-tabs">{marketplaceProviders.map((provider) => <button type="button" className={marketplaceProvider === provider.id ? "active" : ""} onClick={() => setMarketplaceProvider(provider.id)} key={provider.id}>{provider.name}</button>)}</div></div>
+<div className="marketplace-filter-group"><strong>Category</strong><div className="marketplace-category-tabs">{marketplaceKinds.map((kind) => <button type="button" className={marketplaceCategory === kind.id ? "active" : ""} onClick={() => setMarketplaceCategory(kind.id)} key={kind.id}>{kind.name}</button>)}</div></div>
           <div className="marketplace-grid">
             {marketplaceKinds.filter((kind) => kind.id !== "all" && (marketplaceCategory === "all" || marketplaceCategory === kind.id)).map((kind) => <article className="marketplace-category" key={kind.id}>
-              <div className="marketplace-category-heading"><strong>{kind.name} models</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id).length} available</span></div>
+              <div className="marketplace-category-heading"><strong>{kind.name} models</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).length} available</span></div>
               <div className="marketplace-items">
-                {marketplaceItemsList.filter((item) => item.kind === kind.id).map((item) => <label key={item.id} className={`marketplace-item comet-card${marketplaceCart.includes(item.id) ? " selected" : ""}`}>
+                {marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).map((item) => <label key={item.id} className={`marketplace-item comet-card${marketplaceCart.includes(item.id) ? " selected" : ""}`}>
   <input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} aria-label={`Add ${item.name} to cart`} />
   <div className="comet-card-content">
     <div className="comet-card-heading"><b>{item.name}</b><span>{item.category}</span></div>

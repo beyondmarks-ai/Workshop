@@ -2666,6 +2666,8 @@ main::after {
 .marketplace-category-tabs { display: flex; gap: 7px; overflow-x: auto; margin: 20px 0 14px; padding-bottom: 4px; }
 .marketplace-category-tabs button { flex: 0 0 auto; padding: 9px 13px; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #6b7280; font: 800 .66rem "Manrope", sans-serif; cursor: pointer; }
 .marketplace-category-tabs button.active { border-color: #087d66; background: #087d66; color: #fff; }
+.marketplace-filter-group { margin-top: 16px; }
+.marketplace-filter-group > strong { display: block; margin-bottom: 8px; color: #64748b; font: 800 .58rem/1 "Manrope", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
 .marketplace-category { padding: 18px; border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px #0f172a0a; }
 .marketplace-category-heading { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; }
 .marketplace-category-heading strong { font-size: .95rem; }
@@ -2674,7 +2676,7 @@ main::after {
 .marketplace-item:hover { border-color: #73cbb7; box-shadow: 0 6px 16px #087d6618; transform: translateY(-1px); }
 .marketplace-item:has(input:checked) { border-color: #087d66; background: #f0fdf9; box-shadow: 0 0 0 2px #087d6620; }
 .marketplace-item input { margin-top: 3px; }
-.marketplace-checkout { position: sticky; bottom: -32px; margin: 22px -32px -32px; padding: 16px 32px; background: #102f2b; color: #fff; }
+.marketplace-checkout { position: static; margin: 22px -32px -32px; padding: 16px 32px; background: #102f2b; color: #fff; box-shadow: 0 -10px 24px #0f172a12; }
 .marketplace-checkout span { color: #c7e8df; }
 .marketplace-checkout button { background: #25b08f; }
 .marketplace-checkout button:hover { background: #159979; }
