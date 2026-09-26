@@ -2505,6 +2505,20 @@ main::after {
   font-size: .9rem;
 }
 
+.student-continue {
+  margin-top: 22px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--lime);
+  color: #10251b;
+  font: 800 .78rem "DM Sans", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 10px 24px #b9f22733;
+}
+
+.student-continue:hover { filter: brightness(1.08); }
+
 .student-details {
   display: flex;
   justify-content: center;

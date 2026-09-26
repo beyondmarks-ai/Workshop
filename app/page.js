@@ -111,13 +111,9 @@ export default function Home() {
         {user ? (
           <section className="student-welcome" aria-live="polite">
             <p>STUDENT PORTAL</p>
-            <strong>Welcome, {user.name}</strong>
-            <span>Your learning space is ready.</span>
-            <div className="student-details">
-              <span><b>Branch</b>{user.branch}</span>
-              <span><b>Semester</b>{user.semester}</span>
-              <span><b>USN</b>{user.usn}</span>
-            </div>
+            <strong>Your dashboard is ready.</strong>
+            <span>Continue to your learning space.</span>
+            <button className="student-continue" type="button" onClick={() => { window.location.href = "/dashboard"; }}>Continue to dashboard <span aria-hidden="true">→</span></button>
             <button className="student-signout" type="button" onClick={async () => { await fetch("/api/auth", { method: "DELETE" }); setUser(null); }}>Sign Out</button>
           </section>
         ) : (
