@@ -2987,6 +2987,7 @@ main::after {
 .admin-status { justify-self: start; padding: 5px 8px; border-radius: 999px; font-size: .62rem; font-weight: 800; white-space: nowrap; }
 .admin-status.verified { color: #b8ffd5; background: #47cc8250; }
 .admin-status.pending { color: #ffe1a4; background: #d49b3d45; }
+.admin-credit-input { width: 78px; padding: 6px 7px; border: 1px solid #ffffff2e; border-radius: 7px; background: #07162d; color: #fff; font-size: .62rem; }
 .admin-empty { color: #ffffff9c; font-size: .78rem; }
 .admin-actions { display: flex !important; align-items: center; justify-content: flex-end; gap: 6px !important; }
 .admin-actions button { padding: 6px 8px; border: 1px solid #ffffff2e; border-radius: 7px; background: #ffffff0c; color: #fff; font: 800 .62rem "DM Sans", sans-serif; cursor: pointer; }

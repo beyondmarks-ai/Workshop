@@ -45,7 +45,7 @@ export async function POST(request) {
   }
   if (body.action === "adjust-credits") {
     const delta = Number(body.delta);
-    if (!Number.isInteger(delta) || Math.abs(delta) < 1 || Math.abs(delta) > 100000) return Response.json({ error: "Credit adjustment must be a whole number from 1 to 100,000." }, { status: 400 });
+    if (!Number.isSafeInteger(delta) || Math.abs(delta) < 1) return Response.json({ error: "Credit adjustment must be a positive whole number." }, { status: 400 });
     student.credits = Math.max(0, Number.isInteger(student.credits) ? student.credits + delta : Math.max(0, 100 + delta));
   }
   if (body.action === "revoke-student") {
