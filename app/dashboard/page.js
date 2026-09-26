@@ -5,12 +5,10 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [accessOpen, setAccessOpen] = useState(false);
-  const [access, setAccess] = useState({ services: [], apiKeyPrefix: null, apiKey: "", apiEndpoint: "" });
+  const [access, setAccess] = useState({ services: [], endpoints: [], apiKeyPrefix: null, apiKey: "", apiEndpoint: "" });
   const [keyVisible, setKeyVisible] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
-  const [apiEndpoint, setApiEndpoint] = useState("");
-  const [endpointStatus, setEndpointStatus] = useState("idle");
+  const [openEndpoint, setOpenEndpoint] = useState(null);
 
   useEffect(() => {
     fetch("/api/auth")
@@ -30,7 +28,6 @@ export default function Dashboard() {
     fetch("/api/access").then((response) => response.ok && response.json()).then((data) => {
       if (!data) return;
       setAccess((current) => ({ ...current, ...data }));
-      setApiEndpoint(`${window.location.origin}${data.apiEndpoint || "/api/proxy/responses"}`);
     }).catch(() => {});
   }, [user]);
 
@@ -50,21 +47,10 @@ export default function Dashboard() {
     window.setTimeout(() => setCopyStatus(""), 1600);
   }
 
-  async function copyEndpoint() {
-    if (!apiEndpoint) return;
-    await navigator.clipboard.writeText(apiEndpoint);
+  async function copyServiceEndpoint(path) {
+    await navigator.clipboard.writeText(`${window.location.origin}${path}`);
     setCopyStatus("Copied");
     window.setTimeout(() => setCopyStatus(""), 1600);
-  }
-
-  async function testEndpoint() {
-    setEndpointStatus("testing");
-    try {
-      const response = await fetch("/api/apim-test");
-      const result = await response.json();
-      if (Number.isInteger(result.credits)) setUser((current) => current ? { ...current, credits: result.credits } : current);
-      setEndpointStatus(result.ok ? "success" : "error");
-    } catch { setEndpointStatus("error"); }
   }
 
   async function toggleApiKeyVisibility() {
@@ -84,6 +70,7 @@ export default function Dashboard() {
 
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
+      <div className="dashboard-corners" aria-hidden="true" />
       <div className="dashboard-student-welcome">
         <p><span>Welcome,</span><strong>{user.name}</strong></p>
         <small className="dashboard-api-label">API KEY</small>
@@ -99,7 +86,7 @@ export default function Dashboard() {
           </button>
           {copyStatus && <small>{copyStatus}</small>}
         </div>
-        <small className="dashboard-api-label endpoint-label">API ENDPOINT</small>
+        {false && <><small className="dashboard-api-label endpoint-label">API ENDPOINT</small>
         <div className="dashboard-api-key dashboard-endpoint">
           <div className="dashboard-api-key-value"><code>{apiEndpoint || "Loading endpoint…"}</code></div>
           <button className={`endpoint-test endpoint-test-${endpointStatus}`} type="button" onClick={testEndpoint} aria-label="Test API endpoint" title="Test API endpoint">
@@ -108,16 +95,30 @@ export default function Dashboard() {
           <button type="button" onClick={copyEndpoint} aria-label="Copy API endpoint" title="Copy API endpoint">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
           </button>
-        </div>
+        </div></>}
+        <section className="dashboard-endpoint-directory" aria-label="Student service endpoints">
+          <div className="dashboard-endpoint-cards">
+            {access.endpoints.filter((endpoint) => ["responses", "resources", "activity", "access"].includes(endpoint.id)).map((endpoint) => {
+              const names = { responses: "Chat", resources: "Storage", activity: "Activity", access: "Access" };
+              const isOpen = openEndpoint === endpoint.id;
+              const toggleEndpoint = () => setOpenEndpoint(isOpen ? null : endpoint.id);
+              return <article key={endpoint.id} className={`dashboard-endpoint-card${isOpen ? " is-open" : ""}`} role="button" tabIndex={0} aria-expanded={isOpen} onClick={toggleEndpoint} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggleEndpoint(); } }}>
+                <small>{names[endpoint.id]}</small>
+                <div className="dashboard-endpoint-card-info"><code>{window.location.origin}{endpoint.path}</code><span className="dashboard-endpoint-chevron" aria-hidden="true" /></div>
+                <button type="button" onClick={(event) => { event.stopPropagation(); copyServiceEndpoint(endpoint.path); }} aria-label={`Copy ${names[endpoint.id]} endpoint`} title={`Copy ${names[endpoint.id]} endpoint`}>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
+                </button>
+                {isOpen && <div className="dashboard-endpoint-details"><div><span>{endpoint.method}</span><span>{endpoint.auth}</span></div><p>{endpoint.description}</p></div>}
+              </article>;
+            })}
+          </div>
+        </section>
       </div>
       <div className="dashboard-credits" aria-label="100 credits">
         <small>CREDITS</small>
         <strong>{user.credits ?? 100}</strong>
       </div>
-      <button className="access-button" type="button" onClick={() => setAccessOpen((open) => !open)} aria-expanded={accessOpen}>
-        Access <span className="access-chevron" aria-hidden="true" />
-      </button>
-      {accessOpen && (
+      {false && (
         <section className="access-panel" aria-label="Available services">
           <div className="access-panel-heading">
             <span>STUDENT ACCESS</span>
@@ -128,6 +129,16 @@ export default function Dashboard() {
           <a className="admin-access-link" href="/activity">My Activity <span>→</span></a>
           <div className="access-services">
             {access.services.map((service) => <article key={service.id}><strong>{service.name}</strong><p>{service.description}</p></article>)}
+          </div>
+          <div className="access-endpoints-heading"><span>API DIRECTORY</span><h3>Available endpoints</h3></div>
+          <div className="access-endpoints">
+            {access.endpoints.map((endpoint) => <article key={endpoint.id} className="access-endpoint-card">
+              <div className="access-endpoint-top"><span className="access-endpoint-method">{endpoint.method}</span><span className={endpoint.auth === "Student API key" ? "access-endpoint-ready" : "access-endpoint-session"}>{endpoint.auth}</span></div>
+              <strong>{endpoint.name}</strong>
+              <code>{endpoint.path}</code>
+              <p>{endpoint.description}</p>
+              <button type="button" onClick={() => copyServiceEndpoint(endpoint.path)}>Copy endpoint</button>
+            </article>)}
           </div>
           <div className="api-key-box">
             <small>PERSONAL API KEY</small>

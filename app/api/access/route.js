@@ -11,6 +11,14 @@ const services = [
   { id: "profile", name: "Student profile", description: "Manage your registered account information." }
 ];
 
+const endpoints = [
+  { id: "responses", name: "Luna Responses", method: "POST", path: "/api/proxy/responses", auth: "Student API key", description: "Send prompts through the approved AI gateway. Uses one credit per call." },
+  { id: "access", name: "Access catalog", method: "GET", path: "/api/access", auth: "Dashboard session", description: "Read the services and endpoints assigned to this student." },
+  { id: "resources", name: "Student resources", method: "GET / POST", path: "/api/resources", auth: "Dashboard session", description: "List and upload your private learning resources." },
+  { id: "activity", name: "Activity history", method: "GET", path: "/api/activity", auth: "Dashboard session", description: "View calls and credit usage recorded for your account." },
+  { id: "apim-test", name: "Gateway health check", method: "GET", path: "/api/apim-test", auth: "Dashboard session", description: "Test whether the configured APIM gateway is reachable." }
+];
+
 function sessionId() {
   try {
     const [payload, signature] = cookies().get(cookieName)?.value.split(".") || [];
@@ -30,7 +38,7 @@ function newApiKey() {
 export async function GET() {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
-  return Response.json({ services, apiKeyPrefix: user.apiKeyPrefix || null, apiEndpoint: "/api/proxy/responses" });
+  return Response.json({ services, endpoints, apiKeyPrefix: user.apiKeyPrefix || null, apiEndpoint: "/api/proxy/responses" });
 }
 
 export async function POST() {
