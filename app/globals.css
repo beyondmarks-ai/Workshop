@@ -2620,7 +2620,7 @@ main::after {
 .dashboard-codex-button:active { transform: scale(.96); }
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 
-.codex-modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: #07162d99; backdrop-filter: blur(8px); }
+.codex-modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: #00000055; backdrop-filter: blur(3px); }
 .codex-modal { position: relative; width: min(440px, 100%); padding: 28px; border: 1px solid #ffffff; border-radius: 20px; background: #fff; color: #102445; box-shadow: 0 26px 80px #00000066; }
 .codex-modal > small { color: #087d66; font: 800 .58rem/1 "Manrope", sans-serif; letter-spacing: .18em; }
 .codex-modal h2 { margin: 9px 0 6px; font: 800 1.55rem/1 "Manrope", sans-serif; }

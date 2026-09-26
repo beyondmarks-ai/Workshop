@@ -84,9 +84,9 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
-      <button className="dashboard-codex-button" type="button" onClick={() => setCodexOpen(true)} aria-label="Open Codex setup instructions">
+      <button className="dashboard-codex-button" type="button" onClick={() => setCodexOpen(true)} aria-label="Open installation instructions">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
-        <span>Codex</span>
+        <span>Instructions</span>
       </button>
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
         <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
