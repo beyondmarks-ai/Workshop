@@ -83,6 +83,10 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
+      <a className="dashboard-codex-button" href="/api/access" download="codex-endpoints.json" aria-label="Download Codex endpoint catalog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
+        <span>Codex</span>
+      </a>
       <div className="dashboard-student-welcome">
         <p><span>Welcome,</span><strong>{user.name}</strong></p>
       </div>

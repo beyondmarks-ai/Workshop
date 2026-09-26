@@ -2596,6 +2596,30 @@ main::after {
   content: none;
 }
 
+.dashboard-codex-button {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 51;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #087d66;
+  border-radius: 10px;
+  background: #087d66;
+  box-shadow: 0 10px 26px #087d6640;
+  color: #fff;
+  font: 800 .72rem/1 "Manrope", sans-serif;
+  text-decoration: none;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.dashboard-codex-button:hover { background: #066b58; }
+.dashboard-codex-button:active { transform: scale(.96); }
+.dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+
 .dashboard-student-welcome {
   position: fixed;
   top: 28px;
@@ -2870,6 +2894,8 @@ main::after {
   }
 
   .dashboard-student-welcome > p { top: 18px; }
+
+  .dashboard-codex-button { top: 16px; left: 18px; }
 
 
   .dashboard-api-key { top: auto; left: auto; }
