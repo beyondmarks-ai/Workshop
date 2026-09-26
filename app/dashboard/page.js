@@ -15,6 +15,8 @@ export default function Dashboard() {
   const [codexPaymentOpen, setCodexPaymentOpen] = useState(false);
   const [codexAccessUntil, setCodexAccessUntil] = useState(null);
   const [codexPaymentError, setCodexPaymentError] = useState("");
+  const [creditHistoryOpen, setCreditHistoryOpen] = useState(false);
+  const [creditHistory, setCreditHistory] = useState(null);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -102,6 +104,14 @@ export default function Dashboard() {
     setKeyVisible((visible) => !visible);
   }
 
+  async function openCreditHistory() {
+    setCreditHistoryOpen(true);
+    setCreditHistory(null);
+    const response = await fetch("/api/activity");
+    const data = await response.json().catch(() => ({}));
+    setCreditHistory(response.ok ? data.activities || [] : []);
+  }
+
   if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
 
   const endpointItems = (access.endpoints || []).filter((endpoint) => endpoint.category === endpointCategory);
@@ -117,7 +127,8 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
         <span>{codexUnlocked ? "Codex" : "Codex Â· 5 credits"}</span>
       </button>
-      <a className="dashboard-history-link" href="/activity">Credit history</a>
+      <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
+      {creditHistoryOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCreditHistoryOpen(false)}><section className="credit-history-modal" role="dialog" aria-modal="true" aria-labelledby="credit-history-title"><button className="codex-modal-close" type="button" onClick={() => setCreditHistoryOpen(false)} aria-label="Close credit history">×</button><small>CREDIT ACTIVITY</small><h2 id="credit-history-title">Credit history</h2><p className="codex-modal-intro">Your endpoint usage and admin credit adjustments.</p><div className="credit-history-list">{creditHistory === null ? <p>Loading history...</p> : creditHistory.length ? creditHistory.map((activity) => <article key={activity.id}><div><strong>{activity.service === "admin-credit" ? (activity.action === "credit-added" ? "Credits added" : "Credits removed") : activity.service}</strong><span>{new Date(activity.createdAt).toLocaleString()} · {activity.action === "credit-added" ? "+" : "-"}{Math.abs(activity.creditsUsed || 0)} credits{activity.balance !== undefined ? ` · Balance ${activity.balance}` : ""}</span>{activity.note && <p>{activity.note}</p>}</div></article>) : <p>No credit activity recorded yet.</p>}</div></section></div>}
       {codexPaymentOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexPaymentOpen(false)}>
         <section className="codex-modal codex-payment-modal" role="dialog" aria-modal="true" aria-labelledby="codex-payment-title">
           <button className="codex-modal-close" type="button" onClick={() => setCodexPaymentOpen(false)} aria-label="Close Codex payment">Ã—</button>

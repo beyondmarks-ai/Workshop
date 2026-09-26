@@ -2635,7 +2635,17 @@ main::after {
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 .dashboard-codex-locked { left: 158px; }
 .dashboard-codex-locked.unlocked { background: #0a9a7d; }
-.dashboard-history-link { position: fixed; top: 22px; left: 296px; z-index: 51; min-height: 40px; padding: 12px 14px; border: 1px solid #087d66; border-radius: 10px; background: #ffffff; color: #087d66; font: 800 .72rem/1 "Manrope", sans-serif; text-decoration: none; }
+.dashboard-history-link { position: fixed; top: 22px; left: 296px; z-index: 51; min-height: 40px; padding: 12px 14px; border: 1px solid #087d66; border-radius: 10px; background: #ffffff; color: #087d66; font: 800 .72rem/1 "Manrope", sans-serif; cursor: pointer; }
+.credit-history-modal { position: relative; width: min(620px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 28px; border-radius: 18px; background: #fff; color: #111827; box-shadow: 0 24px 80px #0008; }
+.credit-history-modal > small { color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; letter-spacing: .16em; }
+.credit-history-modal h2 { margin: 10px 0 5px; font: 800 1.7rem/1 "Manrope", sans-serif; }
+.credit-history-modal .codex-modal-intro { color: #6b7280; }
+.credit-history-list { display: grid; gap: 8px; margin-top: 18px; }
+.credit-history-list article { padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f8fafc; }
+.credit-history-list article div { display: grid; gap: 4px; }
+.credit-history-list strong { color: #111827; font-size: .78rem; }
+.credit-history-list span { color: #6b7280; font-size: .68rem; }
+.credit-history-list p { margin: 2px 0 0; color: #374151; font-size: .72rem; line-height: 1.4; }
 
 .codex-modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: #00000055; backdrop-filter: blur(3px); }
 .codex-modal { position: relative; width: min(440px, 100%); padding: 28px; border: 1px solid #ffffff; border-radius: 20px; background: #fff; color: #102445; box-shadow: 0 26px 80px #00000066; }
