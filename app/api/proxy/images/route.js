@@ -1,4 +1,4 @@
-import { consumeCredit, getUserByApiKey } from "../../../../lib/storage";
+import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
 
 export const runtime = "nodejs";
 
@@ -10,6 +10,7 @@ function suppliedKey(request) {
 export async function POST(request) {
   const user = await getUserByApiKey(suppliedKey(request));
   if (!user) return Response.json({ error: "Invalid student API key." }, { status: 401 });
+  if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const credit = await consumeCredit(user.id);
   if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");

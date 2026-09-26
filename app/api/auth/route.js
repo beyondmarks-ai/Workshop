@@ -82,7 +82,8 @@ export async function POST(request) {
       if (await getUser(id)) return Response.json({ error: "An account already exists for this email or phone." }, { status: 409 });
       const password = await hashPassword(body.password);
       const apiKey = createApiKey();
-      const user = { id, name: body.name.trim(), contact: email, email, contactNumber, branch: body.branch.trim(), semester: body.semester.trim(), usn: body.usn.trim().toUpperCase(), role: email === adminEmail ? "admin" : "student", preferredLanguage: "English", gradeSubject: "", notifications: true, credits: 100, apiKeyHash: apiKey.hash, apiKeyPrefix: apiKey.prefix, passwordHash: password.hash, passwordSalt: password.salt, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      const isAdmin = email === adminEmail;
+      const user = { id, name: body.name.trim(), contact: email, email, contactNumber, branch: body.branch.trim(), semester: body.semester.trim(), usn: body.usn.trim().toUpperCase(), role: isAdmin ? "admin" : "student", verified: isAdmin, preferredLanguage: "English", gradeSubject: "", notifications: true, credits: isAdmin ? 100 : 0, apiKeyHash: apiKey.hash, apiKeyPrefix: apiKey.prefix, passwordHash: password.hash, passwordSalt: password.salt, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
       await saveUser(user);
       setSession(id);
       return Response.json({ user: publicUser(user), apiKey: apiKey.key }, { status: 201 });
@@ -115,7 +116,6 @@ export async function PATCH(request) {
       user.passwordSalt = password.salt;
     }
     if (body.name !== undefined) user.name = String(body.name).trim().slice(0, 100) || user.name;
-    if (body.role !== undefined && ["teacher", "student", "admin"].includes(body.role)) user.role = body.role;
     if (body.preferredLanguage !== undefined && languages.includes(body.preferredLanguage)) user.preferredLanguage = body.preferredLanguage;
     if (body.gradeSubject !== undefined) user.gradeSubject = String(body.gradeSubject).trim().slice(0, 120);
     if (body.notifications !== undefined) user.notifications = Boolean(body.notifications);

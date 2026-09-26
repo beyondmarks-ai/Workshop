@@ -1,7 +1,8 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getUser, listAllStudentResources, listMaterials, listUsers } from "../../../lib/storage";
+import { getUser, listAllStudentResources, listMaterials, listUsers, saveUser } from "../../../lib/storage";
 import { listActivities } from "../../../lib/activity";
+import { hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -18,8 +19,7 @@ async function currentUser() {
 }
 
 export async function GET() {
-  const admin = await currentUser();
-  if (!admin || admin.role !== "admin") return Response.json({ error: "Admin access required." }, { status: 403 });
+  if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
   const [users, materials, studentResources, activities] = await Promise.all([listUsers(), listMaterials(), listAllStudentResources(), listActivities()]);
   return Response.json({
     users: users.map(({ passwordHash, passwordSalt, apiKeyHash, ...user }) => user),
@@ -28,4 +28,23 @@ export async function GET() {
     activities,
     summary: { students: users.filter((user) => user.role === "student").length, resources: materials.length + studentResources.length, credits: users.reduce((total, user) => total + (user.credits ?? 100), 0) }
   });
+}
+
+export async function POST(request) {
+  const body = await request.json().catch(() => ({}));
+  if (body.action === "verify-admin") {
+    if (!validAdminCredentials(body.email, body.pin)) return Response.json({ error: "Invalid admin email or PIN." }, { status: 403 });
+    setAdminAccess();
+    return Response.json({ verified: true });
+  }
+  if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
+  if (body.action !== "verify-student" || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid verification request." }, { status: 400 });
+  const student = await getUser(body.studentId);
+  if (!student || student.role !== "student") return Response.json({ error: "Student not found." }, { status: 404 });
+  student.verified = true;
+  student.verifiedAt = new Date().toISOString();
+  if (!Number.isInteger(student.credits) || student.credits < 100) student.credits = 100;
+  student.updatedAt = new Date().toISOString();
+  await saveUser(student);
+  return Response.json({ verified: true, studentId: student.id });
 }

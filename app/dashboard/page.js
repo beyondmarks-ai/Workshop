@@ -41,7 +41,7 @@ export default function Dashboard() {
     }).catch(() => {});
   }, [user]);
 
-  const codexUnlocked = codexAccessUntil && new Date(codexAccessUntil).getTime() > Date.now();
+  const codexUnlocked = (user?.role === "admin" || user?.verified === true) && codexAccessUntil && new Date(codexAccessUntil).getTime() > Date.now();
 
   async function unlockCodex() {
     const response = await fetch("/api/codex", { method: "POST" });

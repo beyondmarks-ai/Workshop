@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getUser, saveUser } from "../../../lib/storage";
+import { getUser, isVerifiedUser, saveUser } from "../../../lib/storage";
 
 export const runtime = "nodejs";
 
@@ -46,6 +46,7 @@ function codexUnlocked(user) {
 export async function GET() {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const unlocked = codexUnlocked(user);
   return Response.json({ services, endpoints, apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
 }
@@ -53,6 +54,7 @@ export async function GET() {
 export async function POST() {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   if (!codexUnlocked(user)) return Response.json({ error: "Unlock Codex with 5 credits to access your API key." }, { status: 403 });
   const apiKey = newApiKey();
   user.apiKeyHash = apiKey.hash;
