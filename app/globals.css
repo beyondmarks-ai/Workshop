@@ -2685,6 +2685,18 @@ main::after {
 .marketplace-cart-total { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding: 16px 0; border-top: 1px solid #e5e7eb; color: #64748b; font-size: .72rem; }
 .marketplace-cart-total strong { color: #087d66; font: 800 .95rem "Manrope", sans-serif; }
 .marketplace-cart-buy { min-height: 42px; border: 0; border-radius: 10px; background: #087d66; color: #fff; font: 800 .72rem "DM Sans", sans-serif; cursor: pointer; }
+.marketplace-voice-samples { display: grid; gap: 7px; margin-top: 12px; padding: 10px; border: 1px solid #d8eee8; border-radius: 10px; background: #f4fbf8; }
+.marketplace-voice-samples-heading { display: flex; align-items: center; justify-content: space-between; color: #0c6f5b; font: 800 .6rem "Manrope", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.marketplace-voice-samples-heading small { color: #6b8a84; font-size: .55rem; letter-spacing: 0; text-transform: none; }
+.marketplace-voice-sample { display: grid; grid-template-columns: 28px auto 1fr; align-items: center; gap: 8px; min-height: 38px; padding: 5px 7px; border: 1px solid #dcece8; border-radius: 8px; background: #fff; }
+.marketplace-voice-play { display: grid; place-items: center; width: 28px; height: 28px; padding: 0 0 0 1px; border: 0; border-radius: 50%; background: #087d66; color: #fff; font-size: .62rem; cursor: pointer; box-shadow: 0 3px 8px #087d6633; }
+.marketplace-voice-play.playing { background: #075846; }
+.marketplace-voice-meta { display: grid; gap: 2px; min-width: 86px; }
+.marketplace-voice-meta strong { color: #173b35; font: 800 .62rem/1.1 "Manrope", sans-serif; }
+.marketplace-voice-meta small { overflow: hidden; color: #78908b; font-size: .54rem; text-overflow: ellipsis; white-space: nowrap; }
+.marketplace-voice-wave { display: flex; align-items: center; justify-content: flex-end; gap: 2px; height: 24px; }
+.marketplace-voice-wave i { display: block; width: 3px; min-height: 4px; border-radius: 4px; background: #36a88e; opacity: .85; }
+.marketplace-voice-audio { display: none; }
 .marketplace-cart-buy:disabled { opacity: .45; cursor: not-allowed; }
 .marketplace-grid { grid-template-columns: 1fr; gap: 14px; }
 .marketplace-category-tabs { display: flex; gap: 7px; overflow-x: auto; margin: 20px 0 14px; padding-bottom: 4px; }

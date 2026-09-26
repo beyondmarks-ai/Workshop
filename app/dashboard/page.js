@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
 import { marketplaceCatalog, marketplaceItems } from "../../lib/marketplace";
 
+const sarvamVoiceSamples = [
+  { id: "priya", name: "Priya", tone: "Warm and friendly", src: "/audio/sarvam/priya.wav" },
+  { id: "aditya", name: "Aditya", tone: "Professional male", src: "/audio/sarvam/aditya.wav" },
+  { id: "shreya", name: "Shreya", tone: "Calm narration", src: "/audio/sarvam/shreya.wav" },
+  { id: "tanya", name: "Tanya", tone: "Young and energetic", src: "/audio/sarvam/tanya.wav" }
+];
+
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +35,7 @@ export default function Dashboard() {
   const [marketplaceProvider, setMarketplaceProvider] = useState("all");
   const [marketplaceCartOpen, setMarketplaceCartOpen] = useState(false);
   const [marketplacePurchases, setMarketplacePurchases] = useState([]);
+  const [playingVoice, setPlayingVoice] = useState("");
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -147,6 +155,14 @@ export default function Dashboard() {
     setMarketplaceBusy(false);
   }
 
+  function toggleVoiceSample(event, voiceId) {
+    event.preventDefault();
+    event.stopPropagation();
+    const audio = event.currentTarget.parentElement.querySelector("audio");
+    document.querySelectorAll(".marketplace-voice-audio").forEach((player) => { if (player !== audio) player.pause(); });
+    if (audio.paused) { audio.play().then(() => setPlayingVoice(voiceId)).catch(() => {}); } else { audio.pause(); setPlayingVoice(""); }
+  }
+
   if (loading || !user) return <main className="dashboard-shell" aria-busy="true" />;
 
   const endpointItems = (access.endpoints || []).filter((endpoint) => endpoint.category === endpointCategory);
@@ -181,6 +197,7 @@ export default function Dashboard() {
   <div className="comet-card-content">
     <div className="comet-card-heading"><b>{item.name}</b><span>{item.category}</span></div>
     <small>{item.description}</small>
+    {item.id === "sarvam-bulbul-v3" && <div className="marketplace-voice-samples" onClick={(event) => event.stopPropagation()}><div className="marketplace-voice-samples-heading"><span>Voice samples</span><small>Bulbul v3</small></div>{sarvamVoiceSamples.map((voice) => <div className="marketplace-voice-sample" key={voice.id}><button type="button" className={`marketplace-voice-play${playingVoice === voice.id ? " playing" : ""}`} onClick={(event) => toggleVoiceSample(event, voice.id)} aria-label={`${playingVoice === voice.id ? "Pause" : "Play"} ${voice.name} voice sample`}>{playingVoice === voice.id ? "Ⅱ" : "▶"}</button><div className="marketplace-voice-meta"><strong>{voice.name}</strong><small>{voice.tone}</small></div><div className="marketplace-voice-wave" aria-hidden="true">{[34, 58, 43, 72, 48, 84, 55, 38, 67, 46, 76, 52, 36, 64, 45, 70].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div><audio className="marketplace-voice-audio" src={voice.src} preload="metadata" onEnded={() => setPlayingVoice("")} /></div>)}</div>}
     <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><span className="comet-card-cart-hint">{marketplacePurchases.some((purchase) => purchase.itemId === item.id) ? "Already bought" : marketplaceCart.includes(item.id) ? "In cart" : "Select to add"}</span></div>
   </div>
 </label>)}
