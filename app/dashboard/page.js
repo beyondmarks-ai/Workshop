@@ -127,7 +127,6 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
         <span>{codexUnlocked ? "Codex" : "Codex Â· 5 credits"}</span>
       </button>
-      <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
       {creditHistoryOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCreditHistoryOpen(false)}><section className="credit-history-modal" role="dialog" aria-modal="true" aria-labelledby="credit-history-title"><button className="codex-modal-close" type="button" onClick={() => setCreditHistoryOpen(false)} aria-label="Close credit history">×</button><small>CREDIT ACTIVITY</small><h2 id="credit-history-title">Credit history</h2><p className="codex-modal-intro">Your endpoint usage and admin credit adjustments.</p><div className="credit-history-list">{creditHistory === null ? <p>Loading history...</p> : creditHistory.length ? creditHistory.map((activity) => <article className={`credit-history-item ${activity.action === "credit-added" ? "credit-added" : "credit-deducted"}`} key={activity.id}><div><strong>{activity.service === "admin-credit" ? (activity.action === "credit-added" ? "Credits added" : "Credits removed") : activity.service}</strong><span>{new Date(activity.createdAt).toLocaleString()} · {activity.action === "credit-added" ? "+" : "-"}{Math.abs(activity.creditsUsed || 0)} credits{activity.balance !== undefined ? ` · Balance ${activity.balance}` : ""}</span>{activity.note && <p>{activity.note}</p>}</div></article>) : <p>No credit activity recorded yet.</p>}</div></section></div>}
       {codexPaymentOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexPaymentOpen(false)}>
         <section className="codex-modal codex-payment-modal" role="dialog" aria-modal="true" aria-labelledby="codex-payment-title">
@@ -194,6 +193,7 @@ export default function Dashboard() {
       <div className="dashboard-credits" aria-label={`${user.credits ?? 100} credits`}>
         <small>CREDITS</small>
         <strong>{user.credits ?? 100}</strong>
+        <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>History</button>
       </div>
     </main>
   );

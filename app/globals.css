@@ -2635,7 +2635,7 @@ main::after {
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 .dashboard-codex-locked { left: 158px; }
 .dashboard-codex-locked.unlocked { background: #0a9a7d; }
-.dashboard-history-link { position: fixed; top: 22px; left: 296px; z-index: 51; min-height: 40px; padding: 12px 14px; border: 1px solid #087d66; border-radius: 10px; background: #ffffff; color: #087d66; font: 800 .72rem/1 "Manrope", sans-serif; cursor: pointer; }
+.dashboard-history-link { position: static; z-index: auto; min-height: 0; margin-top: 4px; padding: 6px 9px; border: 1px solid #087d66; border-radius: 8px; background: #fff; color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; cursor: pointer; }
 .credit-history-modal { position: relative; width: min(620px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 28px; border-radius: 18px; background: #fff; color: #111827; box-shadow: 0 24px 80px #0008; }
 .credit-history-modal > small { color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; letter-spacing: .16em; }
 .credit-history-modal h2 { margin: 10px 0 5px; font: 800 1.7rem/1 "Manrope", sans-serif; }
@@ -2958,7 +2958,6 @@ main::after {
 
   .dashboard-codex-button { top: 16px; left: 18px; }
   .dashboard-codex-locked { left: 158px; }
-  .dashboard-history-link { top: 16px; left: 298px; }
 
 
   .dashboard-api-key { top: auto; left: auto; }
