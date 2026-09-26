@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [copyStatus, setCopyStatus] = useState("");
   const [endpointCategory, setEndpointCategory] = useState("generative");
   const [codexOpen, setCodexOpen] = useState(false);
+  const [codexMode, setCodexMode] = useState("instructions");
   const [codexPaymentOpen, setCodexPaymentOpen] = useState(false);
   const [codexAccessUntil, setCodexAccessUntil] = useState(null);
   const [codexPaymentError, setCodexPaymentError] = useState("");
@@ -105,11 +106,11 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
-      <button className="dashboard-codex-button" type="button" onClick={() => setCodexOpen(true)} aria-label="Open installation instructions">
+      <button className="dashboard-codex-button" type="button" onClick={() => { setCodexMode("instructions"); setCodexOpen(true); }} aria-label="Open installation instructions">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>
       </button>
-      <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => codexUnlocked ? setCodexOpen(true) : setCodexPaymentOpen(true)} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
+      <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
         <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
       </button>
@@ -127,6 +128,14 @@ export default function Dashboard() {
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
         <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
           <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
+          {codexMode === "codex" ? <>
+          <small>CODEX WORKSHOP</small>
+          <h2 id="codex-title">Codex access</h2>
+          <p className="codex-modal-intro">Each request or prompt entered in Codex consumes credits. Standard Codex can exhaust its allowance; this workshop Codex is admin-controlled with no request limit.</p>
+          <a className="codex-tools-download" href="/api/codex/download">Download tools.rar</a>
+          <div className="codex-modal-section"><strong>APIM setup</strong><div className="codex-command"><code>{`Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1\n.\\configure-codex-apim.ps1 `}</code><button type="button" onClick={() => copyText('Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1 `\n  -ApimBaseUrl "https://codex-apim-617db5.azure-api.net" `\n  -ApimKey "YOUR_KEY"')} aria-label="Copy APIM setup commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
+          <p className="codex-modal-check">The tools download does not deduct credits. Your 3-day Codex access remains active until the workshop access period ends.</p>
+          </> : <>
           <small>CODEX CLI</small>
           <h2 id="codex-title">Install Codex</h2>
           <p className="codex-modal-intro">Follow these steps in PowerShell to install and start the Codex CLI.</p>
@@ -134,6 +143,7 @@ export default function Dashboard() {
           <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org ↗</a><div className="codex-command"><code>{`node --version\nnpm --version`}</code><button type="button" onClick={() => copyText("node --version\nnpm --version")} aria-label="Copy npm check commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <div className="codex-modal-section"><strong>3. Install Codex CLI</strong><div className="codex-command"><code>npm install -g @openai/codex</code><button type="button" onClick={() => copyText("npm install -g @openai/codex")} aria-label="Copy Codex install command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <div className="codex-modal-section"><strong>4. Start Codex</strong><div className="codex-command"><code>codex</code><button type="button" onClick={() => copyText("codex")} aria-label="Copy Codex start command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>Codex is installed when the CLI opens in your terminal.</span></div>
+          </>}
         </section>
       </div>}
       <div className="dashboard-student-welcome">

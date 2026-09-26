@@ -2633,6 +2633,8 @@ main::after {
 .codex-modal-section code { white-space: pre-line; color: #102445; font: 600 .72rem/1.65 Consolas, monospace; }
 .codex-modal-section span { color: #607089; }
 .codex-npm-link { color: #087d66; font-weight: 800; text-decoration: underline; }
+.codex-tools-download { display: grid; min-height: 42px; place-items: center; margin: 18px 0; border-radius: 10px; background: #087d66; color: #fff; font: 800 .75rem "DM Sans", sans-serif; text-decoration: none; }
+.codex-tools-download:hover { background: #066b58; }
 .codex-command { display: flex; align-items: center; gap: 8px; }
 .codex-command code { flex: 1; min-width: 0; }
 .codex-command button { display: grid; flex: 0 0 auto; width: 28px; height: 28px; place-items: center; border: 1px solid #087d6645; border-radius: 7px; background: #fff; color: #087d66; cursor: pointer; }
