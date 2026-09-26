@@ -141,7 +141,7 @@ export default function Dashboard() {
     const response = await fetch("/api/marketplace", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ itemIds: marketplaceCart }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) setMarketplaceMessage(data.error || "Purchase could not be completed.");
-    else { setUser((current) => ({ ...current, credits: data.credits })); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); }
+    else { setUser((current) => ({ ...current, credits: data.credits })); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); fetch("/api/access").then((accessResponse) => accessResponse.ok && accessResponse.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {}); }
     setMarketplaceBusy(false);
   }
 
