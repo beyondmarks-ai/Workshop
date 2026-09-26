@@ -2642,6 +2642,10 @@ main::after {
 .credit-history-modal .codex-modal-intro { color: #6b7280; }
 .credit-history-list { display: grid; gap: 8px; margin-top: 18px; }
 .credit-history-list article { padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f8fafc; }
+.credit-history-list .credit-added { border-color: #86efac; background: #f0fdf4; }
+.credit-history-list .credit-deducted { border-color: #fca5a5; background: #fff1f2; }
+.credit-history-list .credit-added strong { color: #15803d; }
+.credit-history-list .credit-deducted strong { color: #b91c1c; }
 .credit-history-list article div { display: grid; gap: 4px; }
 .credit-history-list strong { color: #111827; font-size: .78rem; }
 .credit-history-list span { color: #6b7280; font-size: .68rem; }
