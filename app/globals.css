@@ -2707,17 +2707,6 @@ main::after {
 .dashboard-api-key .endpoint-test-testing { color: #ffe08a; border-color: #ffe08a88; }
 
 @keyframes endpoint-drop { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
-.dashboard-api-label {
-  position: absolute;
-  top: -17px;
-  left: 0;
-  margin: 0;
-  color: #087d66;
-  font: 700 .72rem/1 "Manrope", sans-serif;
-  letter-spacing: .18em;
-}
-
-
 .pricing-card-wrap {
   position: absolute;
   inset: 0;
@@ -2883,7 +2872,6 @@ main::after {
   .dashboard-student-welcome > p { top: 18px; }
 
 
-  .dashboard-api-label { top: -17px; left: 0; }
   .dashboard-api-key { top: auto; left: auto; }
 
   .dashboard-credits {

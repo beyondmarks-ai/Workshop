@@ -92,7 +92,6 @@ export default function Dashboard() {
           <header className="pricing-card-header">
             <div className="pricing-card-title-row"><h2>API Endpoints</h2><span className="pricing-card-badge">{endpointItems.length} available</span></div>
             <div className="dashboard-api-key">
-              <small className="dashboard-api-label">API KEY</small>
               <div className="dashboard-api-key-value">
                 <code>{keyVisible && access.apiKey ? access.apiKey : access.apiKeyPrefix ? `${access.apiKeyPrefix}********` : "Creating key..."}</code>
               </div>
