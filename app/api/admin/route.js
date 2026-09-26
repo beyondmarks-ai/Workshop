@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getUser, listAllStudentResources, listMaterials, listUsers, saveUser } from "../../../lib/storage";
-import { listActivities } from "../../../lib/activity";
+import { getUser, listUsers, saveUser } from "../../../lib/storage";
 import { hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
 
 export const runtime = "nodejs";
@@ -20,13 +19,10 @@ async function currentUser() {
 
 export async function GET() {
   if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
-  const [users, materials, studentResources, activities] = await Promise.all([listUsers(), listMaterials(), listAllStudentResources(), listActivities()]);
+  const users = await listUsers();
   return Response.json({
     users: users.map(({ passwordHash, passwordSalt, apiKeyHash, ...user }) => user),
-    materials,
-    studentResources,
-    activities,
-    summary: { students: users.filter((user) => user.role === "student").length, resources: materials.length + studentResources.length, credits: users.reduce((total, user) => total + (user.credits ?? 100), 0) }
+    summary: { students: users.filter((user) => user.role === "student").length, pending: users.filter((user) => user.role === "student" && user.verified !== true).length, credits: users.reduce((total, user) => total + (user.role === "student" ? user.credits ?? 0 : 0), 0) }
   });
 }
 
