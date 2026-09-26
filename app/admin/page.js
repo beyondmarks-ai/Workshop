@@ -10,6 +10,7 @@ export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);
+  const [actionBusy, setActionBusy] = useState("");
 
   async function load() {
     const response = await fetch("/api/admin");
@@ -34,8 +35,18 @@ export default function AdminPage() {
   }
 
   async function verifyStudent(studentId) {
-    const response = await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "verify-student", studentId }) });
+    await runAction(studentId, "verify-student");
+  }
+
+  async function runAction(studentId, action, delta) {
+    if ((action === "revoke-student" || action === "delete-student") && !window.confirm(action === "delete-student" ? "Delete this student account permanently?" : "Revoke this student’s access?") ) return;
+    setActionBusy(`${action}:${studentId}`);
+    setError("");
+    const response = await fetch("/api/admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action, studentId, delta }) });
+    const result = await response.json();
+    if (!response.ok) setError(result.error || "Admin action failed.");
     if (response.ok) await load();
+    setActionBusy("");
   }
 
   const students = useMemo(() => (data?.users || []).filter((user) => user.role === "student" && JSON.stringify(user).toLowerCase().includes(query.toLowerCase())), [data, query]);
@@ -46,7 +57,7 @@ export default function AdminPage() {
   return <main className="admin-shell">
     <header className="admin-header"><div><small>BEYOND MARKS AI ACADEMY</small><h1>Student access</h1><p>Review accounts and approve access to workshop services.</p></div><a href="/dashboard">Dashboard</a></header>
     <section className="admin-summary">{[["Student accounts", data.summary.students], ["Pending review", data.summary.pending], ["Credits allocated", data.summary.credits]].map(([label, value]) => <article key={label}><small>{label}</small><strong>{value}</strong></article>)}</section>
-    <section className="admin-card admin-students-card"><div className="admin-card-heading"><div><small>ACCESS CONTROL</small><h2>Student accounts</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search students" /></div><div className="admin-table">{students.length ? students.map((student) => { const verified = student.verified === true; return <article key={student.id}><div><strong>{student.name}</strong><span>{student.email}</span></div><span>{student.branch || "Unknown branch"} / {student.semester || "Unknown semester"}</span><span className={`admin-status ${verified ? "verified" : "pending"}`}>{verified ? "Verified" : "Pending"}</span>{verified ? <b>{student.credits ?? 0} credits</b> : <button className="admin-verify-button" type="button" onClick={() => verifyStudent(student.id)}>Verify access</button>}</article>; }) : <p className="admin-empty">No student accounts found.</p>}</div></section>
+    <section className="admin-card admin-students-card"><div className="admin-card-heading"><div><small>ACCESS CONTROL</small><h2>Student accounts</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search students" /></div>{error && <p className="admin-error">{error}</p>}<div className="admin-table">{students.length ? students.map((student) => { const verified = student.verified === true; return <article key={student.id}><div><strong>{student.name}</strong><span>{student.email}</span></div><span>{student.branch || "Unknown branch"} / {student.semester || "Unknown semester"}</span><span className={`admin-status ${verified ? "verified" : "pending"}`}>{verified ? "Verified" : "Pending"}</span><b>{student.credits ?? 0} credits</b><div className="admin-actions">{verified ? <><button type="button" onClick={() => runAction(student.id, "adjust-credits", 10)} disabled={!!actionBusy}>+10</button><button type="button" onClick={() => runAction(student.id, "adjust-credits", -10)} disabled={!!actionBusy}>−10</button><button type="button" onClick={() => runAction(student.id, "revoke-student")} disabled={!!actionBusy}>Revoke</button></> : <button className="admin-verify-button" type="button" onClick={() => verifyStudent(student.id)} disabled={!!actionBusy}>Verify access</button>}<button className="admin-delete-button" type="button" onClick={() => runAction(student.id, "delete-student")} disabled={!!actionBusy}>Delete</button></div></article>; }) : <p className="admin-empty">No student accounts found.</p>}</div></section>
   </main>;
 }
 

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getUser, listUsers, saveUser } from "../../../lib/storage";
+import { deleteUser, getUser, listUsers, saveUser } from "../../../lib/storage";
 import { hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
 
 export const runtime = "nodejs";
@@ -34,12 +34,30 @@ export async function POST(request) {
     return Response.json({ verified: true });
   }
   if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
-  if (body.action !== "verify-student" || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid verification request." }, { status: 400 });
+  const actions = new Set(["verify-student", "adjust-credits", "revoke-student", "delete-student"]);
+  if (!actions.has(body.action) || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid student action." }, { status: 400 });
   const student = await getUser(body.studentId);
   if (!student || student.role !== "student") return Response.json({ error: "Student not found." }, { status: 404 });
-  student.verified = true;
-  student.verifiedAt = new Date().toISOString();
-  if (!Number.isInteger(student.credits) || student.credits < 100) student.credits = 100;
+
+  if (body.action === "delete-student") {
+    await deleteUser(student.id);
+    return Response.json({ deleted: true, studentId: student.id });
+  }
+  if (body.action === "adjust-credits") {
+    const delta = Number(body.delta);
+    if (!Number.isInteger(delta) || Math.abs(delta) < 1 || Math.abs(delta) > 100000) return Response.json({ error: "Credit adjustment must be a whole number from 1 to 100,000." }, { status: 400 });
+    student.credits = Math.max(0, Number.isInteger(student.credits) ? student.credits + delta : Math.max(0, 100 + delta));
+  }
+  if (body.action === "revoke-student") {
+    student.verified = false;
+    student.revokedAt = new Date().toISOString();
+    student.codexAccessUntil = null;
+  }
+  if (body.action === "verify-student") {
+    student.verified = true;
+    student.verifiedAt = new Date().toISOString();
+    if (!Number.isInteger(student.credits) || student.credits < 100) student.credits = 100;
+  }
   student.updatedAt = new Date().toISOString();
   await saveUser(student);
   return Response.json({ verified: true, studentId: student.id });
