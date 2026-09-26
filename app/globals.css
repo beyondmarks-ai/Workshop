@@ -2813,6 +2813,7 @@ main::after {
 .pricing-endpoint > div { display: grid; min-width: 0; gap: 4px; }
 .pricing-endpoint strong { overflow: hidden; color: #111827; font: 700 .8rem/1.2 "Manrope", sans-serif; text-overflow: ellipsis; white-space: nowrap; }
 .pricing-endpoint code { overflow: hidden; color: #6b7280; font: 500 .68rem/1.2 Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.pricing-endpoint-cost { flex: 0 0 auto; padding: 5px 8px; border-radius: 999px; background: #087d6617; color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; white-space: nowrap; }
 .pricing-endpoint button { flex: 0 0 auto; min-height: 30px; padding: 0 11px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 700 .68rem "DM Sans", sans-serif; cursor: pointer; transition: background .2s ease, transform .2s ease; }
 .pricing-endpoint button:hover { background: #066b58; }
 .pricing-endpoint button:active { transform: scale(.96); }

@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { consumeCredit, getUser, isVerifiedUser } from "../../../lib/storage";
+import { creditCost } from "../../../lib/pricing";
 
 function sessionId() {
   try {
@@ -18,7 +19,7 @@ export async function GET() {
   const id = sessionId();
   if (!id) return Response.json({ ok: false, error: "Not signed in." }, { status: 401 });
   if (!isVerifiedUser(await getUser(id))) return Response.json({ ok: false, error: "Your account is waiting for admin verification." }, { status: 403 });
-  const credit = await consumeCredit(id);
+  const credit = await consumeCredit(id, creditCost("apim-test"));
   if (!credit.allowed) return Response.json({ ok: false, error: "No credits remaining.", credits: 0 }, { status: 429 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
   const subscriptionKey = process.env.APIM_SUBSCRIPTION_KEY;

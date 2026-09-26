@@ -1,4 +1,5 @@
 import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
+import { creditCost } from "../../../../lib/pricing";
 
 export const runtime = "nodejs";
 
@@ -11,14 +12,17 @@ export async function POST(request) {
   const user = await getUserByApiKey(suppliedKey(request));
   if (!user) return Response.json({ error: "Invalid student API key." }, { status: 401 });
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
-  const credit = await consumeCredit(user.id);
+  const requestedModel = new URL(request.url).searchParams.get("model");
+  const model = requestedModel === "sora-2" ? "sora-2" : process.env.APIM_VIDEO_MODEL || "sora-2";
+  const cost = creditCost("videos", model);
+  const credit = await consumeCredit(user.id, cost);
   if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
   const apimKey = process.env.APIM_SUBSCRIPTION_KEY;
   if (!gateway || !apimKey) return Response.json({ error: "API gateway is not configured." }, { status: 503 });
   try {
     const body = await request.json();
-    body.model = new URL(request.url).searchParams.get("model") === "sora-2" ? "sora-2" : process.env.APIM_VIDEO_MODEL || "sora-2";
+    body.model = model;
     const response = await fetch(`${gateway}/videos/videos`, {
       method: "POST",
       headers: { "content-type": "application/json", "Ocp-Apim-Subscription-Key": apimKey },
