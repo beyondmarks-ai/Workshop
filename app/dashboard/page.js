@@ -3,6 +3,15 @@
 import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
 
+const marketplaceServices = [
+  { name: "OpenAI", status: "Connected", items: ["GPT-4.1", "GPT-5.6 Luna", "GPT Image 2", "Sora 2"] },
+  { name: "Astra", status: "Connected", items: ["Learning tools", "APIM gateway", "Codex workshop"] },
+  { name: "Vertex AI", status: "Key required", items: ["Gemini Pro", "Gemini Flash", "Imagen image models", "Veo video models"] },
+  { name: "Claude", status: "Key required", items: ["Claude Sonnet", "Claude Haiku", "Claude Opus"] },
+  { name: "Sarvam AI", status: "Key required", items: ["Bulbul voices", "Speech to text", "Translation voices"] },
+  { name: "Firecrawl", status: "Key required", items: ["Scrape", "Crawl", "Map", "Search"] }
+];
+
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,6 +28,7 @@ export default function Dashboard() {
   const [creditHistory, setCreditHistory] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [marketplaceOpen, setMarketplaceOpen] = useState(false);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -138,6 +148,8 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>
       </button>
+      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>◆</span> Marketplace</button>
+      {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}><section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title"><button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button><small>AI SERVICE MARKETPLACE</small><h2 id="marketplace-title">Choose a service</h2><p className="codex-modal-intro">Browse models and tools available through the workshop gateway.</p><div className="marketplace-grid">{marketplaceServices.map((service) => <article key={service.name}><div><strong>{service.name}</strong><span className={service.status === "Connected" ? "marketplace-connected" : "marketplace-required"}>{service.status}</span></div><ul>{service.items.map((item) => <li key={item}>{item}</li>)}</ul></article>)}</div></section></div>}
       <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
         <span>{codexUnlocked ? "Codex" : "Codex Â· 5 credits"}</span>

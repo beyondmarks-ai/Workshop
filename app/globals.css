@@ -2635,6 +2635,19 @@ main::after {
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 .dashboard-codex-locked { left: 158px; }
 .dashboard-codex-locked.unlocked { background: #0a9a7d; }
+.dashboard-marketplace-button { position: fixed; top: 22px; left: 296px; z-index: 51; min-height: 40px; padding: 0 14px; border: 1px solid #087d66; border-radius: 10px; background: #fff; color: #087d66; font: 800 .68rem/1 "Manrope", sans-serif; cursor: pointer; }
+.dashboard-marketplace-button span { margin-right: 6px; color: #087d66; }
+.marketplace-modal { position: relative; width: min(760px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 28px; border-radius: 18px; background: #fff; color: #111827; box-shadow: 0 24px 80px #0008; }
+.marketplace-modal > small { color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; letter-spacing: .16em; }
+.marketplace-modal h2 { margin: 10px 0 5px; font: 800 1.7rem/1 "Manrope", sans-serif; }
+.marketplace-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 18px; }
+.marketplace-grid article { padding: 14px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f8fafc; }
+.marketplace-grid article > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.marketplace-grid strong { font: 800 .82rem "Manrope", sans-serif; }
+.marketplace-grid span { padding: 4px 7px; border-radius: 999px; font: 800 .56rem "Manrope", sans-serif; }
+.marketplace-connected { background: #dcfce7; color: #15803d; }
+.marketplace-required { background: #fef3c7; color: #a16207; }
+.marketplace-grid ul { display: grid; gap: 5px; margin: 12px 0 0; padding-left: 16px; color: #6b7280; font-size: .7rem; }
 .dashboard-history-link { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 108px); z-index: 50; min-height: 40px; padding: 0 12px; border: 1px solid #087d66; border-radius: 10px; background: #fff; color: #087d66; font: 800 .68rem/1 "Manrope", sans-serif; cursor: pointer; }
 .dashboard-notification-button { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 228px); z-index: 50; width: 40px; height: 40px; border: 1px solid #087d66; border-radius: 10px; background: #fff; font-size: 1rem; cursor: pointer; }
 .dashboard-notification-button span { position: absolute; top: -6px; right: -6px; min-width: 17px; padding: 3px 4px; border-radius: 999px; background: #ef4444; color: #fff; font: 800 .58rem/1 "Manrope", sans-serif; }
@@ -2968,6 +2981,7 @@ main::after {
 
   .dashboard-codex-button { top: 16px; left: 18px; }
   .dashboard-codex-locked { left: 158px; }
+  .dashboard-marketplace-button { top: 60px; left: 18px; }
 
 
   .dashboard-api-key { top: auto; left: auto; }
