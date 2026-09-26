@@ -170,7 +170,14 @@ export default function Dashboard() {
             {marketplaceKinds.filter((kind) => kind.id !== "all" && (marketplaceCategory === "all" || marketplaceCategory === kind.id)).map((kind) => <article className="marketplace-category" key={kind.id}>
               <div className="marketplace-category-heading"><strong>{kind.name} models</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id).length} available</span></div>
               <div className="marketplace-items">
-                {marketplaceItemsList.filter((item) => item.kind === kind.id).map((item) => <label key={item.id} className="marketplace-item"><input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} /><span><b>{item.name}</b><small>{item.category} � {item.description}</small></span><em>{item.credits ? `${item.credits} credits` : "Free"}</em></label>)}
+                {marketplaceItemsList.filter((item) => item.kind === kind.id).map((item) => <label key={item.id} className={`marketplace-item comet-card${marketplaceCart.includes(item.id) ? " selected" : ""}`}>
+  <input type="checkbox" checked={marketplaceCart.includes(item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} aria-label={`Add ${item.name} to cart`} />
+  <div className="comet-card-content">
+    <div className="comet-card-heading"><b>{item.name}</b><span>{item.category}</span></div>
+    <small>{item.description}</small>
+    <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><button type="button" onClick={(event) => { event.preventDefault(); setMarketplaceCart((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id]); }}>{marketplaceCart.includes(item.id) ? "Added" : "Add to cart"}</button></div>
+  </div>
+</label>)}
               </div>
             </article>)}
           </div>

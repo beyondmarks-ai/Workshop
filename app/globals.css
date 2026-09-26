@@ -2679,6 +2679,24 @@ main::after {
 .marketplace-checkout button { background: #25b08f; }
 .marketplace-checkout button:hover { background: #159979; }
 @media (max-width: 700px) { .marketplace-modal { padding: 22px; } .marketplace-checkout { bottom: -22px; margin: 18px -22px -22px; padding: 14px 22px; } }
+.marketplace-category > .marketplace-items { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.marketplace-item.comet-card { position: relative; display: block; min-height: 158px; overflow: hidden; padding: 18px; border: 1px solid #dce8e5; border-radius: 16px; background: linear-gradient(145deg, #fff 0%, #f7fbfa 100%); box-shadow: 0 10px 24px #0f172a0a, inset 0 1px #fff; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.marketplace-item.comet-card::before { content: ""; position: absolute; inset: -45%; pointer-events: none; background: radial-gradient(circle at 15% 10%, #50d6b055 0, transparent 28%); opacity: .55; transition: opacity .25s ease, transform .35s ease; }
+.marketplace-item.comet-card:hover, .marketplace-item.comet-card:focus-within { border-color: #36b99b; box-shadow: 0 16px 30px #087d6620, 0 0 0 3px #087d6612; transform: translateY(-3px); }
+.marketplace-item.comet-card:hover::before, .marketplace-item.comet-card:focus-within::before { opacity: 1; transform: translate(18%, 12%); }
+.marketplace-item.comet-card.selected { border-color: #087d66; background: linear-gradient(145deg, #f2fffa 0%, #e8faf4 100%); box-shadow: 0 0 0 2px #087d6622, 0 14px 28px #087d6618; }
+.marketplace-item.comet-card > input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.comet-card-content { position: relative; z-index: 1; display: flex; min-height: 122px; flex-direction: column; gap: 10px; }
+.comet-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.comet-card-heading b { color: #102f2b; font: 800 .86rem/1.25 "Manrope", sans-serif; }
+.comet-card-heading span { flex: 0 0 auto; padding: 4px 7px; border: 1px solid #bfe9dd; border-radius: 999px; background: #effcf8; color: #087d66; font: 800 .52rem/1 "Manrope", sans-serif; }
+.comet-card-content > small { min-height: 32px; color: #64748b; font-size: .66rem; line-height: 1.45; }
+.comet-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 10px; border-top: 1px solid #e2ece9; }
+.comet-card-footer em { color: #087d66; font: 800 .72rem/1 "Manrope", sans-serif; font-style: normal; }
+.comet-card-footer button { min-height: 34px; padding: 0 11px; border: 1px solid #087d66; border-radius: 8px; background: #087d66; color: #fff; font: 800 .62rem "DM Sans", sans-serif; cursor: pointer; transition: background .2s ease, transform .2s ease; }
+.comet-card-footer button:hover { background: #066b58; }
+.comet-card-footer button:active { transform: scale(.96); }
+@media (max-width: 700px) { .marketplace-category > .marketplace-items { grid-template-columns: 1fr; } }
 .dashboard-history-link { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 108px); z-index: 50; min-height: 40px; padding: 0 12px; border: 1px solid #087d66; border-radius: 10px; background: #fff; color: #087d66; font: 800 .68rem/1 "Manrope", sans-serif; cursor: pointer; }
 .dashboard-notification-button { position: fixed; top: 22px; right: calc(clamp(22px, 5vw, 72px) + 228px); z-index: 50; width: 40px; height: 40px; border: 1px solid #087d66; border-radius: 10px; background: #fff; font-size: 1rem; cursor: pointer; }
 .dashboard-notification-button span { position: absolute; top: -6px; right: -6px; min-width: 17px; padding: 3px 4px; border-radius: 999px; background: #ef4444; color: #fff; font: 800 .58rem/1 "Manrope", sans-serif; }
