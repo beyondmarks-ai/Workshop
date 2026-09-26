@@ -85,25 +85,25 @@ export default function Dashboard() {
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
       <div className="dashboard-student-welcome">
         <p><span>Welcome,</span><strong>{user.name}</strong></p>
-        <small className="dashboard-api-label">API KEY</small>
-        <div className="dashboard-api-key">
-          <div className="dashboard-api-key-value">
-            <code>{keyVisible && access.apiKey ? access.apiKey : access.apiKeyPrefix ? `${access.apiKeyPrefix}********` : "Creating key..."}</code>
-          </div>
-          <button type="button" onClick={toggleApiKeyVisibility} aria-label={keyVisible ? "Hide API key" : "Show API key"} title={keyVisible ? "Hide API key" : "Show API key"}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-5 9.5-5 9.5 5 9.5 5-3.4 5-9.5 5-9.5-5-9.5-5Z" /><circle cx="12" cy="12" r="2.5" /></svg>
-          </button>
-          <button type="button" onClick={copyApiKey} aria-label="Copy API key" title="Copy API key">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
-          </button>
-          {copyStatus && <small>{copyStatus}</small>}
-        </div>
       </div>
       <section className="pricing-card-wrap" aria-label="Pro plan">
         <article className="pricing-card">
           <div className="pricing-card-glow" aria-hidden="true" />
           <header className="pricing-card-header">
             <div className="pricing-card-title-row"><h2>API Endpoints</h2><span className="pricing-card-badge">{endpointItems.length} available</span></div>
+            <div className="dashboard-api-key">
+              <small className="dashboard-api-label">API KEY</small>
+              <div className="dashboard-api-key-value">
+                <code>{keyVisible && access.apiKey ? access.apiKey : access.apiKeyPrefix ? `${access.apiKeyPrefix}********` : "Creating key..."}</code>
+              </div>
+              <button type="button" onClick={toggleApiKeyVisibility} aria-label={keyVisible ? "Hide API key" : "Show API key"} title={keyVisible ? "Hide API key" : "Show API key"}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-5 9.5-5 9.5 5 9.5 5-3.4 5-9.5 5-9.5-5-9.5-5Z" /><circle cx="12" cy="12" r="2.5" /></svg>
+              </button>
+              <button type="button" onClick={copyApiKey} aria-label="Copy API key" title="Copy API key">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
+              </button>
+              {copyStatus && <small>{copyStatus}</small>}
+            </div>
           </header>
           <div className="endpoint-category-toggle" role="tablist" aria-label="Model endpoint type">
             {[['generative', 'Generative'], ['image', 'Image models'], ['video', 'Video models'], ['other', 'Other']].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={endpointCategory === id} className={endpointCategory === id ? "active" : ""} onClick={() => setEndpointCategory(id)}>{label}</button>)}

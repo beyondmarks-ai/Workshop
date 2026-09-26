@@ -2606,7 +2606,7 @@ main::after {
   flex-direction: column;
   gap: 8px;
   margin: 0;
-  padding-top: 88px;
+  padding-top: 0;
   color: #102445 !important;
   font: 700 clamp(1.44rem, 2.5vw, 1.88rem)/1.1 "Manrope", sans-serif;
   letter-spacing: -.02em;
@@ -2640,19 +2640,18 @@ main::after {
 }
 
 .dashboard-student-welcome p strong {
-  color: #000 !important;
+  color: #087d66 !important;
   font: 800 1.5rem/1 "Manrope", sans-serif;
   letter-spacing: -.04em;
 }
 
 .dashboard-api-key {
-  position: fixed;
-  top: 42px;
-  left: clamp(22px, 5vw, 72px);
+  position: relative;
   display: flex;
   align-items: center;
   gap: 7px;
-  margin-top: 0;
+  width: 100%;
+  margin-top: 14px;
 }
 
 .dashboard-api-key-value {
@@ -2709,11 +2708,11 @@ main::after {
 
 @keyframes endpoint-drop { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
 .dashboard-api-label {
-  position: fixed;
-  top: 22px;
-  left: clamp(22px, 5vw, 72px);
+  position: absolute;
+  top: -17px;
+  left: 0;
   margin: 0;
-  color: #000;
+  color: #087d66;
   font: 700 .72rem/1 "Manrope", sans-serif;
   letter-spacing: .18em;
 }
@@ -2884,8 +2883,8 @@ main::after {
   .dashboard-student-welcome > p { top: 18px; }
 
 
-  .dashboard-api-label { top: 18px; left: 18px; }
-  .dashboard-api-key { top: 38px; left: 18px; }
+  .dashboard-api-label { top: -17px; left: 0; }
+  .dashboard-api-key { top: auto; left: auto; }
 
   .dashboard-credits {
     top: 16px;
