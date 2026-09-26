@@ -1,0 +1,11 @@
+{
+  "name": "vertex-gateway",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/functions/*.js",
+  "dependencies": {
+    "@azure/functions": "^4.7.2",
+    "@azure/identity": "^4.7.0"
+  }
+}

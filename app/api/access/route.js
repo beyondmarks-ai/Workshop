@@ -18,6 +18,7 @@ const endpoints = [
   { id: "image-2", category: "image", name: "GPT Image 2", model: "gpt-image-2", method: "POST", path: "/api/proxy/images?model=gpt-image-2", auth: "Student API key", description: "Generate and edit images through the East US 2 APIM deployment." },
   { id: "image-flare", category: "image", name: "GPT Image 2.5 Flare", model: "gpt-image-2.5-flare", method: "POST", path: "/api/proxy/images?model=gpt-image-2.5-flare", auth: "Student API key", description: "Fast everyday image generation through the East US 2 APIM deployment." },
   { id: "sora-2", category: "video", name: "Sora 2 Video", model: "sora-2", method: "POST", path: "/api/proxy/videos?model=sora-2", auth: "Student API key", description: "Create video jobs with Sora 2 through the East US 2 APIM deployment." },
+  { id: "vertex-gemini-2-5-flash", category: "generative", name: "Vertex Gemini 2.5 Flash", model: "gemini-2.5-flash", method: "POST", path: "/api/proxy/vertex?model=gemini-2.5-flash", auth: "Student API key", description: "Generate content through Google Vertex AI via the APIM gateway." },
   { id: "access", category: "other", name: "Authentication", method: "GET", path: "/api/access", auth: "Dashboard session", description: "Read the services and endpoints assigned to this student." },
   { id: "resources", category: "other", name: "Storage", method: "GET / POST", path: "/api/resources", auth: "Dashboard session", description: "List and upload your private learning resources." },
   { id: "activity", category: "other", name: "Database", method: "GET", path: "/api/activity", auth: "Dashboard session", description: "View calls and credit usage recorded for your account." },
@@ -49,7 +50,7 @@ export async function GET() {
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const unlocked = codexUnlocked(user);
-  return Response.json({ services, endpoints: endpoints.map((endpoint) => ({ ...endpoint, creditCost: endpoint.id === "apim-test" ? creditCost("apim-test") : endpoint.model ? creditCost(endpoint.category === "image" ? "images" : endpoint.category === "video" ? "videos" : "responses", endpoint.model) : 0 })), apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
+  return Response.json({ services, endpoints: endpoints.map((endpoint) => ({ ...endpoint, creditCost: endpoint.id === "apim-test" ? creditCost("apim-test") : endpoint.model ? creditCost(endpoint.category === "image" ? "images" : endpoint.category === "video" ? "videos" : endpoint.id.startsWith("vertex-") ? "vertex" : "responses", endpoint.model) : 0 })), apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
 }
 
 export async function POST() {
