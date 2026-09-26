@@ -2978,6 +2978,9 @@ main::after {
 .admin-card-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
 .admin-card-heading h2 { margin: 7px 0 0; font: 700 1.25rem/1 "Manrope", sans-serif; }
 .admin-card-heading input { width: min(240px, 45%); padding: 10px 12px; border: 1px solid #ffffff38; border-radius: 8px; outline: none; background: #07162d99; color: #fff; }
+.admin-card-tools { display: flex; align-items: center; gap: 8px; }
+.admin-logout-button { padding: 9px 11px; border: 1px solid #ff8b8b45; border-radius: 8px; background: transparent; color: #ffb6b6; font: 800 .68rem "DM Sans", sans-serif; cursor: pointer; }
+.admin-logout-button:hover { background: #ff8b8b18; }
 .admin-table { display: grid; gap: 8px; }
 .admin-table article { display: grid; grid-template-columns: 1.5fr 1fr auto; align-items: center; gap: 18px; padding: 13px 14px; border: 1px solid #ffffff18; border-radius: 10px; background: #07162d66; }
 .admin-students-card .admin-table article { grid-template-columns: 1.5fr 1fr auto auto 1.7fr; }
@@ -3047,6 +3050,7 @@ main::after {
   .admin-summary { grid-template-columns: 1fr; }
   .admin-card-heading { align-items: stretch; flex-direction: column; }
   .admin-card-heading input { width: 100%; }
+  .admin-card-tools { align-items: stretch; flex-direction: column; }
   .admin-table article, .admin-students-card .admin-table article { grid-template-columns: 1fr; gap: 7px; }
   .admin-actions { justify-content: flex-start; }
   .admin-student-details { grid-template-columns: 1fr 1fr; }

@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { deleteUser, getUser, listUsers, saveUser } from "../../../lib/storage";
-import { adminTotpConfigured, hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
+import { adminTotpConfigured, clearAdminAccess, hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -33,6 +33,10 @@ export async function POST(request) {
     if (!validAdminCredentials(body.email, body.pin, body.code)) return Response.json({ error: "Invalid admin email, PIN, or authenticator code." }, { status: 403 });
     setAdminAccess();
     return Response.json({ verified: true });
+  }
+  if (body.action === "logout-admin") {
+    clearAdminAccess();
+    return Response.json({ loggedOut: true });
   }
   if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
   const actions = new Set(["verify-student", "adjust-credits", "revoke-student", "delete-student"]);
