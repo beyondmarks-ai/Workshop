@@ -175,7 +175,7 @@ export default function Dashboard() {
     setMarketplaceMessage("");
     const response = await fetch("/api/marketplace", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ itemIds: marketplaceCart }) });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) { const message = response.status === 429 ? "Low balance. Add credits to buy this model." : data.error || "Purchase could not be completed."; setMarketplaceMessage(message); if (response.status === 429) { setPurchaseErrorToast(message); window.setTimeout(() => setPurchaseErrorToast(""), 4200); } }
+    if (!response.ok) { const lowBalance = response.status === 402 || response.status === 429 || /need .* credits|no credits/i.test(String(data.error || "")); const message = lowBalance ? "Low balance. Add credits to buy this model." : data.error || "Purchase could not be completed."; setMarketplaceMessage(message); if (lowBalance) { setPurchaseErrorToast(message); window.setTimeout(() => setPurchaseErrorToast(""), 4200); } }
     else { const purchasedNames = marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).map((item) => item.name); setUser((current) => ({ ...current, credits: data.credits })); setMarketplacePurchases(data.purchases || []); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); setMarketplaceCartOpen(false); setPurchaseToast(`Thank you. ${purchasedNames.join(", ")} is now active.`); window.setTimeout(() => setPurchaseToast(""), 4200); fetch("/api/access").then((accessResponse) => accessResponse.ok && accessResponse.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {}); }
     setMarketplaceBusy(false);
   }
