@@ -2311,6 +2311,7 @@ main {
 @keyframes dashboard-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 700px) {
+  .credit-history-modal, .api-documentation-modal, .codex-modal { padding: 22px 18px; }
   .dashboard-shell { padding: 22px 18px; }
   .dashboard-main { margin-top: 80px; }
   .dashboard-cards { grid-template-columns: 1fr; margin-top: 34px; }
@@ -2763,6 +2764,9 @@ main::after {
 .credit-history-modal::-webkit-scrollbar, .api-documentation-modal::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .marketplace-modal, .marketplace-content-scroll, .marketplace-cart-items, .notification-popover, .credit-history-modal, .api-documentation-modal, .codex-modal, .codex-command code, .marketplace-category-tabs { scrollbar-width: none; -ms-overflow-style: none; }
 .marketplace-modal::-webkit-scrollbar, .marketplace-content-scroll::-webkit-scrollbar, .marketplace-cart-items::-webkit-scrollbar, .notification-popover::-webkit-scrollbar, .credit-history-modal::-webkit-scrollbar, .api-documentation-modal::-webkit-scrollbar, .codex-modal::-webkit-scrollbar, .codex-command code::-webkit-scrollbar, .marketplace-category-tabs::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.marketplace-modal, .notification-popover, .credit-history-modal, .api-documentation-modal, .codex-modal { box-sizing: border-box; }
+.api-documentation-modal { scrollbar-color: transparent transparent; }
+.api-documentation-modal::-webkit-scrollbar, .api-documentation-modal::-webkit-scrollbar-track, .api-documentation-modal::-webkit-scrollbar-thumb { background: transparent; }
 .credit-history-modal > small { color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; letter-spacing: .16em; }
 .credit-history-modal h2 { margin: 10px 0 5px; font: 800 1.7rem/1 "Manrope", sans-serif; }
 .credit-history-modal .codex-modal-intro { color: #6b7280; }
