@@ -177,7 +177,7 @@ export default function Dashboard() {
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>
       </button>
-      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span>?</span> Marketplace</button>
+      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18l-2 13H5L3 6Z"/><path d="M8 6a4 4 0 0 1 8 0"/><path d="M9 10h.01M15 10h.01"/></svg></span> Marketplace</button>
       {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}>
         <section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title">
           <button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button>
@@ -280,7 +280,7 @@ export default function Dashboard() {
         <strong>{user.credits ?? 100}</strong>
       </div>
       <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
-      <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications">??{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
+      <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
       {notificationOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setNotificationOpen(false)}><section className="credit-history-modal notification-modal" role="dialog" aria-modal="true" aria-labelledby="notifications-title"><button className="codex-modal-close" type="button" onClick={() => setNotificationOpen(false)} aria-label="Close notifications">�</button><small>ACADEMY NOTIFICATIONS</small><h2 id="notifications-title">Notifications</h2><div className="notification-list">{notifications.length ? notifications.map((item) => <article className={item.read ? "read" : "unread"} key={item.id} onClick={() => markNotificationRead(item.id)}><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span><p>{item.message}</p></article>) : <p>No notifications yet.</p>}</div></section></div>}
     </main>
   );
