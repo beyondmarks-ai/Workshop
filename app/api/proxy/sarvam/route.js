@@ -31,8 +31,16 @@ export async function POST(request) {
     const headers = { "Ocp-Apim-Subscription-Key": apimKey };
     let body;
     if (service.item === "sarvam-saaras-v3") {
-      body = await request.arrayBuffer();
-      headers["content-type"] = request.headers.get("content-type") || "application/octet-stream";
+      const contentType = request.headers.get("content-type") || "";
+      const form = new FormData();
+      if (contentType.includes("multipart/form-data")) {
+        const input = await request.formData();
+        for (const [name, value] of input.entries()) form.append(name, value);
+      } else {
+        const audio = await request.arrayBuffer();
+        form.append("file", new Blob([audio], { type: contentType || "audio/wav" }), "audio.wav");
+      }
+      body = form;
     } else {
       const input = await request.json();
       if (service.item === "sarvam-bulbul-v3") { input.model = "bulbul:v3"; input.speaker ||= "priya"; input.target_language_code ||= "en-IN"; }

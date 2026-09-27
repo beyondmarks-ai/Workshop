@@ -34,7 +34,11 @@ async function modelRequest(request, operation) {
   if (!/^[a-z0-9.-]+$/.test(model)) return { status: 400, jsonBody: { error: "Invalid model." } };
   try {
     const suffix = operation === "generate" ? ":generateContent" : operation === "predict" ? ":predict" : operation === "predictLongRunning" ? ":predictLongRunning" : ":embedContent";
-    return result(await callVertex(`projects/${project}/locations/${location}/publishers/google/models/${model}${suffix}`, "POST", JSON.parse(await request.text())));
+    const body = JSON.parse(await request.text());
+    if (operation === "generate" && /tts/.test(model)) {
+      body.generationConfig = { ...(body.generationConfig || {}), responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: body.generationConfig?.speechConfig?.voiceConfig?.prebuiltVoiceConfig?.voiceName || "Kore" } } } };
+    }
+    return result(await callVertex(`projects/${project}/locations/${location}/publishers/google/models/${model}${suffix}`, "POST", body));
   } catch (error) {
     return { status: 502, jsonBody: { error: error.message || "Vertex request failed." } };
   }
