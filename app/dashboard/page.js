@@ -200,12 +200,26 @@ export default function Dashboard() {
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
       {purchaseToast && <div className="purchase-toast" role="status"><span className="purchase-toast-icon" aria-hidden="true">✓</span><div><strong>Purchase complete</strong><p>{purchaseToast}</p></div><button type="button" onClick={() => setPurchaseToast("")} aria-label="Close purchase confirmation">×</button></div>}
       {purchaseErrorToast && <div className="purchase-toast purchase-toast-error" role="alert"><span className="purchase-toast-icon" aria-hidden="true">!</span><div><strong>Low balance</strong><p>{purchaseErrorToast}</p></div><button type="button" onClick={() => setPurchaseErrorToast("")} aria-label="Close low balance alert">×</button></div>}
-      <button className="dashboard-codex-button" type="button" onClick={() => { setCodexMode("instructions"); setCodexOpen(true); }} aria-label="Open installation instructions">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
-        <span>Instructions</span>
-      </button>
-      <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18l-2 13H5L3 6Z"/><path d="M8 6a4 4 0 0 1 8 0"/><path d="M9 10h.01M15 10h.01"/></svg></span> Marketplace</button>
-      <button className="dashboard-documentation-button" type="button" onClick={() => setDocumentationOpen(true)} aria-label="Open API documentation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h3M9 12h6M9 16h6" /></svg><span>Documentation</span></button>
+      <header className="dashboard-header-bar">
+        <nav className="dashboard-action-bar" aria-label="Dashboard actions">
+          <button className="dashboard-codex-button" type="button" onClick={() => { setCodexMode("instructions"); setCodexOpen(true); }} aria-label="Open installation instructions">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
+            <span>Instructions</span>
+          </button>
+          <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+            <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
+          </button>
+          <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18l-2 13H5L3 6Z"/><path d="M8 6a4 4 0 0 1 8 0"/><path d="M9 10h.01M15 10h.01"/></svg></span> Marketplace</button>
+          <button className="dashboard-documentation-button" type="button" onClick={() => setDocumentationOpen(true)} aria-label="Open API documentation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h3M9 12h6M9 16h6" /></svg><span>Documentation</span></button>
+        </nav>
+        <div className="dashboard-status-bar">
+          <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
+          <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
+          <div className="dashboard-credits" aria-label={`${user.credits ?? 100} credits`}><small>CREDITS</small><strong>{user.credits ?? 100}</strong></div>
+        </div>
+      </header>
+      {notificationOpen && <section className="notification-popover" role="dialog" aria-labelledby="notifications-title"><div className="notification-popover-heading"><div><small>ACADEMY NOTIFICATIONS</small><h2 id="notifications-title">Notifications</h2></div><button type="button" onClick={() => setNotificationOpen(false)} aria-label="Close notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg></button></div><div className="notification-list">{notifications.length ? notifications.map((item) => <article className={item.read ? "read" : "unread"} key={item.id} onClick={() => markNotificationRead(item.id)}><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span><p>{item.message}</p></article>) : <p>No notifications yet.</p>}</div></section>}
       {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}>
         <section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title">
           <button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button>
@@ -237,10 +251,6 @@ export default function Dashboard() {
         </section>
       </div>}
       {documentationOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setDocumentationOpen(false)}><section className="codex-modal api-documentation-modal" role="dialog" aria-modal="true" aria-labelledby="api-documentation-title"><button className="codex-modal-close" type="button" onClick={() => setDocumentationOpen(false)} aria-label="Close documentation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg></button><small>API DOCUMENTATION</small><h2 id="api-documentation-title">Prompt and request guide</h2><p className="codex-modal-intro">Buy the model first, copy your API key, and send JSON to the matching endpoint. Replace <b>YOUR_API_KEY</b> only.</p><div className="codex-modal-section"><strong>Every request</strong><code>Base URL: your dashboard URL<br />Header: x-api-key: YOUR_API_KEY<br />Header: Content-Type: application/json</code><span>Use the exact model name shown in your dashboard. Verification, purchase access, and credits are checked automatically.</span></div>{documentationSections.map((section) => <div className="codex-modal-section" key={section.title}><strong>{section.title}</strong><span>Prompt for Codex: {section.prompt}</span><div className="codex-command"><code>{section.example}</code><button type="button" onClick={() => copyText(section.example)} aria-label="Copy example" title="Copy example"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0 2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>)}<div className="codex-modal-section"><strong>Claude and Sarvam</strong><span>Claude uses a messages body. Sarvam TTS uses <b>text</b>, <b>target_language_code</b>, and <b>speaker</b>. Always use the endpoint shown in your dashboard and never put an APIM subscription key in student code.</span></div></section></div>}
-      <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-        <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
-      </button>
       {creditHistoryOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCreditHistoryOpen(false)}><section className="credit-history-modal" role="dialog" aria-modal="true" aria-labelledby="credit-history-title"><button className="codex-modal-close" type="button" onClick={() => setCreditHistoryOpen(false)} aria-label="Close credit history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg></button><small>CREDIT ACTIVITY</small><h2 id="credit-history-title">Credit history</h2><p className="codex-modal-intro">A clear record of credits added, endpoint usage, and purchases.</p><div className="credit-history-list">{creditHistory === null ? <p>Loading history...</p> : creditHistory.length ? creditHistory.map((activity) => { const kind = creditActivityKind(activity); const amount = Math.abs(Number(activity.creditsUsed) || 0); return <article className={`credit-history-item ${kind}`} key={activity.id}><div><strong>{creditActivityLabel(activity)} <em>{kind === "credit-added" ? "+" : "-"}{amount} credits</em></strong><span>{new Date(activity.createdAt).toLocaleString()}</span>{activity.note && <p>{activity.note}</p>}</div></article>; }) : <p>No credit activity recorded yet.</p>}</div></section></div>}
       {codexPaymentOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexPaymentOpen(false)}>
         <section className="codex-modal codex-payment-modal" role="dialog" aria-modal="true" aria-labelledby="codex-payment-title">
@@ -261,7 +271,7 @@ export default function Dashboard() {
           <h2 id="codex-title">Codex access</h2>
           <p className="codex-modal-intro">Each request or prompt entered in Codex consumes credits. Standard Codex can exhaust its allowance; this workshop Codex is admin-controlled with no request limit.</p>
           <a className="codex-tools-download" href="/api/codex/download">Download tools.rar</a>
-          <div className="codex-modal-section"><strong>APIM setup</strong><div className="codex-command"><code>{`Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1\n.\\configure-codex-apim.ps1 ` + "`" + `\n  -ApimBaseUrl "https://codex-apim-617db5.azure-api.net" ` + "`" + `\n  -ApimKey "YOUR_KEY"`}</code><button type="button" onClick={() => copyText('Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1 `\n  -ApimBaseUrl "https://codex-apim-617db5.azure-api.net" `\n  -ApimKey "YOUR_KEY"')} aria-label="Copy APIM setup commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
+          <div className="codex-modal-section"><strong>Codex setup</strong><div className="codex-command"><code>{`Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1\n.\\configure-codex-apim.ps1 -ApimKey "YOUR_BMA_KEY"`}</code><button type="button" onClick={() => copyText('Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1\n.\\configure-codex-apim.ps1 -ApimKey "YOUR_BMA_KEY"')} aria-label="Copy Codex setup commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
           <p className="codex-modal-check">The tools download does not deduct credits. Your 3-day Codex access remains active until the workshop access period ends.</p>
           </> : <>
           <small>CODEX CLI</small>
@@ -274,10 +284,11 @@ export default function Dashboard() {
           </>}
         </section>
       </div>}
-      <div className="dashboard-student-welcome">
-        <p><span>Welcome,</span><strong>{user.name}</strong></p>
-      </div>
-      <section className="pricing-card-wrap" aria-label="Pro plan">
+      <div className="dashboard-primary-content">
+        <div className="dashboard-student-welcome">
+          <p><span>Welcome,</span><strong>{user.name}</strong></p>
+        </div>
+        <section className="pricing-card-wrap" aria-label="Pro plan">
         <article className="pricing-card">
           <div className="pricing-card-glow" aria-hidden="true" />
           <header className="pricing-card-header">
@@ -303,14 +314,8 @@ export default function Dashboard() {
           </div>
           {copyStatus && <small className="pricing-copy-status" role="status">{copyStatus}</small>}
         </article>
-      </section>
-      <div className="dashboard-credits" aria-label={`${user.credits ?? 100} credits`}>
-        <small>CREDITS</small>
-        <strong>{user.credits ?? 100}</strong>
+        </section>
       </div>
-      <button className="dashboard-history-link" type="button" onClick={openCreditHistory}>Credit history</button>
-      <button className="dashboard-notification-button" type="button" onClick={openNotifications} aria-label="Open notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>{notifications.some((item) => !item.read) && <span>{notifications.filter((item) => !item.read).length}</span>}</button>
-      {notificationOpen && <section className="notification-popover" role="dialog" aria-labelledby="notifications-title"><div className="notification-popover-heading"><div><small>ACADEMY NOTIFICATIONS</small><h2 id="notifications-title">Notifications</h2></div><button type="button" onClick={() => setNotificationOpen(false)} aria-label="Close notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg></button></div><div className="notification-list">{notifications.length ? notifications.map((item) => <article className={item.read ? "read" : "unread"} key={item.id} onClick={() => markNotificationRead(item.id)}><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span><p>{item.message}</p></article>) : <p>No notifications yet.</p>}</div></section>}
     </main>
   );
 }

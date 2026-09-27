@@ -3108,6 +3108,186 @@ main::after {
 .api-key-box button { min-height: 35px; border: 1px solid #ffffff42; border-radius: 8px; background: #fff; color: #07162d; font: 700 .72rem "Manrope", sans-serif; cursor: pointer; }
 .api-key-box p { margin: 0; color: #ffffff8f; font-size: .65rem; line-height: 1.35; }
 
+/* Responsive dashboard layout
+   Keep the desktop floating composition, but switch to a document flow on
+   smaller screens so fixed controls cannot cover the welcome card or each other. */
+@media (max-width: 900px) {
+  .dashboard-shell {
+    min-height: 100svh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 148px 16px 36px;
+  }
+
+  .dashboard-student-welcome {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-width: none;
+    align-items: stretch;
+    margin: 0 0 18px;
+  }
+
+  .dashboard-student-welcome > p {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    white-space: normal;
+    transform: none;
+  }
+
+  .pricing-card-wrap {
+    position: relative;
+    inset: auto;
+    display: block;
+    width: 100%;
+  }
+
+  .pricing-card {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .dashboard-api-key {
+    flex-wrap: wrap;
+  }
+
+  .dashboard-api-key-value {
+    flex: 1 1 calc(100% - 82px);
+    width: auto;
+    min-width: 0;
+  }
+
+  .endpoint-category-toggle {
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .endpoint-category-toggle::-webkit-scrollbar { display: none; }
+
+  .endpoint-category-toggle button {
+    flex: 0 0 auto;
+    padding: 0 12px;
+  }
+
+  .pricing-endpoint {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+
+  .pricing-endpoint > div {
+    flex: 1 1 100%;
+  }
+
+  .pricing-endpoint code {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .dashboard-credits {
+    top: 16px;
+    right: 16px;
+  }
+
+  .dashboard-history-link {
+    top: 72px;
+    right: 64px;
+  }
+
+  .dashboard-notification-button {
+    top: 72px;
+    right: 16px;
+  }
+
+  .notification-popover {
+    top: 124px;
+    right: 16px;
+  }
+
+  .access-button {
+    top: 16px;
+    right: 116px;
+  }
+
+  .access-panel {
+    top: 66px;
+    right: 16px;
+    max-height: calc(100svh - 82px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-shell { padding: 148px 12px 28px; }
+
+  .dashboard-codex-button,
+  .dashboard-codex-locked,
+  .dashboard-marketplace-button,
+  .dashboard-documentation-button {
+    left: 12px;
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: .62rem;
+  }
+
+  .dashboard-codex-button { top: 16px; }
+  .dashboard-codex-locked { top: 16px; left: 148px; }
+  .dashboard-marketplace-button { top: 62px; }
+  .dashboard-documentation-button { top: 62px; left: 140px; }
+
+  .dashboard-student-welcome > p {
+    gap: 5px;
+    padding: 10px 12px;
+  }
+
+  .dashboard-student-welcome p span,
+  .dashboard-student-welcome p strong { font-size: clamp(1.05rem, 5vw, 1.5rem); }
+
+  .pricing-card-header,
+  .pricing-card-content { padding-left: 16px; padding-right: 16px; }
+
+  .pricing-card-title-row { align-items: flex-start; flex-wrap: wrap; }
+
+  .endpoint-category-toggle { margin-left: 16px; margin-right: 16px; }
+
+  .dashboard-api-key-value { flex-basis: 100%; }
+
+  .dashboard-api-key button { flex: 0 0 34px; }
+
+  .dashboard-history-link { right: 64px; }
+}
+
+@media (max-width: 400px) {
+  .dashboard-codex-locked { left: 132px; }
+  .dashboard-documentation-button { left: 132px; }
+  .dashboard-history-link { top: 120px; right: 16px; }
+  .dashboard-notification-button { top: 72px; right: 16px; }
+  .dashboard-shell { padding-top: 196px; }
+}
+
+/* The top actions have different label widths. Keep them in their own
+   lanes on desktop instead of relying on the old overlapping offsets. */
+@media (min-width: 1201px) {
+  .dashboard-codex-button { left: 22px; white-space: nowrap; }
+  .dashboard-codex-locked { left: 210px; }
+  .dashboard-marketplace-button { left: 448px; white-space: nowrap; }
+  .dashboard-documentation-button { left: 570px; white-space: nowrap; }
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+  .dashboard-shell { padding-top: 136px; }
+  .dashboard-codex-button { top: 16px; left: 16px; white-space: nowrap; }
+  .dashboard-codex-locked { top: 16px; left: 204px; }
+  .dashboard-marketplace-button { top: 64px; left: 16px; white-space: nowrap; }
+  .dashboard-documentation-button { top: 64px; left: 160px; white-space: nowrap; }
+}
+
 @media (max-width: 600px) {
   .dashboard-student-welcome {
     top: 18px;
@@ -3286,4 +3466,494 @@ main::after {
   .admin-model-access-row { grid-template-columns: 1fr auto; }
   .admin-model-access-row > div { grid-column: 1 / -1; }
   .admin-model-access-row button { grid-column: 1 / -1; justify-self: start; }
+}
+
+/* Final dashboard layout: one responsive header and one scrolling content
+   column. These rules intentionally replace the legacy fixed coordinates. */
+.dashboard-shell {
+  display: block;
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 clamp(14px, 2.5vw, 36px) 48px;
+}
+
+.dashboard-stars { position: fixed; }
+
+.dashboard-header-bar {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 0 16px;
+  background: linear-gradient(180deg, #000 58%, #000000d9 78%, transparent);
+}
+
+.dashboard-action-bar,
+.dashboard-status-bar {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-action-bar { flex-wrap: wrap; }
+.dashboard-status-bar { flex: 0 0 auto; margin-left: auto; }
+
+.dashboard-header-bar .dashboard-codex-button,
+.dashboard-header-bar .dashboard-codex-locked,
+.dashboard-header-bar .dashboard-marketplace-button,
+.dashboard-header-bar .dashboard-documentation-button,
+.dashboard-header-bar .dashboard-history-link,
+.dashboard-header-bar .dashboard-notification-button,
+.dashboard-header-bar .dashboard-credits {
+  position: static !important;
+  inset: auto !important;
+  margin: 0;
+  transform: none;
+  white-space: nowrap;
+}
+
+.dashboard-header-bar .dashboard-codex-button,
+.dashboard-header-bar .dashboard-marketplace-button,
+.dashboard-header-bar .dashboard-documentation-button,
+.dashboard-header-bar .dashboard-history-link {
+  min-height: 44px;
+}
+
+.dashboard-header-bar .dashboard-notification-button {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+}
+
+.dashboard-header-bar .dashboard-credits {
+  min-width: 96px;
+  padding: 9px 13px;
+}
+
+.dashboard-primary-content {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  width: min(720px, 100%);
+  gap: 18px;
+  margin: 24px auto 0;
+}
+
+.dashboard-primary-content .dashboard-student-welcome {
+  position: static;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-primary-content .dashboard-student-welcome > p {
+  position: static;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  transform: none;
+  white-space: normal;
+}
+
+.dashboard-primary-content .pricing-card-wrap {
+  position: static;
+  inset: auto;
+  display: block;
+  width: 100%;
+}
+
+.dashboard-primary-content .pricing-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.dashboard-primary-content .pricing-card-content {
+  max-height: none;
+  overflow: visible;
+}
+
+.notification-popover {
+  top: 92px;
+  right: clamp(14px, 2.5vw, 36px);
+}
+
+@media (max-width: 1180px) {
+  .dashboard-header-bar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dashboard-status-bar {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .dashboard-primary-content { margin-top: 18px; }
+  .notification-popover { top: 150px; }
+}
+
+@media (max-width: 700px) {
+  .dashboard-shell { padding: 0 12px 30px; }
+
+  .dashboard-header-bar {
+    position: relative;
+    padding: 12px 0;
+    background: linear-gradient(180deg, #000 72%, transparent);
+  }
+
+  .dashboard-action-bar {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-header-bar .dashboard-codex-button,
+  .dashboard-header-bar .dashboard-marketplace-button,
+  .dashboard-header-bar .dashboard-documentation-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    justify-content: center;
+    padding: 0 9px;
+    font-size: .62rem;
+  }
+
+  .dashboard-status-bar {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .dashboard-header-bar .dashboard-history-link {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .dashboard-header-bar .dashboard-credits {
+    min-width: 82px;
+  }
+
+  .dashboard-primary-content { margin-top: 8px; gap: 12px; }
+
+  .dashboard-primary-content .dashboard-student-welcome > p {
+    width: 100%;
+    padding: 11px 12px;
+  }
+
+  .dashboard-primary-content .dashboard-student-welcome p span,
+  .dashboard-primary-content .dashboard-student-welcome p strong {
+    font-size: clamp(1.05rem, 6vw, 1.45rem);
+  }
+
+  .pricing-card-header,
+  .pricing-card-content { padding-left: 14px; padding-right: 14px; }
+
+  .pricing-card-title-row { align-items: flex-start; flex-wrap: wrap; }
+  .endpoint-category-toggle { margin-left: 14px; margin-right: 14px; }
+
+  .dashboard-api-key { flex-wrap: wrap; }
+  .dashboard-api-key-value { flex: 1 1 100%; width: 100%; min-width: 0; }
+
+  .pricing-endpoint {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+  }
+
+  .pricing-endpoint > div { grid-column: 1 / -1; }
+  .pricing-endpoint code { overflow-wrap: anywhere; white-space: normal; }
+  .pricing-endpoint button { min-height: 36px; }
+
+  .notification-popover {
+    top: 12px;
+    right: 12px;
+    width: calc(100vw - 24px);
+    max-height: calc(100svh - 24px);
+  }
+
+  .codex-modal-backdrop { padding: 12px; }
+  .codex-modal,
+  .marketplace-modal,
+  .credit-history-modal,
+  .api-documentation-modal {
+    width: 100%;
+    max-height: calc(100svh - 24px);
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 390px) {
+  .dashboard-action-bar { grid-template-columns: 1fr; }
+  .dashboard-status-bar { grid-template-columns: 42px minmax(0, 1fr) 76px; }
+  .dashboard-header-bar .dashboard-credits { min-width: 76px; padding-inline: 8px; }
+  .endpoint-category-toggle button { padding-inline: 10px; }
+}
+
+/* Dashboard finishing pass */
+.dashboard-shell {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboard-shell::-webkit-scrollbar,
+.dashboard-primary-content .pricing-card-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.dashboard-header-bar {
+  position: relative;
+  background: transparent;
+}
+
+.dashboard-header-bar .dashboard-notification-button {
+  position: relative !important;
+}
+
+.dashboard-header-bar .dashboard-notification-button > span {
+  top: -7px;
+  right: -7px;
+  z-index: 2;
+}
+
+.dashboard-primary-content {
+  width: min(430px, 100%);
+}
+
+.dashboard-primary-content .pricing-card-content {
+  max-height: min(470px, calc(100svh - 330px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+
+.dashboard-action-bar button,
+.dashboard-status-bar button,
+.dashboard-status-bar .dashboard-credits,
+.dashboard-primary-content .pricing-card,
+.dashboard-primary-content .dashboard-student-welcome > p {
+  transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+}
+
+.dashboard-action-bar button:hover,
+.dashboard-status-bar button:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-height: 720px) and (min-width: 701px) {
+  .dashboard-primary-content { margin-top: 8px; gap: 10px; }
+  .dashboard-primary-content .pricing-card-content {
+    max-height: calc(100svh - 310px);
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-primary-content { width: min(430px, 100%); }
+  .dashboard-primary-content .pricing-card-content {
+    max-height: clamp(260px, calc(100svh - 390px), 430px);
+  }
+}
+
+@media (max-width: 390px) {
+  .dashboard-primary-content .pricing-card-content {
+    max-height: clamp(230px, calc(100svh - 470px), 390px);
+  }
+}
+
+/* Keep the dashboard inside the viewport on short monitors. Only the
+   endpoint list scrolls; the surrounding page remains fixed. */
+.dashboard-shell {
+  display: flex;
+  height: 100svh;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-header-bar {
+  flex: 0 0 auto;
+}
+
+.dashboard-primary-content {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  margin-top: 8px;
+  padding-bottom: 12px;
+  overflow: hidden;
+}
+
+.dashboard-primary-content .pricing-card-wrap {
+  height: 100%;
+  min-height: 0;
+}
+
+.dashboard-primary-content .pricing-card {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.dashboard-primary-content .pricing-card-header,
+.dashboard-primary-content .endpoint-category-toggle {
+  flex: 0 0 auto;
+}
+
+.dashboard-primary-content .pricing-card-content {
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+  .dashboard-primary-content {
+    min-height: 0;
+    margin-top: 4px;
+    padding-bottom: 8px;
+  }
+
+  .dashboard-primary-content .pricing-card-content { max-height: none; }
+}
+
+/* Compact endpoint-card internals. The card is intentionally narrow even on
+   large screens, so these controls must respond to the card rather than the
+   viewport breakpoint. */
+.dashboard-primary-content .dashboard-api-key {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) 34px 34px;
+  gap: 7px;
+}
+
+.dashboard-primary-content .dashboard-api-key-value {
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboard-primary-content .dashboard-api-key button {
+  width: 34px;
+  height: 34px;
+}
+
+.dashboard-primary-content .dashboard-api-key small {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.dashboard-primary-content .endpoint-category-toggle {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.dashboard-primary-content .endpoint-category-toggle button {
+  min-width: 0;
+  padding: 0 4px;
+  white-space: normal;
+  line-height: 1.15;
+}
+
+.dashboard-primary-content .pricing-endpoint {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-primary-content .pricing-endpoint > div {
+  grid-column: auto;
+  min-width: 0;
+}
+
+.dashboard-primary-content .pricing-endpoint strong,
+.dashboard-primary-content .pricing-endpoint code {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-primary-content .pricing-endpoint-cost {
+  max-width: 82px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-primary-content .pricing-endpoint button {
+  min-width: 94px;
+  min-height: 34px;
+  padding: 0 9px;
+}
+
+@media (max-width: 430px) {
+  .dashboard-primary-content .pricing-endpoint {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .dashboard-primary-content .pricing-endpoint > div { grid-column: 1 / -1; }
+  .dashboard-primary-content .pricing-endpoint button { min-width: 104px; }
+}
+
+/* Keep short endpoint lists compact instead of stretching their rows to fill
+   the monitor. Long lists still use the card's internal scroll area. */
+.dashboard-primary-content .pricing-card-wrap {
+  display: grid;
+  align-items: start;
+}
+
+.dashboard-primary-content .pricing-card {
+  height: auto;
+  max-height: 100%;
+  container-type: inline-size;
+}
+
+.dashboard-primary-content .pricing-card-content {
+  flex: 0 1 auto;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+@container (max-width: 400px) {
+  .dashboard-primary-content .pricing-card-header,
+  .dashboard-primary-content .pricing-card-content {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .dashboard-primary-content .endpoint-category-toggle {
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+
+  .dashboard-primary-content .pricing-endpoint {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 8px;
+  }
+
+  .dashboard-primary-content .pricing-endpoint > div { grid-column: 1 / -1; }
 }
