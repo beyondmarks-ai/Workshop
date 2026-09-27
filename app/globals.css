@@ -2766,6 +2766,9 @@ main::after {
 .credit-history-list .credit-deducted strong { color: #b91c1c; }
 .credit-history-list article div { display: grid; gap: 4px; }
 .credit-history-list strong { color: #111827; font: 800 .86rem/1.2 "Manrope", sans-serif; }
+.credit-history-list strong em { font-style: normal; }
+.credit-history-list .credit-added strong em { color: #15803d; }
+.credit-history-list .credit-deducted strong em { color: #b91c1c; }
 .credit-history-list span { color: #64748b; font-size: .72rem; line-height: 1.4; }
 .credit-history-list p { margin: 4px 0 0; color: #334155; font-size: .76rem; line-height: 1.45; }
 .credit-history-modal .codex-modal-close svg { width: 18px; height: 18px; }
