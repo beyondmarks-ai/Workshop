@@ -2754,20 +2754,21 @@ main::after {
 .notification-popover .notification-list { margin-top: 12px; }
 .notification-popover .notification-list article { transition: background .18s ease, border-color .18s ease; }
 .notification-popover .notification-list article:hover { border-color: #73cbb7; }
-.credit-history-modal { position: relative; width: min(620px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 28px; border-radius: 18px; background: #fff; color: #111827; box-shadow: 0 24px 80px #0008; }
+.credit-history-modal { position: relative; width: min(680px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 30px; border-radius: 20px; background: #fff; color: #111827; box-shadow: 0 24px 80px #0008; }
 .credit-history-modal > small { color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; letter-spacing: .16em; }
 .credit-history-modal h2 { margin: 10px 0 5px; font: 800 1.7rem/1 "Manrope", sans-serif; }
 .credit-history-modal .codex-modal-intro { color: #6b7280; }
 .credit-history-list { display: grid; gap: 8px; margin-top: 18px; }
-.credit-history-list article { padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f8fafc; }
+.credit-history-list article { padding: 15px 16px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f8fafc; }
 .credit-history-list .credit-added { border-color: #86efac; background: #f0fdf4; }
 .credit-history-list .credit-deducted { border-color: #fca5a5; background: #fff1f2; }
 .credit-history-list .credit-added strong { color: #15803d; }
 .credit-history-list .credit-deducted strong { color: #b91c1c; }
 .credit-history-list article div { display: grid; gap: 4px; }
-.credit-history-list strong { color: #111827; font-size: .78rem; }
-.credit-history-list span { color: #6b7280; font-size: .68rem; }
-.credit-history-list p { margin: 2px 0 0; color: #374151; font-size: .72rem; line-height: 1.4; }
+.credit-history-list strong { color: #111827; font: 800 .86rem/1.2 "Manrope", sans-serif; }
+.credit-history-list span { color: #64748b; font-size: .72rem; line-height: 1.4; }
+.credit-history-list p { margin: 4px 0 0; color: #334155; font-size: .76rem; line-height: 1.45; }
+.credit-history-modal .codex-modal-close svg { width: 18px; height: 18px; }
 .notification-list { display: grid; gap: 8px; margin-top: 18px; }
 .notification-list article { padding: 12px; border-radius: 10px; cursor: pointer; }
 .notification-list article.unread { background: #ecfdf5; border: 1px solid #86efac; }
