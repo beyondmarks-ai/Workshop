@@ -20,7 +20,8 @@ async function googleToken() {
 
 async function callVertex(path, method, body) {
   const token = await googleToken();
-  const response = await fetch(`https://${location}-aiplatform.googleapis.com/v1/${path}`, { method, headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "x-goog-user-project": project }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const host = location === "global" ? "aiplatform.googleapis.com" : `${location}-aiplatform.googleapis.com`;
+  const response = await fetch(`https://${host}/v1/${path}`, { method, headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "x-goog-user-project": project }, body: body === undefined ? undefined : JSON.stringify(body) });
   return { status: response.status, contentType: response.headers.get("content-type") || "application/json", body: await response.text() };
 }
 
