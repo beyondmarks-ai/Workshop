@@ -3846,7 +3846,7 @@ main::after {
 .dashboard-primary-content .dashboard-api-key {
   display: grid;
   width: 100%;
-  grid-template-columns: minmax(0, 1fr) 34px 34px;
+  grid-template-columns: minmax(0, 1fr) repeat(3, 34px);
   gap: 7px;
 }
 
