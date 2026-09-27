@@ -3139,6 +3139,8 @@ main::after {
 .admin-notification-tools textarea { min-height: 34px; resize: vertical; }
 .admin-notification-tools label { grid-column: 4; grid-row: 2; color: #ffffffad; font-size: .66rem; white-space: nowrap; }
 .admin-notification-tools button { grid-column: 1; grid-row: 2; min-height: 34px; padding: 0 12px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .66rem "DM Sans", sans-serif; cursor: pointer; }
+.admin-notification-tools .admin-notification-send { grid-column: 1; }
+.admin-notification-tools .admin-polish-notification { grid-column: 2; grid-row: 2; }
 .admin-notification-tools button:disabled { opacity: .5; cursor: wait; }
 .admin-comment-button { color: #bfeee4 !important; border-color: #087d6680 !important; }
 .admin-cancel-button { background: transparent !important; border: 1px solid #ffffff2e !important; }
