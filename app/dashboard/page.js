@@ -267,7 +267,7 @@ export default function Dashboard() {
             </div>
           </header>
           <div className="endpoint-category-toggle" role="tablist" aria-label="Model endpoint type">
-            {[['generative', 'Generative'], ['image', 'Image models'], ['video', 'Video models'], ['other', 'Other']].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={endpointCategory === id} className={endpointCategory === id ? "active" : ""} onClick={() => setEndpointCategory(id)}>{label}</button>)}
+            {[['generative', 'Generative'], ['image', 'Image models'], ['video', 'Video models'], ['audio', 'Audio & voices'], ['other', 'Other']].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={endpointCategory === id} className={endpointCategory === id ? "active" : ""} onClick={() => setEndpointCategory(id)}>{label}</button>)}
           </div>
           <div className="pricing-card-content">
             {endpointItems.length ? endpointItems.map((endpoint) => <div className="pricing-endpoint" key={endpoint.id}><div><strong>{endpoint.name}</strong><code>{endpoint.path}</code></div><span className="pricing-endpoint-cost">{endpoint.creditCost ? endpoint.creditCost + " credits" : "Free"}</span><button type="button" onClick={() => copyServiceEndpoint(endpoint.path)}>Copy endpoint</button></div>) : <p className="pricing-empty">Buy a model in Marketplace to unlock its endpoint.</p>}
