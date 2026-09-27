@@ -11,6 +11,13 @@ const sarvamVoiceSamples = [
   { id: "tanya", name: "Tanya", tone: "Young and energetic", src: "/audio/sarvam/tanya.wav" }
 ];
 
+const documentationSections = [
+  { title: "Luna — text and reasoning", prompt: "Use the Luna endpoint to answer this request clearly and cite assumptions: YOUR_TASK.", example: `POST /api/proxy/responses?model=gpt-5.6-luna\n{"input":[{"role":"user","content":"Explain photosynthesis for a first-year student."}]}` },
+  { title: "Gemini — Vertex AI", prompt: "Use Vertex Gemini for a concise answer and follow the requested format exactly: YOUR_TASK.", example: `POST /api/proxy/vertex?model=gemini-3.5-flash&operation=generate\n{"contents":[{"role":"user","parts":[{"text":"Summarize this lesson in five bullet points."}]}]}` },
+  { title: "Image models", prompt: "Create an image with the subject, style, lighting, composition, and output size: YOUR_IMAGE_REQUEST.", example: `POST /api/proxy/images?model=gpt-image-2\n{"prompt":"A clean futuristic classroom, editorial illustration, soft daylight","n":1,"size":"1024x1024","quality":"medium"}` },
+  { title: "Video — Sora 2", prompt: "Create a short video with a subject, action, camera movement, duration, aspect ratio, and visual style: YOUR_VIDEO_REQUEST.", example: `POST /api/proxy/videos?model=sora-2\n{"prompt":"A student walks through a bright AI lab, slow cinematic camera move","size":"1280x720","seconds":"8"}` }
+];
+
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +35,7 @@ export default function Dashboard() {
   const [notifications, setNotifications] = useState([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [marketplaceOpen, setMarketplaceOpen] = useState(false);
+  const [documentationOpen, setDocumentationOpen] = useState(false);
   const [marketplaceCart, setMarketplaceCart] = useState([]);
   const [marketplaceMessage, setMarketplaceMessage] = useState("");
   const [marketplaceBusy, setMarketplaceBusy] = useState(false);
@@ -178,6 +186,7 @@ export default function Dashboard() {
         <span>Instructions</span>
       </button>
       <button className="dashboard-marketplace-button" type="button" onClick={() => setMarketplaceOpen(true)} aria-label="Open AI marketplace"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18l-2 13H5L3 6Z"/><path d="M8 6a4 4 0 0 1 8 0"/><path d="M9 10h.01M15 10h.01"/></svg></span> Marketplace</button>
+      <button className="dashboard-documentation-button" type="button" onClick={() => setDocumentationOpen(true)} aria-label="Open API documentation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h3M9 12h6M9 16h6" /></svg><span>Documentation</span></button>
       {marketplaceOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setMarketplaceOpen(false)}>
         <section className="marketplace-modal" role="dialog" aria-modal="true" aria-labelledby="marketplace-title">
           <button className="codex-modal-close" type="button" onClick={() => setMarketplaceOpen(false)} aria-label="Close marketplace">×</button>
@@ -208,6 +217,7 @@ export default function Dashboard() {
           {marketplaceCartOpen && <aside className="marketplace-cart-drawer" aria-label="Shopping cart"><div className="marketplace-cart-heading"><div><small>YOUR CART</small><h3>Selected models</h3></div><button type="button" onClick={() => setMarketplaceCartOpen(false)} aria-label="Close cart">×</button></div><div className="marketplace-cart-items">{marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).map((item) => <div className="marketplace-cart-item" key={item.id}><div><strong>{item.name}</strong><small>{item.category}</small></div><span>{item.credits ? `${item.credits} credits` : "Free"}</span><button type="button" onClick={() => setMarketplaceCart((current) => current.filter((id) => id !== item.id))} aria-label={`Remove ${item.name}`}>×</button></div>)}{!marketplaceCart.length && <p className="marketplace-cart-empty">Your cart is empty. Select a model to add it.</p>}</div><div className="marketplace-cart-total"><span>Total</span><strong>{marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).reduce((sum, item) => sum + item.credits, 0)} credits</strong></div><button className="marketplace-cart-buy" type="button" onClick={purchaseMarketplace} disabled={marketplaceBusy || !marketplaceCart.length}>{marketplaceBusy ? "Processing..." : "Buy with credits"}</button></aside>}          {marketplaceMessage && <p className="marketplace-message">{marketplaceMessage}</p>}
         </section>
       </div>}
+      {documentationOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setDocumentationOpen(false)}><section className="codex-modal api-documentation-modal" role="dialog" aria-modal="true" aria-labelledby="api-documentation-title"><button className="codex-modal-close" type="button" onClick={() => setDocumentationOpen(false)} aria-label="Close documentation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg></button><small>API DOCUMENTATION</small><h2 id="api-documentation-title">Prompt and request guide</h2><p className="codex-modal-intro">Buy the model first, copy your API key, and send JSON to the matching endpoint. Replace <b>YOUR_API_KEY</b> only.</p><div className="codex-modal-section"><strong>Every request</strong><code>Base URL: your dashboard URL<br />Header: x-api-key: YOUR_API_KEY<br />Header: Content-Type: application/json</code><span>Use the exact model name shown in your dashboard. Verification, purchase access, and credits are checked automatically.</span></div>{documentationSections.map((section) => <div className="codex-modal-section" key={section.title}><strong>{section.title}</strong><span>Prompt for Codex: {section.prompt}</span><div className="codex-command"><code>{section.example}</code><button type="button" onClick={() => copyText(section.example)} aria-label="Copy example" title="Copy example"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0 2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>)}<div className="codex-modal-section"><strong>Claude and Sarvam</strong><span>Claude uses a messages body. Sarvam TTS uses <b>text</b>, <b>target_language_code</b>, and <b>speaker</b>. Always use the endpoint shown in your dashboard and never put an APIM subscription key in student code.</span></div></section></div>}
       <button className={`dashboard-codex-button dashboard-codex-locked${codexUnlocked ? " unlocked" : ""}`} type="button" onClick={() => { if (codexUnlocked) { setCodexMode("codex"); setCodexOpen(true); } else setCodexPaymentOpen(true); }} aria-label={codexUnlocked ? "Open Codex" : "Unlock Codex for 5 credits"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
         <span>{codexUnlocked ? "Codex" : "Codex · 5 credits"}</span>
