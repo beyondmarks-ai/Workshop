@@ -2,7 +2,8 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { deleteUser, getUser, listUsers, saveUser } from "../../../lib/storage";
 import { adminTotpConfigured, clearAdminAccess, hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
-import { saveActivity } from "../../../lib/activity";
+import { listStudentActivities, saveActivity } from "../../../lib/activity";
+import { marketplaceItems } from "../../../lib/marketplace";
 
 export const runtime = "nodejs";
 
@@ -85,6 +86,37 @@ export async function POST(request) {
       await saveUser(student);
     }
     return Response.json({ sent: recipients.length });
+  }
+  if (body.action === "student-usage") {
+    if (!/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid student." }, { status: 400 });
+    const student = await getUser(body.studentId);
+    if (!student || student.role !== "student") return Response.json({ error: "Student not found." }, { status: 404 });
+    const purchases = Array.isArray(student.marketplacePurchases) ? student.marketplacePurchases : [];
+    const catalog = new Map(marketplaceItems().map((item) => [item.id, item]));
+    const usageByModel = {};
+    for (const activity of await listStudentActivities(student.id)) {
+      const rawModel = String(activity.request?.model || activity.action || "unknown");
+      const model = catalog.has(rawModel) ? rawModel : ({ "claude-sonnet-5": "claude-sonnet", "claude-haiku-4-5": "claude-haiku", "claude-opus-5": "claude-opus" }[rawModel] || rawModel);
+      const entry = usageByModel[model] || { requests: 0, credits: 0 };
+      entry.requests += 1;
+      entry.credits = Math.round((entry.credits + Math.abs(Number(activity.creditsUsed) || 0)) * 100) / 100;
+      usageByModel[model] = entry;
+    }
+    const total = Object.values(usageByModel).reduce((result, entry) => ({ requests: result.requests + entry.requests, credits: Math.round((result.credits + entry.credits) * 100) / 100 }), { requests: 0, credits: 0 });
+    return Response.json({ purchases, usageByModel, total });
+  }
+  if (body.action === "remove-marketplace-purchase") {
+    if (!/^[a-f0-9]{64}$/.test(String(body.studentId || "")) || !String(body.itemId || "")) return Response.json({ error: "Invalid marketplace access request." }, { status: 400 });
+    const student = await getUser(body.studentId);
+    if (!student || student.role !== "student") return Response.json({ error: "Student not found." }, { status: 404 });
+    const purchases = Array.isArray(student.marketplacePurchases) ? student.marketplacePurchases : [];
+    const removed = purchases.find((purchase) => purchase.itemId === body.itemId);
+    if (!removed) return Response.json({ error: "That model is not purchased by this student." }, { status: 404 });
+    student.marketplacePurchases = purchases.filter((purchase) => purchase.itemId !== body.itemId);
+    student.updatedAt = new Date().toISOString();
+    await saveUser(student);
+    await saveActivity({ studentId: student.id, service: "admin-marketplace", action: "access-revoked", status: "completed", creditsUsed: 0, note: `Removed ${removed.name || body.itemId} access`, source: "admin" });
+    return Response.json({ removed: body.itemId, purchases: student.marketplacePurchases });
   }
   const actions = new Set(["verify-student", "adjust-credits", "revoke-student", "delete-student"]);
   if (!actions.has(body.action) || !/^[a-f0-9]{64}$/.test(String(body.studentId || ""))) return Response.json({ error: "Invalid student action." }, { status: 400 });

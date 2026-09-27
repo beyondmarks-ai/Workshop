@@ -3139,6 +3139,22 @@ main::after {
 .admin-student-details span { display: grid; gap: 4px; min-width: 0; }
 .admin-student-details small { color: #ffffff70; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; }
 .admin-student-details b { overflow: hidden; color: #fff; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+.admin-model-access { grid-column: 1 / -1; display: grid; gap: 8px; margin-top: 4px; padding-top: 12px; border-top: 1px solid #ffffff18; }
+.admin-model-access-heading { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-model-access-heading div { gap: 3px !important; }
+.admin-model-access-heading small, .admin-model-access-row small { color: #ffffff70; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; }
+.admin-model-access-heading strong { color: #fff; font-size: .78rem; }
+.admin-model-access-heading > span { color: #76e2bf; font-size: .65rem; font-weight: 800; }
+.admin-model-access-row { display: grid; grid-template-columns: minmax(0, 1.7fr) auto auto auto; align-items: center; gap: 12px; padding: 10px; border: 1px solid #ffffff16; border-radius: 9px; background: #ffffff08; }
+.admin-model-access-row > div { display: grid; gap: 3px; min-width: 0; }
+.admin-model-access-row strong { color: #fff; font-size: .72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-model-access-row span { display: grid; gap: 2px; text-align: right; }
+.admin-model-access-row span b { color: #76e2bf; font-size: .68rem; }
+.admin-model-access-row button { padding: 6px 8px; border: 1px solid #ff8b8b45; border-radius: 7px; background: #ff5c5c12; color: #ffb6b6; font: 800 .6rem "DM Sans", sans-serif; cursor: pointer; }
+.admin-model-access-row button:hover { background: #a52e3d; color: #fff; }
+.admin-model-access-row button:disabled { opacity: .5; cursor: wait; }
+.admin-usage-total { display: flex; align-items: center; justify-content: space-between; padding-top: 5px; color: #ffffff9c; font-size: .65rem; }
+.admin-usage-total b { color: #fff; }
 .admin-table strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
 .admin-table span { overflow: hidden; color: #ffffff9c; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
 .admin-table b { color: #fff; font-size: .7rem; white-space: nowrap; }
@@ -3205,4 +3221,7 @@ main::after {
   .admin-table article, .admin-students-card .admin-table article { grid-template-columns: 1fr; gap: 7px; }
   .admin-actions { justify-content: flex-start; }
   .admin-student-details { grid-template-columns: 1fr 1fr; }
+  .admin-model-access-row { grid-template-columns: 1fr auto; }
+  .admin-model-access-row > div { grid-column: 1 / -1; }
+  .admin-model-access-row button { grid-column: 1 / -1; justify-self: start; }
 }
