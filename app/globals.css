@@ -3145,16 +3145,19 @@ main::after {
 .admin-model-access-heading small, .admin-model-access-row small { color: #ffffff70; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; }
 .admin-model-access-heading strong { color: #fff; font-size: .78rem; }
 .admin-model-access-heading > span { color: #76e2bf; font-size: .65rem; font-weight: 800; }
-.admin-model-access-row { display: grid; grid-template-columns: minmax(0, 1.7fr) auto auto auto; align-items: center; gap: 12px; padding: 10px; border: 1px solid #ffffff16; border-radius: 9px; background: #ffffff08; }
+.admin-model-access-row { display: grid; grid-template-columns: minmax(220px, 1fr) 90px 90px 112px; align-items: center; gap: 16px; padding: 12px 14px; border: 1px solid #ffffff16; border-radius: 9px; background: #ffffff08; }
 .admin-model-access-row > div { display: grid; gap: 3px; min-width: 0; }
 .admin-model-access-row strong { color: #fff; font-size: .72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.admin-model-access-row span { display: grid; gap: 2px; text-align: right; }
-.admin-model-access-row span b { color: #76e2bf; font-size: .68rem; }
-.admin-model-access-row button { padding: 6px 8px; border: 1px solid #ff8b8b45; border-radius: 7px; background: #ff5c5c12; color: #ffb6b6; font: 800 .6rem "DM Sans", sans-serif; cursor: pointer; }
+.admin-model-access-row span { display: grid; gap: 3px; text-align: right; overflow: visible; }
+.admin-model-access-row span b { color: #76e2bf; font-size: .74rem; }
+.admin-model-access-row span small { font-size: .54rem; text-align: right; }
+.admin-model-access-row button { width: 112px; padding: 8px 6px; border: 1px solid #ff8b8b45; border-radius: 7px; background: #ff5c5c12; color: #ffb6b6; font: 800 .6rem "DM Sans", sans-serif; cursor: pointer; }
 .admin-model-access-row button:hover { background: #a52e3d; color: #fff; }
 .admin-model-access-row button:disabled { opacity: .5; cursor: wait; }
 .admin-usage-total { display: flex; align-items: center; justify-content: space-between; padding-top: 5px; color: #ffffff9c; font-size: .65rem; }
 .admin-usage-total b { color: #fff; }
+.admin-student-details > span { padding: 4px 0; }
+.admin-student-details > span b { display: block; }
 .admin-table strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
 .admin-table span { overflow: hidden; color: #ffffff9c; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
 .admin-table b { color: #fff; font-size: .7rem; white-space: nowrap; }
