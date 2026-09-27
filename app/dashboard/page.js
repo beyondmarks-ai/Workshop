@@ -53,6 +53,7 @@ export default function Dashboard() {
   const [documentationOpen, setDocumentationOpen] = useState(false);
   const [marketplaceCart, setMarketplaceCart] = useState([]);
   const [marketplaceMessage, setMarketplaceMessage] = useState("");
+  const [purchaseToast, setPurchaseToast] = useState("");
   const [marketplaceBusy, setMarketplaceBusy] = useState(false);
   const [marketplaceCategory, setMarketplaceCategory] = useState("all");
   const [marketplaceProvider, setMarketplaceProvider] = useState("all");
@@ -174,7 +175,7 @@ export default function Dashboard() {
     const response = await fetch("/api/marketplace", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ itemIds: marketplaceCart }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) setMarketplaceMessage(data.error || "Purchase could not be completed.");
-    else { setUser((current) => ({ ...current, credits: data.credits })); setMarketplacePurchases(data.purchases || []); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); fetch("/api/access").then((accessResponse) => accessResponse.ok && accessResponse.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {}); }
+    else { const purchasedNames = marketplaceItemsList.filter((item) => marketplaceCart.includes(item.id)).map((item) => item.name); setUser((current) => ({ ...current, credits: data.credits })); setMarketplacePurchases(data.purchases || []); setMarketplaceCart([]); setMarketplaceMessage("Added to your services."); setMarketplaceCartOpen(false); setPurchaseToast(`Thank you. ${purchasedNames.join(", ")} is now active.`); window.setTimeout(() => setPurchaseToast(""), 4200); fetch("/api/access").then((accessResponse) => accessResponse.ok && accessResponse.json()).then((accessData) => accessData && setAccess((current) => ({ ...current, ...accessData }))).catch(() => {}); }
     setMarketplaceBusy(false);
   }
 
@@ -196,6 +197,7 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell" aria-label="Beyond Marks AI Academy dashboard">
       <GravityStarsBackground starsCount={Math.max(0, Number(user.credits ?? 100))} className="dashboard-stars" />
+      {purchaseToast && <div className="purchase-toast" role="status"><span className="purchase-toast-icon" aria-hidden="true">✓</span><div><strong>Purchase complete</strong><p>{purchaseToast}</p></div><button type="button" onClick={() => setPurchaseToast("")} aria-label="Close purchase confirmation">×</button></div>}
       <button className="dashboard-codex-button" type="button" onClick={() => { setCodexMode("instructions"); setCodexOpen(true); }} aria-label="Open installation instructions">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
         <span>Instructions</span>

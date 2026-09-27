@@ -2632,6 +2632,13 @@ main::after {
 }
 
 .dashboard-codex-button:hover { background: #066b58; }
+.purchase-toast { position: fixed; top: 78px; right: clamp(18px, 5vw, 72px); z-index: 120; display: flex; align-items: center; gap: 11px; width: min(360px, calc(100vw - 36px)); padding: 13px 14px; border: 1px solid #9de4d1; border-radius: 14px; background: #f3fffb; color: #123d34; box-shadow: 0 14px 34px #0003; animation: purchase-toast-in .25s ease both; }
+.purchase-toast-icon { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #087d66; color: #fff; font: 800 .9rem/1 "Manrope", sans-serif; }
+.purchase-toast div { min-width: 0; flex: 1; }
+.purchase-toast strong { display: block; font: 800 .72rem/1.2 "Manrope", sans-serif; }
+.purchase-toast p { margin: 3px 0 0; overflow: hidden; color: #4b7068; font-size: .68rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.purchase-toast button { width: 24px; height: 24px; border: 0; background: transparent; color: #6b8b84; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+@keyframes purchase-toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 .dashboard-codex-button:active { transform: scale(.96); }
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 .dashboard-codex-locked { left: 158px; }
