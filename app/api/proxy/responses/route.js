@@ -17,9 +17,12 @@ export async function POST(request) {
   const rawBody = await request.text();
   let body;
   try { body = JSON.parse(rawBody); } catch { return Response.json({ error: "Request body must be valid JSON." }, { status: 400 }); }
-  const requestedModel = new URL(request.url).searchParams.get("model") || String(body.model || "");
+  const requestedModel = new URL(request.url).searchParams.get("model") || String(body.model || "") || process.env.APIM_TEST_MODEL || "gpt-5.6-luna";
   const supportedModels = ["gpt-4.1", "gpt-6-astra", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"];
-  const model = supportedModels.includes(requestedModel) ? requestedModel : process.env.APIM_TEST_MODEL || "gpt-5.6-luna";
+  if (!supportedModels.includes(requestedModel)) {
+    return Response.json({ error: `Model '${requestedModel}' is not available through BeyondMarks Codex.` }, { status: 400 });
+  }
+  const model = requestedModel;
   if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
   const cost = creditCost("responses", model);
   const credit = await consumeCredit(user.id, cost);
