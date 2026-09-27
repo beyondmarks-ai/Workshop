@@ -2759,6 +2759,8 @@ main::after {
 .credit-history-modal::-webkit-scrollbar-track { margin: 16px 0; background: transparent; }
 .credit-history-modal::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: #9fb8b2; background-clip: padding-box; }
 .credit-history-modal::-webkit-scrollbar-thumb:hover { background: #087d66; background-clip: padding-box; }
+.credit-history-modal, .api-documentation-modal { scrollbar-width: none; -ms-overflow-style: none; }
+.credit-history-modal::-webkit-scrollbar, .api-documentation-modal::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .credit-history-modal > small { color: #087d66; font: 800 .62rem/1 "Manrope", sans-serif; letter-spacing: .16em; }
 .credit-history-modal h2 { margin: 10px 0 5px; font: 800 1.7rem/1 "Manrope", sans-serif; }
 .credit-history-modal .codex-modal-intro { color: #6b7280; }
