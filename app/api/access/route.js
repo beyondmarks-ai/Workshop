@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { getUser, isVerifiedUser, saveUser } from "../../../lib/storage";
 import { hasMarketplaceAccess, marketplaceItems } from "../../../lib/marketplace";
 import { creditCost } from "../../../lib/pricing";
+import { createStudentApiKey, decryptApiKey } from "../../../lib/api-key";
 
 export const runtime = "nodejs";
 
@@ -56,11 +57,6 @@ function sessionId() {
   } catch { return null; }
 }
 
-function newApiKey() {
-  const key = `bma_${crypto.randomBytes(32).toString("base64url")}`;
-  return { key, hash: crypto.createHash("sha256").update(key).digest("hex"), prefix: key.slice(0, 12) };
-}
-
 function codexUnlocked(user) {
   return new Date(user.codexAccessUntil || 0).getTime() > Date.now();
 }
@@ -75,14 +71,34 @@ export async function GET() {
   return Response.json({ services, endpoints: allEndpoints.filter((endpoint) => !endpoint.model || hasMarketplaceAccess(user, endpoint.model)).map((endpoint) => ({ ...endpoint, creditCost: endpoint.id === "apim-test" ? creditCost("apim-test") : endpoint.model ? creditCost(endpoint.category === "image" ? "images" : endpoint.category === "video" ? "videos" : endpoint.id.startsWith("vertex-") ? "vertex" : endpoint.id.startsWith("sarvam-") ? "sarvam" : endpoint.id.startsWith("claude-") ? "claude" : "responses", endpoint.model) : 0 })), apiKeyPrefix: unlocked ? user.apiKeyPrefix || null : null, apiKeyLocked: !unlocked, apiEndpoint: "/api/proxy/responses" });
 }
 
-export async function POST() {
+export async function POST(request) {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   if (!codexUnlocked(user)) return Response.json({ error: "Unlock Codex with 5 credits to access your API key." }, { status: 403 });
-  const apiKey = newApiKey();
+  const body = await request.json().catch(() => ({}));
+  const action = body.action || "reveal";
+
+  if (action === "reveal") {
+    if (!user.apiKeyEncrypted) {
+      return Response.json({ error: "Your existing key is still active but cannot be displayed. Use Rotate API key only if you need a new key." }, { status: 409 });
+    }
+    try {
+      const apiKey = decryptApiKey(user.apiKeyEncrypted);
+      const digest = crypto.createHash("sha256").update(apiKey).digest("hex");
+      if (digest !== user.apiKeyHash) throw new Error("Stored API key does not match its hash.");
+      return Response.json({ apiKey, apiKeyPrefix: user.apiKeyPrefix });
+    } catch {
+      return Response.json({ error: "Your existing key is still active but cannot be displayed. Use Rotate API key only if you need a new key." }, { status: 409 });
+    }
+  }
+
+  if (action !== "rotate") return Response.json({ error: "Unsupported API key action." }, { status: 400 });
+
+  const apiKey = createStudentApiKey();
   user.apiKeyHash = apiKey.hash;
   user.apiKeyPrefix = apiKey.prefix;
+  user.apiKeyEncrypted = apiKey.encrypted;
   user.updatedAt = new Date().toISOString();
   await saveUser(user);
   return Response.json({ apiKey: apiKey.key, apiKeyPrefix: apiKey.prefix });

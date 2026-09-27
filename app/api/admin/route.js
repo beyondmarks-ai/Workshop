@@ -23,7 +23,7 @@ export async function GET() {
   if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
   const users = await listUsers();
   return Response.json({
-    users: users.map(({ passwordHash, passwordSalt, apiKeyHash, ...user }) => user),
+    users: users.map(({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, ...user }) => user),
     summary: { students: users.filter((user) => user.role === "student").length, pending: users.filter((user) => user.role === "student" && user.verified !== true).length, credits: users.reduce((total, user) => total + (user.role === "student" ? user.credits ?? 0 : 0), 0) }
   });
 }

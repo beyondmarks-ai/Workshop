@@ -2944,6 +2944,7 @@ main::after {
 }
 
 .dashboard-api-key button:hover { background: #f0f0f0; }
+.dashboard-api-key button:disabled { cursor: wait; opacity: .55; }
 .dashboard-api-key svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
 .dashboard-api-key small { color: #000; font-size: .62rem; }
 
