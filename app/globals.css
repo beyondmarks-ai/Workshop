@@ -3106,24 +3106,26 @@ main::after {
 .admin-summary small { color: #ffffffa3; font-size: .7rem; }
 .admin-summary strong { font: 800 1.7rem/1 "Manrope", sans-serif; }
 .admin-card { padding: 22px; }
-.admin-card-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.admin-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
 .admin-card-heading h2 { margin: 7px 0 0; font: 700 1.25rem/1 "Manrope", sans-serif; }
-.admin-card-heading input { width: min(240px, 45%); padding: 10px 12px; border: 1px solid #ffffff38; border-radius: 8px; outline: none; background: #07162d99; color: #fff; }
+.admin-card-heading input { width: 220px; min-height: 38px; padding: 0 12px; border: 1px solid #ffffff38; border-radius: 9px; outline: none; background: #07162d99; color: #fff; }
 .admin-card-tools { display: flex; align-items: center; gap: 8px; }
 .admin-logout-button { padding: 9px 11px; border: 1px solid #ff8b8b45; border-radius: 8px; background: transparent; color: #ffb6b6; font: 800 .68rem "DM Sans", sans-serif; cursor: pointer; }
 .admin-logout-button:hover { background: #ff8b8b18; }
-.admin-note-tools { display: flex; gap: 8px; margin: 0 0 16px; }
-.admin-note-tools input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d99; color: #fff; outline: none; font-size: .72rem; }
-.admin-note-tools select { padding: 0 10px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d; color: #fff; font-size: .72rem; }
-.admin-note-tools button { padding: 0 12px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .66rem "DM Sans", sans-serif; cursor: pointer; }
+.admin-note-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 10px; border: 1px solid #ffffff18; border-radius: 11px; background: #ffffff06; }
+.admin-note-tools strong { white-space: nowrap; }
+.admin-note-tools span { color: #ffffff9c; font-size: .68rem; }
+.admin-note-tools input { flex: 1 1 180px; min-width: 130px; min-height: 36px; padding: 0 12px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d99; color: #fff; outline: none; font-size: .72rem; }
+.admin-note-tools select { min-height: 36px; padding: 0 10px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d; color: #fff; font-size: .72rem; }
+.admin-note-tools button { min-height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .66rem "DM Sans", sans-serif; cursor: pointer; }
 .admin-note-tools button:disabled { opacity: .5; cursor: wait; }
-.admin-notification-tools { display: grid; grid-template-columns: 1fr 1fr 2fr auto; gap: 8px; align-items: center; margin: 0 0 16px; padding: 12px; border: 1px solid #ffffff20; border-radius: 10px; background: #ffffff08; }
+.admin-notification-tools { display: grid; grid-template-columns: minmax(150px, .8fr) minmax(180px, 1fr) minmax(260px, 2fr) auto; gap: 10px; align-items: center; margin: 0 0 18px; padding: 14px; border: 1px solid #ffffff20; border-radius: 11px; background: #ffffff08; }
 .admin-notification-tools div { display: grid; gap: 3px; }
 .admin-notification-tools div span { color: #ffffff9c; font-size: .62rem; }
 .admin-notification-tools input:not([type="checkbox"]), .admin-notification-tools textarea { width: 100%; padding: 9px 10px; border: 1px solid #ffffff2e; border-radius: 8px; background: #07162d99; color: #fff; font: .7rem "DM Sans", sans-serif; }
 .admin-notification-tools textarea { min-height: 34px; resize: vertical; }
-.admin-notification-tools label { color: #ffffffad; font-size: .66rem; }
-.admin-notification-tools button { min-height: 34px; padding: 0 12px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .66rem "DM Sans", sans-serif; cursor: pointer; }
+.admin-notification-tools label { grid-column: 4; grid-row: 2; color: #ffffffad; font-size: .66rem; white-space: nowrap; }
+.admin-notification-tools button { grid-column: 1; grid-row: 2; min-height: 34px; padding: 0 12px; border: 0; border-radius: 8px; background: #087d66; color: #fff; font: 800 .66rem "DM Sans", sans-serif; cursor: pointer; }
 .admin-notification-tools button:disabled { opacity: .5; cursor: wait; }
 .admin-comment-button { color: #bfeee4 !important; border-color: #087d6680 !important; }
 .admin-cancel-button { background: transparent !important; border: 1px solid #ffffff2e !important; }
@@ -3221,6 +3223,7 @@ main::after {
   .admin-note-tools { flex-direction: column; }
   .admin-note-tools button { min-height: 34px; }
   .admin-notification-tools { grid-template-columns: 1fr; }
+  .admin-notification-tools label, .admin-notification-tools button { grid-column: auto; grid-row: auto; }
   .admin-table article, .admin-students-card .admin-table article { grid-template-columns: 1fr; gap: 7px; }
   .admin-actions { justify-content: flex-start; }
   .admin-student-details { grid-template-columns: 1fr 1fr; }
