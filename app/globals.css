@@ -2638,6 +2638,10 @@ main::after {
 .purchase-toast strong { display: block; font: 800 .72rem/1.2 "Manrope", sans-serif; }
 .purchase-toast p { margin: 3px 0 0; overflow: hidden; color: #4b7068; font-size: .68rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
 .purchase-toast button { width: 24px; height: 24px; border: 0; background: transparent; color: #6b8b84; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+.purchase-toast-error { border-color: #fecaca; background: #fff5f5; color: #7f1d1d; }
+.purchase-toast-error .purchase-toast-icon { background: #dc2626; }
+.purchase-toast-error p { color: #a44b4b; }
+.purchase-toast-error button { color: #a44b4b; }
 @keyframes purchase-toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 .dashboard-codex-button:active { transform: scale(.96); }
 .dashboard-codex-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
