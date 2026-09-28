@@ -7,6 +7,10 @@ import { marketplaceItems } from "../../../lib/marketplace";
 
 export const runtime = "nodejs";
 
+export function OPTIONS() {
+  return new Response(null, { status: 204 });
+}
+
 async function currentUser() {
   try {
     const [payload, signature] = cookies().get("astra_session")?.value.split(".") || [];
@@ -19,8 +23,8 @@ async function currentUser() {
   } catch { return null; }
 }
 
-export async function GET() {
-  if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
+export async function GET(request) {
+  if (!hasAdminAccess(request)) return Response.json({ error: "Admin verification required." }, { status: 401 });
   const users = await listUsers();
   return Response.json({
     users: users.map(({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, processedRefundIds, ...user }) => user),
@@ -33,14 +37,14 @@ export async function POST(request) {
   if (body.action === "verify-admin") {
     if (!adminTotpConfigured()) return Response.json({ error: "Google Authenticator is not configured on the server." }, { status: 503 });
     if (!validAdminCredentials(body.email, body.pin, body.code)) return Response.json({ error: "Invalid admin email, PIN, or authenticator code." }, { status: 403 });
-    setAdminAccess();
-    return Response.json({ verified: true });
+    const token = setAdminAccess();
+    return Response.json({ verified: true, token, expiresIn: 3600 });
   }
   if (body.action === "logout-admin") {
     clearAdminAccess();
     return Response.json({ loggedOut: true });
   }
-  if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
+  if (!hasAdminAccess(request)) return Response.json({ error: "Admin verification required." }, { status: 401 });
   if (body.action === "polish-comment") {
     const comment = String(body.comment || "").trim().slice(0, 500);
     const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
