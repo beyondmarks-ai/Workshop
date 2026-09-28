@@ -5,6 +5,27 @@ import { finishUsageCharge, startUsageCharge } from "../../../../lib/billing";
 
 export const runtime = "nodejs";
 
+function videoId(result) {
+  try {
+    const value = JSON.parse(result);
+    return value?.id || value?.video_id || value?.data?.id || value?.operation?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+function responseHeaders(response, credits) {
+  const headers = new Headers({
+    "content-type": response.headers.get("content-type") || "application/json",
+    "x-credits-remaining": String(credits)
+  });
+  for (const name of ["retry-after", "x-request-id", "request-id"]) {
+    const value = response.headers.get(name);
+    if (value) headers.set(name, value);
+  }
+  return headers;
+}
+
 function suppliedKey(request) {
   const bearer = request.headers.get("authorization") || "";
   return request.headers.get("x-api-key") || (bearer.startsWith("Bearer ") ? bearer.slice(7).trim() : "");
@@ -33,8 +54,9 @@ export async function POST(request) {
       body: JSON.stringify(body)
     });
     const result = await response.text();
-    await finishUsageCharge(credit, { studentId: user.id, httpStatus: response.status, response: result }).catch(() => {});
-    return new Response(result, { status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/json", "x-credits-remaining": String(credit.credits) } });
+    const id = response.ok ? videoId(result) : null;
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: response.status, response: result, videoJobId: id }).catch(() => {});
+    return new Response(result, { status: response.status, headers: responseHeaders(response, credit.credits) });
   } catch (error) {
     await finishUsageCharge(credit, { studentId: user.id, httpStatus: 502, error: error.message || "Could not reach video endpoint." }).catch(() => {});
     return Response.json({ error: error.message || "Could not reach video endpoint.", credits: credit.credits }, { status: 502 });
