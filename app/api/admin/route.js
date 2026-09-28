@@ -23,7 +23,7 @@ export async function GET() {
   if (!hasAdminAccess()) return Response.json({ error: "Admin verification required." }, { status: 401 });
   const users = await listUsers();
   return Response.json({
-    users: users.map(({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, ...user }) => user),
+    users: users.map(({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, processedRefundIds, ...user }) => user),
     summary: { students: users.filter((user) => user.role === "student").length, pending: users.filter((user) => user.role === "student" && user.verified !== true).length, credits: users.reduce((total, user) => total + (user.role === "student" ? user.credits ?? 0 : 0), 0) }
   });
 }
@@ -95,11 +95,13 @@ export async function POST(request) {
     const catalog = new Map(marketplaceItems().map((item) => [item.id, item]));
     const usageByModel = {};
     for (const activity of await listStudentActivities(student.id)) {
+      if (activity.service === "automatic-refund" || activity.action === "credit-refunded") continue;
       const rawModel = String(activity.request?.model || activity.action || "unknown");
       const model = catalog.has(rawModel) ? rawModel : ({ "claude-sonnet-5": "claude-sonnet", "claude-haiku-4-5": "claude-haiku", "claude-opus-5": "claude-opus" }[rawModel] || rawModel);
       const entry = usageByModel[model] || { requests: 0, credits: 0 };
       entry.requests += 1;
-      entry.credits = Math.round((entry.credits + Math.abs(Number(activity.creditsUsed) || 0)) * 100) / 100;
+      const netCredits = activity.refundStatus === "refunded" ? 0 : Math.abs(Number(activity.creditsUsed) || 0);
+      entry.credits = Math.round((entry.credits + netCredits) * 100) / 100;
       usageByModel[model] = entry;
     }
     const total = Object.values(usageByModel).reduce((result, entry) => ({ requests: result.requests + entry.requests, credits: Math.round((result.credits + entry.credits) * 100) / 100 }), { requests: 0, credits: 0 });

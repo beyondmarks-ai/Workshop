@@ -12,7 +12,7 @@ const cookieName = "astra_session";
 const adminEmail = "admin@beyondmarks.ai";
 const normalizeContact = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, "");
 const userId = (contact) => crypto.createHash("sha256").update(contact).digest("hex");
-const publicUser = ({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, ...user }) => user;
+const publicUser = ({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, processedRefundIds, ...user }) => user;
 
 async function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
   return { salt, hash: (await scrypt(password, salt, 64)).toString("hex") };

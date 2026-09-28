@@ -1,6 +1,7 @@
-import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
+import { getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
 import { creditCost } from "../../../../lib/pricing";
 import { hasMarketplaceAccess } from "../../../../lib/marketplace";
+import { finishUsageCharge, startUsageCharge } from "../../../../lib/billing";
 
 export const runtime = "nodejs";
 
@@ -16,14 +17,15 @@ export async function POST(request) {
   const requestedModel = new URL(request.url).searchParams.get("model");
   const model = requestedModel === "sora-2" ? "sora-2" : process.env.APIM_VIDEO_MODEL || "sora-2";
   if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
-  const cost = creditCost("videos", model);
-  const credit = await consumeCredit(user.id, cost);
-  if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
   const apimKey = process.env.APIM_SUBSCRIPTION_KEY;
   if (!gateway || !apimKey) return Response.json({ error: "API gateway is not configured." }, { status: 503 });
+  let body;
+  try { body = await request.json(); } catch { return Response.json({ error: "Request body must be valid JSON." }, { status: 400 }); }
+  const cost = creditCost("videos", model);
+  const credit = await startUsageCharge(user.id, cost, { service: "videos", action: "video-generation", model, request: { model, prompt: body.prompt } });
+  if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   try {
-    const body = await request.json();
     body.model = model;
     const response = await fetch(`${gateway}/videos/videos`, {
       method: "POST",
@@ -31,8 +33,10 @@ export async function POST(request) {
       body: JSON.stringify(body)
     });
     const result = await response.text();
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: response.status, response: result }).catch(() => {});
     return new Response(result, { status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/json", "x-credits-remaining": String(credit.credits) } });
   } catch (error) {
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: 502, error: error.message || "Could not reach video endpoint." }).catch(() => {});
     return Response.json({ error: error.message || "Could not reach video endpoint.", credits: credit.credits }, { status: 502 });
   }
 }

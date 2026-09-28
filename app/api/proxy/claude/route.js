@@ -1,7 +1,7 @@
-import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
-import { saveActivity } from "../../../../lib/activity";
+import { getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
 import { creditCost } from "../../../../lib/pricing";
 import { hasMarketplaceAccess } from "../../../../lib/marketplace";
+import { finishUsageCharge, startUsageCharge } from "../../../../lib/billing";
 
 export const runtime = "nodejs";
 
@@ -17,20 +17,22 @@ export async function POST(request) {
   const model = new URL(request.url).searchParams.get("model") || "claude-sonnet";
   const deployments = { "claude-sonnet": "claude-sonnet-5", "claude-haiku": "claude-haiku-4-5", "claude-opus": "claude-opus-5" };
   if (!deployments[model] || !hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
-  const credit = await consumeCredit(user.id, creditCost("claude", model));
-  if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
   const apimKey = process.env.APIM_SUBSCRIPTION_KEY;
   if (!gateway || !apimKey) return Response.json({ error: "API gateway is not configured." }, { status: 503 });
+  let body;
+  try { body = JSON.parse(await request.text()); } catch { return Response.json({ error: "Request body must be valid JSON." }, { status: 400 }); }
+  const cost = creditCost("claude", model);
+  const credit = await startUsageCharge(user.id, cost, { service: "claude", action: "messages", model, request: { model } });
+  if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   try {
-    const rawBody = await request.text();
-    const body = JSON.parse(rawBody);
     body.model = deployments[model];
     const response = await fetch(`${gateway}/claude/messages`, { method: "POST", headers: { "content-type": "application/json", "Ocp-Apim-Subscription-Key": apimKey }, body: JSON.stringify(body) });
     const result = await response.text();
-    await saveActivity({ studentId: user.id, service: "claude", action: "messages", status: response.status, creditsUsed: creditCost("claude", model), request: { model: body.model }, response: result.slice(0, 12000) }).catch(() => {});
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: response.status, response: result }).catch(() => {});
     return new Response(result, { status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/json", "x-credits-remaining": String(credit.credits) } });
   } catch (error) {
-    return Response.json({ error: error instanceof SyntaxError ? "Request body must be valid JSON." : error.message || "Could not reach API gateway.", credits: credit.credits }, { status: error instanceof SyntaxError ? 400 : 502 });
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: 502, error: error.message || "Could not reach API gateway." }).catch(() => {});
+    return Response.json({ error: error.message || "Could not reach API gateway.", credits: credit.credits }, { status: 502 });
   }
 }

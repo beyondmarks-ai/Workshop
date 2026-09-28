@@ -19,6 +19,7 @@ const documentationSections = [
 ];
 
 function creditActivityLabel(activity) {
+  if (activity.service === "automatic-refund" || activity.action === "credit-refunded") return "Automatic refund";
   if (activity.service === "admin-credit") return activity.action === "credit-added" ? "Credits added" : "Credits removed";
   if (activity.service === "admin-marketplace") return "Marketplace access removed";
   if (activity.service === "marketplace") return "Marketplace purchase";
@@ -30,7 +31,7 @@ function creditActivityLabel(activity) {
 }
 
 function creditActivityKind(activity) {
-  return activity.action === "credit-added" ? "credit-added" : "credit-deducted";
+  return activity.action === "credit-added" || activity.action === "credit-refunded" ? "credit-added" : "credit-deducted";
 }
 
 export default function Dashboard() {

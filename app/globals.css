@@ -3327,7 +3327,10 @@ main::after {
   z-index: 2;
 }
 
-.admin-shell { position: relative; min-height: 100svh; padding: 42px clamp(20px, 6vw, 90px); overflow: hidden; background: #000; color: #fff; }
+.admin-shell { position: relative; width: 100%; height: 100svh; min-height: 100svh; padding: 42px clamp(20px, 6vw, 90px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: #000; color: #fff; scrollbar-width: thin; scrollbar-color: #087d66 #000; }
+.admin-shell::-webkit-scrollbar { width: 9px; }
+.admin-shell::-webkit-scrollbar-track { background: #000; }
+.admin-shell::-webkit-scrollbar-thumb { border: 2px solid #000; border-radius: 999px; background: #087d66; }
 .admin-shell > *:not(.dashboard-stars) { position: relative; z-index: 1; }
 .admin-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; max-width: 1180px; margin: 0 auto 30px; }
 .admin-header small, .admin-card-heading small { color: #ffffff9c; font: 700 .62rem/1 "Manrope", sans-serif; letter-spacing: .17em; }

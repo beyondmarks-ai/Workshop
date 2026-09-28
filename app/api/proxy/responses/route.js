@@ -1,7 +1,7 @@
-import { consumeCredit, getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
-import { saveActivity } from "../../../../lib/activity";
+import { getUserByApiKey, isVerifiedUser } from "../../../../lib/storage";
 import { creditCost } from "../../../../lib/pricing";
 import { hasMarketplaceAccess } from "../../../../lib/marketplace";
+import { finishUsageCharge, startUsageCharge } from "../../../../lib/billing";
 
 export const runtime = "nodejs";
 
@@ -24,19 +24,20 @@ export async function POST(request) {
   }
   const model = requestedModel;
   if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
-  const cost = creditCost("responses", model);
-  const credit = await consumeCredit(user.id, cost);
-  if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
   const apimKey = process.env.APIM_SUBSCRIPTION_KEY;
   if (!gateway || !apimKey) return Response.json({ error: "API gateway is not configured." }, { status: 503 });
+  const cost = creditCost("responses", model);
+  const credit = await startUsageCharge(user.id, cost, { service: "foundry-responses", action: "responses", model, request: { model, input: body.input } });
+  if (!credit.allowed) return Response.json({ error: "No credits remaining." }, { status: 429 });
   try {
     body.model = model;
     const response = await fetch(`${gateway}/openai/responses?api-version=2025-03-01-preview`, { method: "POST", headers: { "content-type": "application/json", "Ocp-Apim-Subscription-Key": apimKey }, body: JSON.stringify(body) });
     const result = await response.text();
-    await saveActivity({ studentId: user.id, service: "foundry-responses", action: "responses", status: response.status, creditsUsed: cost, request: { model: body.model, input: body.input }, response: result.slice(0, 12000) }).catch(() => {});
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: response.status, response: result }).catch(() => {});
     return new Response(result, { status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/json", "x-credits-remaining": String(credit.credits) } });
   } catch (error) {
+    await finishUsageCharge(credit, { studentId: user.id, httpStatus: 502, error: error.message || "Could not reach API gateway." }).catch(() => {});
     return Response.json({ error: error.message || "Could not reach API gateway.", credits: credit.credits }, { status: 502 });
   }
 }
