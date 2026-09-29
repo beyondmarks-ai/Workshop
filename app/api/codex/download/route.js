@@ -18,7 +18,12 @@ function sessionId() {
 export async function GET() {
   const user = await getUser(sessionId());
   if (!user) return Response.json({ error: "Not signed in." }, { status: 401 });
-  if (new Date(user.codexAccessUntil || 0).getTime() <= Date.now()) return Response.json({ error: "Unlock Codex to download the tools." }, { status: 403 });
-  const file = await getStoredFile("codex-tools", "tools.rar");
-  return new Response(file.data, { headers: { "content-type": "application/vnd.rar", "content-disposition": 'attachment; filename="tools.rar"', "content-length": String(file.data.length) } });
+  if (new Date(user.codexAccessUntil || 0).getTime() <= Date.now()) return Response.json({ error: "Unlock Codex to download the Windows setup." }, { status: 403 });
+  const file = await getStoredFile("codex-tools", "beyondmarks-codex-windows-setup.zip");
+  return new Response(file.data, { headers: {
+    "content-type": "application/zip",
+    "content-disposition": 'attachment; filename="beyondmarks-codex-windows-setup.zip"',
+    "content-length": String(file.data.length),
+    "cache-control": "private, no-store",
+  } });
 }

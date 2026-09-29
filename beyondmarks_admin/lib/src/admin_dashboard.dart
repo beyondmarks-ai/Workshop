@@ -490,13 +490,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   : selected.remove(student.id),
                             ),
                             onExpand: () => toggleDetails(student),
-                            onVerify: () => run(
-                              'verify:${student.id}',
-                              () => widget.controller.api.verifyStudent(
+                            onVerify: () async {
+                              final ok = await widget.controller.verifyStudent(
                                 student.id,
-                              ),
-                              '${student.name} now has access.',
-                            ),
+                              );
+                              if (mounted) {
+                                notice(
+                                  ok
+                                      ? '${student.name} now has access.'
+                                      : (widget.controller.error ??
+                                            'Verification failed.'),
+                                  error: !ok,
+                                );
+                              }
+                            },
                             onRevoke: () async {
                               if (await confirm(
                                 'Revoke access?',
@@ -504,13 +511,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 confirmText: 'Revoke',
                                 destructive: true,
                               )) {
-                                await run(
-                                  'revoke:${student.id}',
-                                  () => widget.controller.api.revokeStudent(
-                                    student.id,
-                                  ),
-                                  '${student.name} access revoked.',
-                                );
+                                final ok = await widget.controller
+                                    .revokeStudent(student.id);
+                                if (mounted) {
+                                  notice(
+                                    ok
+                                        ? '${student.name} access revoked.'
+                                        : (widget.controller.error ??
+                                              'Could not revoke access.'),
+                                    error: !ok,
+                                  );
+                                }
                               }
                             },
                             onDelete: () async {
@@ -520,13 +531,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 confirmText: 'Delete',
                                 destructive: true,
                               )) {
-                                await run(
-                                  'delete:${student.id}',
-                                  () => widget.controller.api.deleteStudent(
-                                    student.id,
-                                  ),
-                                  '${student.name} deleted.',
-                                );
+                                final ok = await widget.controller
+                                    .deleteStudent(student.id);
+                                if (mounted) {
+                                  notice(
+                                    ok
+                                        ? '${student.name} deleted.'
+                                        : (widget.controller.error ??
+                                              'Could not delete student.'),
+                                    error: !ok,
+                                  );
+                                }
                                 if (mounted) {
                                   setState(() => selected.remove(student.id));
                                 }
@@ -569,6 +584,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                     );
                   }, childCount: visible.length),
+                ),
+              ),
+            if (data.hasMore)
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 110),
+                    child: FilledButton.tonalIcon(
+                      onPressed: widget.controller.loadingMore
+                          ? null
+                          : widget.controller.loadMore,
+                      icon: widget.controller.loadingMore
+                          ? const SizedBox.square(
+                              dimension: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.expand_more_rounded),
+                      label: Text(
+                        widget.controller.loadingMore
+                            ? 'Loading students…'
+                            : 'Load more students',
+                      ),
+                    ),
+                  ),
                 ),
               ),
           ],

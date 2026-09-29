@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { getUser, isVerifiedUser, saveUser } from "../../../lib/storage";
-import { marketplaceCatalog, marketplaceItems } from "../../../lib/marketplace";
+import { isStarterPackModel, marketplaceCatalog, marketplaceItems } from "../../../lib/marketplace";
 import { saveActivity } from "../../../lib/activity";
 
 export const runtime = "nodejs";
@@ -35,6 +35,8 @@ export async function POST(request) {
   const total = items.reduce((sum, item) => sum + item.credits, 0);
   const credits = Number.isFinite(Number(user.credits)) ? Number(user.credits) : 0;
   if (!items.length || items.length !== ids.length) return Response.json({ error: "Select valid marketplace items." }, { status: 400 });
+  if (items.some((item) => item.academyOnly)) return Response.json({ error: "This service is available only to students admitted to the academy. Contact the administrator for access." }, { status: 403 });
+  if (items.some((item) => isStarterPackModel(item.id))) return Response.json({ error: "Starter pack models are already included with your account." }, { status: 409 });
   if (items.some((item) => ownedIds.has(item.id))) return Response.json({ error: "One or more selected models are already bought." }, { status: 409 });
   if (credits < total) return Response.json({ error: `You need ${total} credits for this cart.`, credits }, { status: 402 });
   user.credits = Math.round((credits - total) * 100) / 100;

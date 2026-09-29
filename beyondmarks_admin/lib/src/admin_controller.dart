@@ -13,6 +13,7 @@ class AdminController extends ChangeNotifier {
   AdminDashboardData? data;
   String? error;
   bool refreshing = false;
+  bool loadingMore = false;
   final Set<String> busyActions = {};
   final Map<String, StudentUsage> usage = {};
 
@@ -37,12 +38,12 @@ class AdminController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login(String email, String pin, String code) async {
+  Future<bool> login(String email, String pin) async {
     error = null;
     _busy('login', true);
     try {
-      await api.login(email: email, pin: pin, code: code);
-      data = await api.dashboard();
+      await api.login(email: email, pin: pin);
+      data = await api.dashboard(page: 1);
       sessionState = AdminSessionState.signedIn;
       return true;
     } on AdminApiException catch (exception) {
@@ -54,6 +55,30 @@ class AdminController extends ChangeNotifier {
       return false;
     } finally {
       _busy('login', false);
+    }
+  }
+
+  Future<void> loadMore() async {
+    final current = data;
+    if (current == null || !current.hasMore || loadingMore) return;
+    loadingMore = true;
+    notifyListeners();
+    try {
+      final next = await api.dashboard(page: current.page + 1);
+      final known = current.users.map((student) => student.id).toSet();
+      data = next.copyWith(
+        users: [
+          ...current.users,
+          ...next.users.where((student) => !known.contains(student.id)),
+        ],
+      );
+    } on AdminApiException catch (exception) {
+      error = exception.message;
+    } catch (_) {
+      error = 'Could not load more students. Check your connection.';
+    } finally {
+      loadingMore = false;
+      notifyListeners();
     }
   }
 
@@ -111,6 +136,66 @@ class AdminController extends ChangeNotifier {
     } finally {
       _busy(key, false);
     }
+  }
+
+  Future<bool> verifyStudent(String studentId) =>
+      run('verify:$studentId', () async {
+        await api.verifyStudent(studentId);
+        _setVerified(studentId, true);
+      }, reload: false);
+
+  Future<bool> revokeStudent(String studentId) =>
+      run('revoke:$studentId', () async {
+        await api.revokeStudent(studentId);
+        _setVerified(studentId, false);
+      }, reload: false);
+
+  Future<bool> deleteStudent(String studentId) =>
+      run('delete:$studentId', () async {
+        await api.deleteStudent(studentId);
+        final current = data;
+        if (current == null) return;
+        Student? removed;
+        for (final student in current.users) {
+          if (student.id == studentId) removed = student;
+        }
+        data = current.copyWith(
+          users: current.users
+              .where((student) => student.id != studentId)
+              .toList(),
+          summary: current.summary.copyWith(
+            students: current.summary.students - 1,
+            pending: removed != null && !removed.verified
+                ? current.summary.pending - 1
+                : current.summary.pending,
+            credits: removed == null
+                ? current.summary.credits
+                : current.summary.credits - removed.credits,
+          ),
+        );
+        usage.remove(studentId);
+      }, reload: false);
+
+  void _setVerified(String studentId, bool verified) {
+    final current = data;
+    if (current == null) return;
+    Student? existing;
+    for (final student in current.users) {
+      if (student.id == studentId) existing = student;
+    }
+    if (existing == null || existing.verified == verified) return;
+    data = current.copyWith(
+      users: current.users
+          .map(
+            (student) => student.id == studentId
+                ? student.copyWith(verified: verified)
+                : student,
+          )
+          .toList(),
+      summary: current.summary.copyWith(
+        pending: current.summary.pending + (verified ? -1 : 1),
+      ),
+    );
   }
 
   Future<StudentUsage?> loadUsage(

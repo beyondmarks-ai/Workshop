@@ -15,8 +15,9 @@ export async function POST(request) {
   if (!user) return Response.json({ error: "Invalid student API key." }, { status: 401 });
   if (!isVerifiedUser(user)) return Response.json({ error: "Your account is waiting for admin verification." }, { status: 403 });
   const model = new URL(request.url).searchParams.get("model") || "claude-sonnet";
-  const deployments = { "claude-sonnet": "claude-sonnet-5", "claude-haiku": "claude-haiku-4-5", "claude-opus": "claude-opus-5" };
-  if (!deployments[model] || !hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
+  const deployments = { "claude-sonnet": "claude-sonnet-5" };
+  if (!deployments[model]) return Response.json({ error: "This Claude model is not currently available through BeyondMarks." }, { status: 400 });
+  if (!hasMarketplaceAccess(user, model)) return Response.json({ error: "Buy this model in the marketplace to unlock its endpoint." }, { status: 403 });
   const gateway = process.env.APIM_GATEWAY_URL?.replace(/\/$/, "");
   const apimKey = process.env.APIM_SUBSCRIPTION_KEY;
   if (!gateway || !apimKey) return Response.json({ error: "API gateway is not configured." }, { status: 503 });

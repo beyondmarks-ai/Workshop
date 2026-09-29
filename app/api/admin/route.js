@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { deleteUser, getUser, listUsers, saveUser } from "../../../lib/storage";
-import { adminTotpConfigured, clearAdminAccess, hasAdminAccess, setAdminAccess, validAdminCredentials } from "../../../lib/admin-auth";
+import { adminTotpConfigured, clearAdminAccess, hasAdminAccess, setAdminAccess, validAdminAppCredentials, validAdminCredentials } from "../../../lib/admin-auth";
 import { listStudentActivities, saveActivity } from "../../../lib/activity";
 import { marketplaceItems } from "../../../lib/marketplace";
 
@@ -26,14 +26,28 @@ async function currentUser() {
 export async function GET(request) {
   if (!hasAdminAccess(request)) return Response.json({ error: "Admin verification required." }, { status: 401 });
   const users = await listUsers();
+  const url = new URL(request.url);
+  const paginated = url.searchParams.has("page");
+  const page = Math.max(1, Number.parseInt(url.searchParams.get("page") || "1", 10) || 1);
+  const pageSize = Math.min(100, Math.max(10, Number.parseInt(url.searchParams.get("pageSize") || "40", 10) || 40));
+  const students = users.filter((user) => user.role === "student").sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  const offset = (page - 1) * pageSize;
+  const pageUsers = paginated ? students.slice(offset, offset + pageSize) : students;
   return Response.json({
-    users: users.map(({ passwordHash, passwordSalt, apiKeyHash, apiKeyEncrypted, processedRefundIds, ...user }) => user),
-    summary: { students: users.filter((user) => user.role === "student").length, pending: users.filter((user) => user.role === "student" && user.verified !== true).length, credits: users.reduce((total, user) => total + (user.role === "student" ? user.credits ?? 0 : 0), 0) }
+    users: pageUsers.map((user) => ({ id: user.id, role: "student", name: user.name, email: user.email, verified: user.verified === true, credits: user.credits ?? 0, branch: user.branch, semester: user.semester, usn: user.usn, contactNumber: user.contactNumber || user.contact, createdAt: user.createdAt })),
+    summary: { students: students.length, pending: students.filter((user) => user.verified !== true).length, credits: students.reduce((total, user) => total + (user.credits ?? 0), 0) },
+    pagination: { page, pageSize, total: students.length, hasMore: paginated && offset + pageUsers.length < students.length }
   });
 }
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
+  if (body.action === "verify-admin-app") {
+    if (!validAdminAppCredentials(body.email, body.pin)) return Response.json({ error: "Invalid admin email or PIN." }, { status: 403 });
+    const maxAge = 365 * 24 * 60 * 60;
+    const token = setAdminAccess(maxAge);
+    return Response.json({ verified: true, token, expiresIn: maxAge });
+  }
   if (body.action === "verify-admin") {
     if (!adminTotpConfigured()) return Response.json({ error: "Google Authenticator is not configured on the server." }, { status: 503 });
     if (!validAdminCredentials(body.email, body.pin, body.code)) return Response.json({ error: "Invalid admin email, PIN, or authenticator code." }, { status: 403 });

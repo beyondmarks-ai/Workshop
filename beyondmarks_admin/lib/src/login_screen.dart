@@ -16,25 +16,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController(text: 'admin@beyondmarks.ai');
   final pinController = TextEditingController();
-  final codeController = TextEditingController();
   bool hidePin = true;
 
   @override
   void dispose() {
     emailController.dispose();
     pinController.dispose();
-    codeController.dispose();
     super.dispose();
   }
 
   Future<void> submit() async {
     FocusManager.instance.primaryFocus?.unfocus();
     if (!(formKey.currentState?.validate() ?? false)) return;
-    await widget.controller.login(
-      emailController.text,
-      pinController.text,
-      codeController.text,
-    );
+    await widget.controller.login(emailController.text, pinController.text);
   }
 
   @override
@@ -85,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Sign in with your PIN and current Google Authenticator code.',
+                                'Sign in once with your email and PIN. This device will keep you signed in securely.',
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       color: const Color(0xFF667085),
@@ -97,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 controller: emailController,
                                 autofillHints: const [AutofillHints.username],
                                 keyboardType: TextInputType.emailAddress,
-                                textInputAction: TextInputAction.next,
+                                textInputAction: TextInputAction.done,
                                 decoration: const InputDecoration(
                                   labelText: 'Admin email',
                                   prefixIcon: Icon(
@@ -138,29 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 validator: (value) => value?.length == 6
                                     ? null
                                     : 'PIN must contain 6 digits',
-                              ),
-                              const SizedBox(height: 14),
-                              TextFormField(
-                                controller: codeController,
-                                autofillHints: const [
-                                  AutofillHints.oneTimeCode,
-                                ],
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.done,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(6),
-                                ],
                                 onFieldSubmitted: (_) => busy ? null : submit(),
-                                decoration: const InputDecoration(
-                                  labelText: 'Authenticator code',
-                                  prefixIcon: Icon(
-                                    Icons.verified_user_outlined,
-                                  ),
-                                ),
-                                validator: (value) => value?.length == 6
-                                    ? null
-                                    : 'Enter the current 6-digit code',
                               ),
                               if (widget.controller.error != null) ...[
                                 const SizedBox(height: 14),
@@ -195,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   SizedBox(width: 6),
                                   Text(
-                                    'Encrypted session · expires after 1 hour',
+                                    'Secure sign-in stored on this device',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Color(0xFF7A8799),

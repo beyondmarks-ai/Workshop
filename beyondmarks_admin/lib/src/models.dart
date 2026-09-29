@@ -9,6 +9,13 @@ class AdminSummary {
   final int pending;
   final double credits;
 
+  AdminSummary copyWith({int? students, int? pending, double? credits}) =>
+      AdminSummary(
+        students: students ?? this.students,
+        pending: pending ?? this.pending,
+        credits: credits ?? this.credits,
+      );
+
   factory AdminSummary.fromJson(Map<String, dynamic> json) => AdminSummary(
     students: _integer(json['students']),
     pending: _integer(json['pending']),
@@ -41,6 +48,19 @@ class Student {
   final String contact;
   final DateTime? createdAt;
 
+  Student copyWith({bool? verified, double? credits}) => Student(
+    id: id,
+    name: name,
+    email: email,
+    verified: verified ?? this.verified,
+    credits: credits ?? this.credits,
+    branch: branch,
+    semester: semester,
+    usn: usn,
+    contact: contact,
+    createdAt: createdAt,
+  );
+
   String get initials {
     final parts = name
         .trim()
@@ -69,10 +89,29 @@ class Student {
 }
 
 class AdminDashboardData {
-  const AdminDashboardData({required this.users, required this.summary});
+  const AdminDashboardData({
+    required this.users,
+    required this.summary,
+    this.page = 1,
+    this.hasMore = false,
+  });
 
   final List<Student> users;
   final AdminSummary summary;
+  final int page;
+  final bool hasMore;
+
+  AdminDashboardData copyWith({
+    List<Student>? users,
+    AdminSummary? summary,
+    int? page,
+    bool? hasMore,
+  }) => AdminDashboardData(
+    users: users ?? this.users,
+    summary: summary ?? this.summary,
+    page: page ?? this.page,
+    hasMore: hasMore ?? this.hasMore,
+  );
 
   factory AdminDashboardData.fromJson(Map<String, dynamic> json) {
     final users = (json['users'] as List<dynamic>? ?? const [])
@@ -86,6 +125,11 @@ class AdminDashboardData {
       summary: AdminSummary.fromJson(
         (json['summary'] as Map<String, dynamic>?) ?? const {},
       ),
+      page: _integer(
+        (json['pagination'] as Map<String, dynamic>?)?['page'],
+      ).clamp(1, 1000000),
+      hasMore:
+          (json['pagination'] as Map<String, dynamic>?)?['hasMore'] == true,
     );
   }
 }

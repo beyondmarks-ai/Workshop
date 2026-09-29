@@ -50,8 +50,15 @@ for (const operation of ["generate", "predict", "predictLongRunning", "embedCont
 
 app.http("vertex-poll", { methods: ["GET"], authLevel: "function", route: "vertex/operation", handler: async (request) => {
   const name = new URL(request.url).searchParams.get("name");
-  if (!name || !name.startsWith("projects/")) return { status: 400, jsonBody: { error: "A valid operation name is required." } };
-  try { return result(await callVertex(name, "GET")); } catch (error) { return { status: 502, jsonBody: { error: error.message || "Could not poll Vertex operation." } }; }
+  const prefix = `projects/${project}/locations/${location}/publishers/google/models/`;
+  if (!name || !name.startsWith(prefix)) return { status: 400, jsonBody: { error: "A valid operation name is required." } };
+  const model = name.slice(prefix.length).split("/operations/")[0];
+  if (!model || !/^[a-z0-9.-]+$/.test(model) || !name.includes("/operations/")) return { status: 400, jsonBody: { error: "A valid operation name is required." } };
+  try {
+    return result(await callVertex(`${prefix}${model}:fetchPredictOperation`, "POST", { operationName: name }));
+  } catch (error) {
+    return { status: 502, jsonBody: { error: error.message || "Could not poll Vertex operation." } };
+  }
 } });
 
 app.http("vertex-legacy", { methods: ["POST"], authLevel: "function", route: "vertex/{model}", handler: (request) => modelRequest(request, "generate") });

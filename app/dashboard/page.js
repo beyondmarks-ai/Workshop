@@ -2,7 +2,18 @@
 
 import { useEffect, useState } from "react";
 import GravityStarsBackground from "../components/gravity-stars-background";
-import { marketplaceCatalog, marketplaceItems } from "../../lib/marketplace";
+import { isStarterPackModel, marketplaceCatalog, marketplaceItems } from "../../lib/marketplace";
+import openAiLogo from "../../Logo/openai.svg";
+import geminiLogo from "../../Logo/gemini-color.svg";
+import claudeLogo from "../../Logo/claude-color.svg";
+import sarvamLogo from "../../Logo/Sarvam-color.svg";
+import googleCloudLogo from "../../Logo/google_cloud-icon.svg";
+import googleMapsLogo from "../../Logo/google_maps-icon.svg";
+import youtubeLogo from "../../Logo/youtube-icon.svg";
+import googlePhotosLogo from "../../Logo/icons8-google-photos-48.png";
+import recaptchaLogo from "../../Logo/icons8-google-recaptcha-64.png";
+import academyLogo from "../../Logo/250069932.jpg";
+import firecrawlLogo from "../../Logo/firecrawl-color.svg";
 
 const sarvamVoiceSamples = [
   { id: "priya", name: "Priya", tone: "Warm and friendly", src: "/audio/sarvam/priya.wav" },
@@ -10,6 +21,31 @@ const sarvamVoiceSamples = [
   { id: "shreya", name: "Shreya", tone: "Calm narration", src: "/audio/sarvam/shreya.wav" },
   { id: "tanya", name: "Tanya", tone: "Young and energetic", src: "/audio/sarvam/tanya.wav" }
 ];
+
+const marketplaceBrandLogos = {
+  OpenAI: { src: openAiLogo.src, alt: "OpenAI", theme: "openai" },
+  "Vertex AI": { src: geminiLogo.src, alt: "Google Gemini", theme: "gemini" },
+  Claude: { src: claudeLogo.src, alt: "Claude", theme: "anthropic" },
+  "Sarvam AI": { src: sarvamLogo.src, alt: "Sarvam AI", theme: "sarvam" },
+  Firecrawl: { src: firecrawlLogo.src, alt: "Firecrawl", theme: "firecrawl" },
+  "Google Cloud": { src: googleCloudLogo.src, alt: "Google Cloud", theme: "google" },
+};
+
+const marketplaceLogoSources = [openAiLogo.src, geminiLogo.src, claudeLogo.src, sarvamLogo.src, firecrawlLogo.src, googleCloudLogo.src, googleMapsLogo.src, youtubeLogo.src, googlePhotosLogo.src, recaptchaLogo.src, academyLogo.src];
+
+function MarketplaceBrandLogo({ category, itemId, kind }) {
+  let brand = marketplaceBrandLogos[category] || marketplaceBrandLogos.OpenAI;
+  if (category === "Google Cloud" && kind === "maps") brand = { src: googleMapsLogo.src, alt: "Google Maps", theme: "maps" };
+  if (category === "Google Cloud" && kind === "youtube") brand = { src: youtubeLogo.src, alt: "YouTube", theme: "youtube" };
+  if (itemId === "google-google-photos") brand = { src: googlePhotosLogo.src, alt: "Google Photos", theme: "photos" };
+  if (itemId === "google-recaptcha-enterprise") brand = { src: recaptchaLogo.src, alt: "reCAPTCHA", theme: "recaptcha" };
+
+  return (
+    <span className={`marketplace-brand-logo marketplace-brand-${brand.theme}`} aria-hidden="true">
+      <img src={brand.src} alt="" width="24" height="24" loading="lazy" decoding="async" />
+    </span>
+  );
+}
 
 const documentationSections = [
   { title: "Luna — text and reasoning", prompt: "Use the Luna endpoint to answer this request clearly and cite assumptions: YOUR_TASK.", example: `POST /api/proxy/responses?model=gpt-5.6-luna\n{"input":[{"role":"user","content":"Explain photosynthesis for a first-year student."}]}` },
@@ -63,6 +99,18 @@ export default function Dashboard() {
   const [marketplaceCartOpen, setMarketplaceCartOpen] = useState(false);
   const [marketplacePurchases, setMarketplacePurchases] = useState([]);
   const [playingVoice, setPlayingVoice] = useState("");
+  const [academyService, setAcademyService] = useState(null);
+  const [academyContactOpen, setAcademyContactOpen] = useState(false);
+
+  useEffect(() => {
+    const preloadLogos = () => marketplaceLogoSources.forEach((src) => {
+      const logo = new Image();
+      logo.decoding = "async";
+      logo.src = src;
+    });
+    const idleId = window.requestIdleCallback ? window.requestIdleCallback(preloadLogos) : window.setTimeout(preloadLogos, 150);
+    return () => window.requestIdleCallback ? window.cancelIdleCallback(idleId) : window.clearTimeout(idleId);
+  }, []);
 
   useEffect(() => {
     const refreshUser = () => fetch("/api/auth")
@@ -214,7 +262,7 @@ export default function Dashboard() {
 
   const endpointItems = (access.endpoints || []).filter((endpoint) => endpoint.category === endpointCategory);
   const marketplaceItemsList = marketplaceItems();
-  const marketplaceKinds = [{ id: "all", name: "All categories" }, { id: "chat", name: "Chat" }, { id: "image", name: "Image" }, { id: "video", name: "Video" }, { id: "audio", name: "Audio" }, { id: "embeddings", name: "Embeddings" }, { id: "tools", name: "Tools" }];
+  const marketplaceKinds = [{ id: "all", name: "All categories" }, { id: "chat", name: "Chat" }, { id: "image", name: "Image" }, { id: "video", name: "Video" }, { id: "audio", name: "Audio" }, { id: "embeddings", name: "Embeddings" }, { id: "tools", name: "Tools" }, { id: "maps", name: "Maps" }, { id: "youtube", name: "YouTube" }, { id: "cloud-ai", name: "Cloud AI" }, { id: "data", name: "Data" }, { id: "compute", name: "Compute" }, { id: "firebase", name: "Firebase" }, { id: "business", name: "Business" }, { id: "security", name: "Security" }, { id: "devops", name: "DevOps" }];
   const marketplaceProviders = [{ id: "all", name: "All models" }, ...marketplaceCatalog.map((service) => ({ id: service.name, name: service.name }))];
 
   return (
@@ -253,16 +301,28 @@ export default function Dashboard() {
           <div className="marketplace-filter-group"><strong>Model</strong><div className="marketplace-category-tabs">{marketplaceProviders.map((provider) => <button type="button" className={marketplaceProvider === provider.id ? "active" : ""} onClick={() => setMarketplaceProvider(provider.id)} key={provider.id}>{provider.name}</button>)}</div></div>
 <div className="marketplace-filter-group"><strong>Category</strong><div className="marketplace-category-tabs">{marketplaceKinds.map((kind) => <button type="button" className={marketplaceCategory === kind.id ? "active" : ""} onClick={() => setMarketplaceCategory(kind.id)} key={kind.id}>{kind.name}</button>)}</div></div>
           <div className="marketplace-grid">
-            {marketplaceKinds.filter((kind) => kind.id !== "all" && (marketplaceCategory === "all" || marketplaceCategory === kind.id)).map((kind) => <article className="marketplace-category" key={kind.id}>
-              <div className="marketplace-category-heading"><strong>{kind.name} models</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).length} available</span></div>
+            {marketplaceKinds.filter((kind) => kind.id !== "all" && (marketplaceCategory === "all" || marketplaceCategory === kind.id) && marketplaceItemsList.some((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider))).map((kind) => <article className="marketplace-category" key={kind.id}>
+              <div className="marketplace-category-heading"><strong>{kind.name}</strong><span>{marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).length} available</span></div>
               <div className="marketplace-items">
-                {marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).map((item) => <label key={item.id} className={`marketplace-item comet-card${marketplaceCart.includes(item.id) ? " selected" : ""}`}>
-  <input type="checkbox" checked={marketplaceCart.includes(item.id)} disabled={marketplacePurchases.some((purchase) => purchase.itemId === item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} aria-label={`Add ${item.name} to cart`} />
+                {marketplaceItemsList.filter((item) => item.kind === kind.id && (marketplaceProvider === "all" || item.category === marketplaceProvider)).map((item) => item.academyOnly ? <button key={item.id} type="button" className="marketplace-item comet-card marketplace-academy-card" onClick={() => { setAcademyService(item); setAcademyContactOpen(false); }} aria-label={`View academy access information for ${item.name}`}>
   <div className="comet-card-content">
-    <div className="comet-card-heading"><b>{item.name}</b><span>{item.category}</span></div>
+    <div className="comet-card-heading">
+      <MarketplaceBrandLogo category={item.category} itemId={item.id} kind={item.kind} />
+      <div className="comet-card-identity"><b>{item.name}</b><span className="comet-card-provider">Google</span></div>
+    </div>
+    <small>{item.description}</small>
+    <div className="comet-card-footer marketplace-academy-footer"><em>Academy only</em><span className="comet-card-cart-hint">View access</span></div>
+  </div>
+</button> : <label key={item.id} className={`marketplace-item comet-card${marketplaceCart.includes(item.id) ? " selected" : ""}`}>
+  <input type="checkbox" checked={marketplaceCart.includes(item.id)} disabled={isStarterPackModel(item.id) || marketplacePurchases.some((purchase) => purchase.itemId === item.id)} onChange={(event) => setMarketplaceCart((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} aria-label={isStarterPackModel(item.id) ? `${item.name} is included in the starter pack` : `Add ${item.name} to cart`} />
+  <div className="comet-card-content">
+    <div className="comet-card-heading">
+      <MarketplaceBrandLogo category={item.category} itemId={item.id} kind={item.kind} />
+      <div className="comet-card-identity"><b>{item.name}</b><span className="comet-card-provider">{item.category}</span></div>
+    </div>
     <small>{item.description}</small>
     {item.id === "sarvam-bulbul-v3" && <div className="marketplace-voice-samples" onClick={(event) => event.stopPropagation()}><div className="marketplace-voice-samples-heading"><span>Voice samples</span><small>Bulbul v3</small></div>{sarvamVoiceSamples.map((voice) => <div className="marketplace-voice-sample" key={voice.id}><button type="button" className={`marketplace-voice-play${playingVoice === voice.id ? " playing" : ""}`} onClick={(event) => toggleVoiceSample(event, voice.id)} aria-label={`${playingVoice === voice.id ? "Pause" : "Play"} ${voice.name} voice sample`}>{playingVoice === voice.id ? "Ⅱ" : "▶"}</button><div className="marketplace-voice-meta"><strong>{voice.name}</strong><small>{voice.tone}</small></div><div className="marketplace-voice-wave" aria-hidden="true">{[34, 58, 43, 72, 48, 84, 55, 38, 67, 46, 76, 52, 36, 64, 45, 70].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div><audio className="marketplace-voice-audio" src={voice.src} preload="metadata" onEnded={() => setPlayingVoice("")} /></div>)}</div>}
-    <div className="comet-card-footer"><em>{item.credits ? `${item.credits} credits` : "Free"}</em><span className="comet-card-cart-hint">{marketplacePurchases.some((purchase) => purchase.itemId === item.id) ? "Already bought" : marketplaceCart.includes(item.id) ? "In cart" : "Select to add"}</span></div>
+    <div className="comet-card-footer"><em>{isStarterPackModel(item.id) ? "Included" : item.credits ? `${item.credits} credits` : "Free"}</em><span className="comet-card-cart-hint">{isStarterPackModel(item.id) ? "Already owned" : marketplacePurchases.some((purchase) => purchase.itemId === item.id) ? "Already bought" : marketplaceCart.includes(item.id) ? "In cart" : "Select to add"}</span></div>
   </div>
 </label>)}
               </div>
@@ -286,23 +346,29 @@ export default function Dashboard() {
         </section>
       </div>}
       {codexOpen && <div className="codex-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCodexOpen(false)}>
-        <section className="codex-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
+        <section className="codex-modal codex-setup-modal" role="dialog" aria-modal="true" aria-labelledby="codex-title">
           <button className="codex-modal-close" type="button" onClick={() => setCodexOpen(false)} aria-label="Close Codex instructions">×</button>
           {codexMode === "codex" ? <>
           <small>CODEX WORKSHOP</small>
           <h2 id="codex-title">Codex access</h2>
-          <p className="codex-modal-intro">Each request or prompt entered in Codex consumes credits. Standard Codex can exhaust its allowance; this workshop Codex is admin-controlled with no request limit.</p>
-          <a className="codex-tools-download" href="/api/codex/download">Download tools.rar</a>
-          <div className="codex-modal-section"><strong>One-time Codex setup</strong><div className="codex-command"><code>{`Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1\n.\\configure-codex-apim.ps1 -ApimKey "YOUR_BMA_KEY"`}</code><button type="button" onClick={() => copyText('Set-ExecutionPolicy -Scope Process Bypass\nUnblock-File .\\configure-codex-apim.ps1\n.\\configure-codex-apim.ps1 -ApimKey "YOUR_BMA_KEY"')} aria-label="Copy Codex setup commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>Run this once. In Codex, type <b>/model</b> to switch between Luna, Sol, and Terra with the same key. Only purchased models can run.</span></div>
-          <p className="codex-modal-check">The tools download does not deduct credits. Your 3-day Codex access remains active until the workshop access period ends.</p>
+          <p className="codex-modal-intro">Set up BeyondMarks once on this Windows PC. Your key is stored securely for your Windows account and stays configured after restarts.</p>
+          <a className="codex-tools-download" href="/api/codex/download" download>Download Windows setup (.zip)</a>
+          <ol className="codex-setup-steps">
+            <li><b>Extract the ZIP</b><span>Open Downloads, right-click the ZIP, choose <strong>Extract All</strong>, then open the extracted folder.</span></li>
+            <li><b>Copy your API key</b><span>Close this window, use the copy button beside your <strong>bma_...</strong> key, then reopen Codex access.</span></li>
+            <li><b>Run the installer</b><span>Double-click <code>install-beyondmarks-codex.cmd</code>. Administrator access is not required.</span></li>
+            <li><b>Paste the key once</b><span>Paste the complete key and press Enter. The key is hidden while you type. Wait for <strong>setup completed successfully</strong>.</span></li>
+            <li><b>Restart Codex</b><span>Fully close Codex, reopen it, and type <code>/model</code> to select any model you purchased.</span></li>
+          </ol>
+          <div className="codex-modal-section codex-setup-help"><strong>Need to repair or change the key?</strong><span>Run the same installer again. It safely updates the saved key and repairs the Codex configuration.</span></div>
+          <p className="codex-modal-check"><strong>No repeated setup:</strong> run it again only after changing the API key, changing Windows users, or moving to another PC. Downloading and installing do not deduct credits.</p>
           </> : <>
           <small>CODEX CLI</small>
           <h2 id="codex-title">Install Codex</h2>
-          <p className="codex-modal-intro">Follow these steps in PowerShell to install and start the Codex CLI.</p>
-          <div className="codex-modal-section"><strong>1. Open PowerShell</strong><div className="codex-command"><code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code><button type="button" onClick={() => copyText("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned")} aria-label="Copy PowerShell command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>When prompted, type <b>Y</b> and press Enter.</span></div>
-          <div className="codex-modal-section"><strong>2. Install npm</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download Node.js and npm from nodejs.org ↗</a><div className="codex-command"><code>{`node --version\nnpm --version`}</code><button type="button" onClick={() => copyText("node --version\nnpm --version")} aria-label="Copy npm check commands" title="Copy commands"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
-          <div className="codex-modal-section"><strong>3. Install Codex CLI</strong><div className="codex-command"><code>npm install -g @openai/codex</code><button type="button" onClick={() => copyText("npm install -g @openai/codex")} aria-label="Copy Codex install command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
-          <div className="codex-modal-section"><strong>4. Start Codex</strong><div className="codex-command"><code>codex</code><button type="button" onClick={() => copyText("codex")} aria-label="Copy Codex start command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>Codex is installed when the CLI opens in your terminal.</span></div>
+          <p className="codex-modal-intro">Install the Codex CLI first. After unlocking Codex, the dashboard provides the BeyondMarks one-click Windows setup.</p>
+          <div className="codex-modal-section"><strong>1. Install Node.js</strong><a className="codex-npm-link" href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Download the recommended LTS release from nodejs.org ↗</a><span>Close and reopen your terminal after installation.</span></div>
+          <div className="codex-modal-section"><strong>2. Install or update Codex</strong><div className="codex-command"><code>npm install -g @openai/codex@latest</code><button type="button" onClick={() => copyText("npm install -g @openai/codex@latest")} aria-label="Copy Codex install command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div></div>
+          <div className="codex-modal-section"><strong>3. Confirm installation</strong><div className="codex-command"><code>codex --version</code><button type="button" onClick={() => copyText("codex --version")} aria-label="Copy Codex version command" title="Copy command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg></button></div><span>A version number confirms Codex is ready. Then unlock Codex and follow the one-click setup.</span></div>
           </>}
         </section>
       </div>}
@@ -341,6 +407,24 @@ export default function Dashboard() {
         </article>
         </section>
       </div>
+      {academyService && <div className="codex-modal-backdrop academy-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) { setAcademyService(null); setAcademyContactOpen(false); } }}>
+        <section className="codex-modal academy-access-modal" role="dialog" aria-modal="true" aria-labelledby="academy-access-title">
+          <button className="codex-modal-close" type="button" onClick={() => { setAcademyService(null); setAcademyContactOpen(false); }} aria-label="Close academy access information">×</button>
+          <div className="academy-access-logo" aria-hidden="true"><img src={academyLogo.src} alt="" /></div>
+          <small>ACADEMY EXCLUSIVE</small>
+          <h2 id="academy-access-title">{academyService.name}</h2>
+          <p>This service is available only to students who have taken admission in Beyond Marks AI Academy.</p>
+          <div className="academy-access-note"><strong>Want access?</strong><span>Contact the administrator for admission details and service activation.</span></div>
+          {!academyContactOpen ? <button className="academy-contact-button" type="button" onClick={() => setAcademyContactOpen(true)}>Contact admin</button> : <div className="academy-contact-card" aria-label="Beyond Marks AI Academy contact details">
+            <div className="academy-contact-heading"><span className="academy-contact-mark" aria-hidden="true"><img src={academyLogo.src} alt="" /></span><div><strong>Beyond Marks AI Academy</strong><small>Bidar</small></div></div>
+            <div className="academy-contact-links">
+              <a href="tel:+919113260846"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"/></svg><span><small>Call us</small><strong>9113260846</strong></span></a>
+              <a href="tel:+919902300846"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"/></svg><span><small>Alternate</small><strong>9902300846</strong></span></a>
+              <a className="academy-contact-email" href={`mailto:contact@beyondmarks.ai?subject=${encodeURIComponent(`Academy access request: ${academyService.name}`)}`}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span><small>Email</small><strong>contact@beyondmarks.ai</strong></span></a>
+            </div>
+          </div>}
+        </section>
+      </div>}
     </main>
   );
 }

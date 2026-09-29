@@ -25,26 +25,22 @@ class AdminApi {
     defaultValue: 'https://dashboard.beyondmarks.ai',
   );
   static const _tokenKey = 'beyondmarks_admin_session';
+  static const _emailKey = 'beyondmarks_admin_email';
+  static const _pinKey = 'beyondmarks_admin_pin';
   final http.Client _client;
   final FlutterSecureStorage _storage;
   String? _token;
 
   Future<bool> restoreSession() async {
     _token = await _storage.read(key: _tokenKey);
-    return _token?.isNotEmpty == true;
+    if (_token?.isNotEmpty == true) return true;
+    return _renewSession();
   }
 
-  Future<void> login({
-    required String email,
-    required String pin,
-    required String code,
-  }) async {
-    final result = await _post({
-      'action': 'verify-admin',
-      'email': email.trim(),
-      'pin': pin.trim(),
-      'code': code.trim(),
-    }, authenticated: false);
+  Future<void> login({required String email, required String pin}) async {
+    final cleanEmail = email.trim();
+    final cleanPin = pin.trim();
+    final result = await _loginRequest(cleanEmail, cleanPin);
     final token = '${result['token'] ?? ''}';
     if (token.isEmpty) {
       throw const AdminApiException(
@@ -53,6 +49,29 @@ class AdminApi {
     }
     _token = token;
     await _storage.write(key: _tokenKey, value: token);
+    await _storage.write(key: _emailKey, value: cleanEmail);
+    await _storage.write(key: _pinKey, value: cleanPin);
+  }
+
+  Future<Map<String, dynamic>> _loginRequest(String email, String pin) => _post(
+    {'action': 'verify-admin-app', 'email': email, 'pin': pin},
+    authenticated: false,
+  );
+
+  Future<bool> _renewSession() async {
+    final email = await _storage.read(key: _emailKey);
+    final pin = await _storage.read(key: _pinKey);
+    if (email?.isNotEmpty != true || pin?.isNotEmpty != true) return false;
+    try {
+      final result = await _loginRequest(email!, pin!);
+      final token = '${result['token'] ?? ''}';
+      if (token.isEmpty) return false;
+      _token = token;
+      await _storage.write(key: _tokenKey, value: token);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> logout() async {
@@ -63,13 +82,20 @@ class AdminApi {
     } finally {
       _token = null;
       await _storage.delete(key: _tokenKey);
+      await _storage.delete(key: _emailKey);
+      await _storage.delete(key: _pinKey);
     }
   }
 
-  Future<AdminDashboardData> dashboard() async {
-    final response = await _client
-        .get(_uri('/api/admin'), headers: _headers())
+  Future<AdminDashboardData> dashboard({int page = 1}) async {
+    var response = await _client
+        .get(_uri('/api/admin?page=$page&pageSize=40'), headers: _headers())
         .timeout(const Duration(seconds: 25));
+    if (response.statusCode == 401 && await _renewSession()) {
+      response = await _client
+          .get(_uri('/api/admin?page=$page&pageSize=40'), headers: _headers())
+          .timeout(const Duration(seconds: 25));
+    }
     return AdminDashboardData.fromJson(_decode(response));
   }
 
@@ -146,9 +172,14 @@ class AdminApi {
     final headers = authenticated
         ? _headers()
         : {'content-type': 'application/json'};
-    final response = await _client
+    var response = await _client
         .post(_uri('/api/admin'), headers: headers, body: jsonEncode(body))
         .timeout(const Duration(seconds: 30));
+    if (authenticated && response.statusCode == 401 && await _renewSession()) {
+      response = await _client
+          .post(_uri('/api/admin'), headers: _headers(), body: jsonEncode(body))
+          .timeout(const Duration(seconds: 30));
+    }
     return _decode(response);
   }
 
